@@ -1,8 +1,10 @@
 <script setup>
 import NavButton from "../Components/NavButton.vue";
 
-const meetingItems = ['meetingitem1','metitem2','meetitem3'];
-const treasuryItems = ['treasuryitem1','treasuryitem2','item3'];
+const meetingItems = ['Summary','Minutes','Upcoming'];
+const treasuryItems = ['Summary','Reports'];
+const purchaseItems = ['All Purchases', 'Request', 'Pending Approval'];
+const maintenanceItems = ['All Maintenance', 'Upcoming', 'Request', 'Pending Approval'];
 
 </script>
 
@@ -14,8 +16,8 @@ const treasuryItems = ['treasuryitem1','treasuryitem2','item3'];
 	</div>
 	<div class="flex flex-nowrap">
 		<NavButton :items="meetingItems">Meetings</NavButton>
-		<NavButton :items="meetingItems">Purchases</NavButton>
-		<NavButton :items="meetingItems">Maintenance</NavButton>
+		<NavButton :items="purchaseItems">Purchases</NavButton>
+		<NavButton :items="maintenanceItems">Maintenance</NavButton>
 		<NavButton :items="treasuryItems">Treasury</NavButton>
 	</div>
 </nav>

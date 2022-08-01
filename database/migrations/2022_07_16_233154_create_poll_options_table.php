@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::create('poll_options', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-			$table->text('body');
-			$table->uuidMorphs('commentable');
-			$table->foreignId('user_id');
+			$table->tinyText('option');
+			$table->foreignId('poll_id');
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comments');
+        Schema::dropIfExists('poll_options');
     }
 };

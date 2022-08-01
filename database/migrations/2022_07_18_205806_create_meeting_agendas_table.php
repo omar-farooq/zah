@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::create('meeting_agendas', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-			$table->text('body');
-			$table->uuidMorphs('commentable');
+			$table->text('item');
+			$table->foreignId('meeting_id');
 			$table->foreignId('user_id');
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comments');
+        Schema::dropIfExists('meeting_agendas');
     }
 };

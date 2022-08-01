@@ -13,13 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('comments', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-			$table->text('body');
-			$table->uuidMorphs('commentable');
+        Schema::create('schedule', function (Blueprint $table) {
+			$table->timestamp('date');
 			$table->foreignId('user_id');
-        });
+		});
     }
 
     /**
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comments');
+        Schema::dropIfExists('schedule');
     }
 };
