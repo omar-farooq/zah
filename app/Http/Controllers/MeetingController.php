@@ -8,6 +8,7 @@ use App\Models\Meeting;
 use App\Models\Membership;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class MeetingController extends Controller
 {
@@ -98,6 +99,9 @@ class MeetingController extends Controller
 		$now = Carbon::now('Europe/London');
 		$find_upcoming = $meeting->where('time_of_meeting', '>', $now)->first();
 		$memberships = Membership::where('end_date', null)->with('user')->get();
+
+		$schedule = DB::table('schedule')->get();
+
 		if($find_upcoming == null){ 
 			$upcoming = 'null';
 			$upcomingID = -1;
@@ -109,7 +113,8 @@ class MeetingController extends Controller
 		return Inertia::render('Meetings/Upcoming', [
 			'upcoming' => $upcoming,
 			'id' => $upcomingID,
-			'memberships' => $memberships
+			'memberships' => $memberships,
+			'schedule' => $schedule
 		]);
 	}
 }

@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('schedule', function (Blueprint $table) {
 			$table->timestamp('date');
 			$table->foreignId('user_id');
+			$table->string('availability');
 		});
     }
 

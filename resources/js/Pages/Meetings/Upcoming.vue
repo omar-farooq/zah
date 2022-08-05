@@ -1,20 +1,29 @@
 <script setup>
-	import { ref, reactive, computed } from "vue";
+	import { ref, computed } from "vue";
 
 	const props = defineProps ({
 		upcoming: String,
 		id: Number,
 		memberships: Array,
+		schedule: Array
 	})
 
-	const today = new Date()
 	const daysFromNow = ref(0);
 
-	const fourWeeks = reactive(Array(28).fill().map((_, i) => new Date(today).setDate(today.getDate() + i)))
+	const today = new Date();
+	const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
 
 	const sevenDays = computed(() => {
-			return fourWeeks.slice(0,7);
+		const fourWeeks = Array(28).fill().map((_, i) => new Date().setDate(today.getDate() + i)).map(x => new Date(x).toLocaleDateString('en-GB', options));
+		return fourWeeks.slice(parseInt(daysFromNow.value),parseInt(daysFromNow.value) + 7)
 	})
+
+	let available = (day, uid) => {
+		let tableDate = new Date(day.replace(',','')).getTime()
+		const arr = props.schedule.filter(x => x.user_id == uid && new Date(x.date).getTime() == tableDate)
+		return arr.map(({availability}) => availability)[0]
+		
+	}
 	
 </script>
 
@@ -44,17 +53,17 @@
 		<thead>
 			<tr>
 				<th class="px-8"></th>
-				<th v-for="membership in memberships">
+				<th v-for="membership in memberships" :key="membership.user.id">
 					{{ membership.user.name }}
 				</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr v-for="date in sevenDays">
+			<tr v-for="day in sevenDays">
 				<th>
-					{{ date }}
+					{{ day }}
 				</th>
-				<td v-for="membership in memberships">{{ membership.user.id }}</td>
+				<td v-for="membership in memberships">{{ available(day,membership.user.id) }}</td>
 			</tr>
 		</tbody>
 	</table>
