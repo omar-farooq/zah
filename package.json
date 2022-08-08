@@ -22,6 +22,7 @@
         "vue": "^3.2.31"
     },
     "dependencies": {
-        "click-outside-vue3": "^4.0.1"
+        "click-outside-vue3": "^4.0.1",
+        "tw-elements": "^1.0.0-alpha12"
     }
 }

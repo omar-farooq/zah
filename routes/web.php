@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\ScheduleController;
 use Inertia\Inertia;
 
 /*
@@ -30,7 +31,11 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::controller(MeetingController::class)->group(function() {
-	Route::get('/meetings/upcoming', 'getUpcoming');	
+	Route::post('/meetings/create', 'store');	
+});
+
+Route::controller(ScheduleController::class)->group(function() {
+	Route::get('/meetings/schedule', 'browse');	
 });
 
 require __DIR__.'/auth.php';

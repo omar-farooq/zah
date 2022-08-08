@@ -13,4 +13,8 @@ class Membership extends Model
 	{
 		return $this->belongsTo(User::class);
 	}
+
+	public function getMembers() {
+		return $this->where('end_date', null)->with('user')->get();
+	}
 }

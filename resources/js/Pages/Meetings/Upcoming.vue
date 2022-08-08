@@ -1,41 +1,81 @@
 <script setup>
-	import { ref, computed } from "vue";
+	import { ref, computed } from "vue"
+	import Modal from '@/Components/Modal/Body.vue'
+	import ModalButton from '@/Components/Modal/Button.vue'
 
 	const props = defineProps ({
-		upcoming: String,
-		id: Number,
+		upcomingDate: String,
+		upcomingID: Number,
 		memberships: Array,
-		schedule: Array
+		schedule: Array,
+		currentUser: Object
 	})
 
-	const daysFromNow = ref(0);
+	const upcomingDateRef = ref(props.upcomingDate)
 
-	const today = new Date();
-	const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+	// The day specified in the modal
+	const selectedDay = ref()
+	const updateDay = (e) => { selectedDay.value = e.target.textContent }
 
+	// Dropdown menu option to select week determines this value (multiples of 7)
+	// Used to determine the week shown in the schedule
+	const daysFromNow = ref(0)
+
+	// Set date options
+	const today = new Date()
+	const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }
+
+	//Create an array for every day in the next four weeks and fill it.
+	// Return the seven days selected from the week dropdown
 	const sevenDays = computed(() => {
-		const fourWeeks = Array(28).fill().map((_, i) => new Date().setDate(today.getDate() + i)).map(x => new Date(x).toLocaleDateString('en-GB', options));
+		const fourWeeks = Array(28).fill().map((_, i) => new Date().setDate(today.getDate() + i)).map(x => new Date(x).toLocaleDateString('en-GB', options))
 		return fourWeeks.slice(parseInt(daysFromNow.value),parseInt(daysFromNow.value) + 7)
 	})
 
+	// function to display availability
 	let available = (day, uid) => {
 		let tableDate = new Date(day.replace(',','')).getTime()
 		const arr = props.schedule.filter(x => x.user_id == uid && new Date(x.date).getTime() == tableDate)
 		return arr.map(({availability}) => availability)[0]
 		
 	}
+
+	// Function to update the suggestion table
+	const makeSuggestion = (selectedDay, currentUser) => { 
+		let hour = document.getElementById('hour').value
+		let minute = document.getElementById('minute').value
+		console.log(currentUser)
+		alert(selectedDay + hour + minute)
+	}
+
+	// function to create a meeting
+	const createMeeting = (selectedDay) => {
+		let hour = document.getElementById('hour').value
+		let minute = document.getElementById('minute').value
+		let timeOfMeeting = new Date(selectedDay.replace(',','') + " " + hour + ":" + minute)
+		axios.post('/meetings/create', {time: timeOfMeeting})
+		.then((response) => {
+			let existingUpcomingDateraw = new Date(props.upcomingDate)
+			if (timeOfMeeting < existingUpcomingDateraw) {
+				upcomingDateRef.value = timeOfMeeting
+			}
+		})
+		.catch((errors) => {
+			console.log(errors)
+		})
+	}
+
 	
 </script>
 
 <template>
 
-	<div v-if="upcoming == 'null'">
+	<div v-if="upcomingDateRef == 'null'">
 		No upcoming meeting yet scheduled. 
 	</div>
 
 	<div v-else>
-		upcoming meeting is {{ upcoming }}
-		<br>Agenda items are as follows:
+		upcoming meeting is {{ upcomingDateRef }}
 	</div>
 
 
@@ -61,7 +101,7 @@
 		<tbody>
 			<tr v-for="day in sevenDays">
 				<th>
-					{{ day }}
+					<button data-bs-toggle="modal" data-bs-target="#schedule-modal" @click="updateDay($event)">{{ day }}</button>
 				</th>
 				<td v-for="membership in memberships">{{ available(day,membership.user.id) }}</td>
 			</tr>
@@ -69,5 +109,20 @@
 	</table>
 	</div>
 
+	<!-- Modal Component -->
+	<modal ModalID="schedule-modal">
+		<template #title>
+			Suggest or Schedule date
+		</template>
+		<template #body>
+			{{ selectedDay }} 
+			<input type="number" id="hour" value="18" class="w-14 appearance-none" style="-moz-appearance: textfield" /> : 
+			<input type="number" id="minute" value="30" class="w-14 appearance-none" style="-moz-appearance: textfield" /> ?
+		</template>
+		<template #buttons>
+			<modal-button class="bg-purple-400 hover:bg-purple-600 focus:bg-purple-700 active:bg-purple-800" data-bs-dismiss="modal" @axios-response="makeSuggestion(selectedDay, currentUser.id)">Suggest</modal-button>
+			<modal-button class="bg-blue-400 hover:bg-blue-600" data-bs-dismiss="modal" @axios-response="createMeeting(selectedDay)">Schedule</modal-button>
+		</template>
+	</modal>
 
 </template>
