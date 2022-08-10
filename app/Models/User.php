@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -41,4 +42,32 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+	/**
+	 * Relationship with Schedule Suggestions
+	 *
+	 */
+	 public function scheduleSuggestions() {
+		return $this->hasMany(ScheduleSuggestion::class)->where('suggested_date', '>', Carbon::now('Europe/London'));
+	 }
+
+	 /**
+	 * Relationship with Membership
+	 *
+	 *
+	 */
+	 public function membership() {
+		return $this->hasOne(Membership::class);
+	 }
+
+	/**
+	 * Get Members
+	 *
+     *
+	**/
+	public function currentMember() {
+		return $this->with('membership')->whereHas('membership', function($query){
+			$query->whereNull('end_date');
+		});
+	}
 }

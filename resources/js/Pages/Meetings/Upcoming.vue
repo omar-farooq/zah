@@ -6,15 +6,17 @@
 	const props = defineProps ({
 		upcomingDate: String,
 		upcomingID: Number,
-		memberships: Array,
+		members: Array,
 		schedule: Array,
 		currentUser: Object
 	})
 
+	//upcoming date prop made reactive
 	const upcomingDateRef = ref(props.upcomingDate)
 
-	// The day specified in the modal
+	// The selected day specified in the modal
 	const selectedDay = ref()
+	//function to get the text of the day clicked to display in the modal
 	const updateDay = (e) => { selectedDay.value = e.target.textContent }
 
 	// Dropdown menu option to select week determines this value (multiples of 7)
@@ -55,9 +57,9 @@
 		let timeOfMeeting = new Date(selectedDay.replace(',','') + " " + hour + ":" + minute)
 		axios.post('/meetings/create', {time: timeOfMeeting})
 		.then((response) => {
-			let existingUpcomingDateraw = new Date(props.upcomingDate)
-			if (timeOfMeeting < existingUpcomingDateraw) {
-				upcomingDateRef.value = timeOfMeeting
+			let existingUpcomingDateraw = new Date(upcomingDateRef.value.replace(',',''))
+			if (timeOfMeeting < existingUpcomingDateraw || upcomingDateRef.value == 'null') {
+				upcomingDateRef.value = new Date(timeOfMeeting).toLocaleDateString('en-GB', options)
 			}
 		})
 		.catch((errors) => {
@@ -65,6 +67,17 @@
 		})
 	}
 
+	// Return Schedule Suggestions
+	console.log(props.members[0].schedule_suggestions[0].suggested_date)
+	let test = () => props.members.filter( 
+			x => x.id != props.currentUser.id
+		)
+		.forEach((member) => { 
+			member.schedule_suggestions.forEach((suggestion) => {
+			console.log(suggestion.suggested_date)
+			})
+		})
+	test()
 	
 </script>
 
@@ -93,8 +106,8 @@
 		<thead>
 			<tr>
 				<th class="px-8"></th>
-				<th v-for="membership in memberships" :key="membership.user.id">
-					{{ membership.user.name }}
+				<th v-for="member in members" :key="member.id">
+					{{ member.name }}
 				</th>
 			</tr>
 		</thead>
@@ -103,7 +116,7 @@
 				<th>
 					<button data-bs-toggle="modal" data-bs-target="#schedule-modal" @click="updateDay($event)">{{ day }}</button>
 				</th>
-				<td v-for="membership in memberships">{{ available(day,membership.user.id) }}</td>
+				<td v-for="member in members">{{ available(day,member.id) }}</td>
 			</tr>
 		</tbody>
 	</table>
@@ -124,5 +137,8 @@
 			<modal-button class="bg-blue-400 hover:bg-blue-600" data-bs-dismiss="modal" @axios-response="createMeeting(selectedDay)">Schedule</modal-button>
 		</template>
 	</modal>
+
+	<!-- Suggestions -->
+	
 
 </template>
