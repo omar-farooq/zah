@@ -37,12 +37,11 @@ class MeetingController extends Controller
      */
     public function store(StoreMeetingRequest $request)
     {
-//        $meeting = new Meeting;
-//		$meeting->time_of_meeting = $request->time;
-	//	$meeting->save();
+        $meeting = new Meeting;
+		$meeting->time_of_meeting = $request->time;
+		$meeting->save();
 		return response()->json([
-	//		'id' => $meeting->id
-			'id' => '3'
+			'id' => $meeting->id
 		]);
     }
 

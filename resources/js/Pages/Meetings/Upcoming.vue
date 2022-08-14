@@ -46,8 +46,22 @@
 	const makeSuggestion = (selectedDay, currentUser) => { 
 		let hour = document.getElementById('hour').value
 		let minute = document.getElementById('minute').value
-		console.log(currentUser)
-		alert(selectedDay + hour + minute)
+		let proposedNewSuggestion = {
+			suggested_date: new Date(selectedDay + " " + hour + ":" + minute).toISOString().replace('T',' ').replace('Z', ''),
+			user_id: currentUser
+		}
+		axios.post('/meetings/schedule/suggestions/add', proposedNewSuggestion)
+		.then((response) => {
+			authUserScheduleSuggestions.value.push({id: response.data.id, suggested_date: selectedDay, user_id: currentUser.user_id})
+		})
+	}
+
+	const deleteSuggestion = (deleteSuggestionID) => {
+		axios.post('/meetings/schedule/suggestions/delete', {id: deleteSuggestionID})
+//		.then((response) => {
+			authUserScheduleSuggestions.value = authUserScheduleSuggestions.value.filter(remaining => remaining.id != deleteSuggestionID)
+//		}
+
 	}
 
 	// function to create a meeting
@@ -67,18 +81,18 @@
 		})
 	}
 
-	// Return Schedule Suggestions
-	console.log(props.members[0].schedule_suggestions[0].suggested_date)
-	let test = () => props.members.filter( 
-			x => x.id != props.currentUser.id
-		)
-		.forEach((member) => { 
-			member.schedule_suggestions.forEach((suggestion) => {
-			console.log(suggestion.suggested_date)
-			})
-		})
-	test()
-	
+	// Return list of suggesters and their suggestions
+	let suggesters = props.members
+		.filter(x => x.id != props.currentUser.id)
+		.filter(member => member.schedule_suggestions.length > 0)
+
+	//Reactive current user schedule suggestions
+	const authUserScheduleSuggestions = ref(props.members
+		.filter(x => x.id == props.currentUser.id)
+		.map(user => user.schedule_suggestions)[0])
+
+	const availabilityModal = (uid) => uid == 8 ? alert('hello') : ''
+
 </script>
 
 <template>
@@ -116,13 +130,39 @@
 				<th>
 					<button data-bs-toggle="modal" data-bs-target="#schedule-modal" @click="updateDay($event)">{{ day }}</button>
 				</th>
-				<td v-for="member in members">{{ available(day,member.id) }}</td>
+				<td v-for="member in members" :key="member.id" class="border-2" :class="{ 'border-yellow-300': member.id === props.currentUser.id }" :data-bs-toggle="member.id === props.currentUser.id ? 'modal' : ''" :data-bs-target="member.id === props.currentUser.id ? '#availability-modal' : ''">
+					{{ available(day,member.id) }}
+				</td>
 			</tr>
 		</tbody>
 	</table>
 	</div>
 
-	<!-- Modal Component -->
+	<!-- Suggestions -->
+	<div>
+	Suggested dates
+		<div v-if="authUserScheduleSuggestions.length > 0">
+			Your suggestions;
+			
+			<ul>
+				<li v-for="mySuggested in authUserScheduleSuggestions" :key="mySuggested.id">
+					{{ mySuggested.suggested_date }} <button @click="deleteSuggestion(mySuggested.id)">Delete</button>
+				</li>
+			</ul>
+		</div>
+		<ul>
+			<li v-for="suggester in suggesters">
+				{{suggester.name}} has suggested:
+				<ul>
+					<li v-for="suggestedObj in suggester.schedule_suggestions" :key="suggestedObj.id">
+						{{ suggestedObj.suggested_date }}
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+
+	<!-- Modal Component for suggesting or scheduling a date -->
 	<modal ModalID="schedule-modal">
 		<template #title>
 			Suggest or Schedule date
@@ -138,7 +178,19 @@
 		</template>
 	</modal>
 
-	<!-- Suggestions -->
-	
+	<!-- Modal Component for updating availability -->
+	<modal ModalID="availability-modal">
+		<template #title>
+			Update your availability
+		</template>
+		<template #body>
+			{{ selectedDay }}	
+		</template>
+		<template #buttons>
+			<modal-button class="bg-green-400 hover:bg-green-600 focus:bg-green-700 active:bg-green-800" data-bs-dismiss="modal">Available</modal-button>
+			<modal-button class="bg-orange-400 hover:bg-orange-600 focus:bg-orange-700 active:bg-orange-800" data-bs-dismiss="modal">Tentative</modal-button>
+			<modal-button class="bg-red-400 hover:bg-red-600 focus:bg-red-700 active:bg-red-800" data-bs-dismiss="modal">Unavailable</modal-button>
+		</template>
+	</modal>
 
 </template>

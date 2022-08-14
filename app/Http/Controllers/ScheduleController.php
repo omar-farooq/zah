@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Meeting;
 use App\Models\User;
 use App\Models\Schedule;
+use App\Models\ScheduleSuggestion;
 use App\Services\ScheduleService;
 use Inertia\Inertia;
 
@@ -31,5 +32,36 @@ class ScheduleController extends Controller
             'schedule' => $schedule->get(),
 			'currentUser' => Auth::user()
         ]);
+	}
+
+	/**
+	* Create a suggestion
+	*
+	* @param \App\Http\Requests\StoreScheduleSuggestionRequest $request
+	*
+	* @return \Illuminatee\Http\Response
+	*/
+
+	public function addSuggestion(Request $request) {
+		$scheduleSuggestion = new ScheduleSuggestion;
+		$scheduleSuggestion->suggested_date = $request->suggested_date;
+		$scheduleSuggestion->user_id = $request->user_id;
+		$scheduleSuggestion->save();
+		return response()->json([
+			'id' => $scheduleSuggestion->id
+		]);
+	}
+
+	/**
+	* Delete a suggestion
+	*
+	* @param \Illuminate\Http\Request $request
+	* @param \App\Models\ScheduleSuggestion $scheduleSuggestion
+	*
+	* @return \Illuminate\Http\Response
+	*/
+
+	public function removeSuggestion(Request $request, ScheduleSuggestion $scheduleSuggestion) {
+		$scheduleSuggestion::destroy($request->id);
 	}
 }
