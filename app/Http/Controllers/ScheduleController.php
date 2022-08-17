@@ -29,7 +29,7 @@ class ScheduleController extends Controller
             'upcomingDate' => $scheduleService->upcoming()['upcomingDate'],
             'upcomingID' => $scheduleService->upcoming()['upcomingID'],
             'members' => $users->currentMember()->with('scheduleSuggestions')->get(),
-            'schedule' => $schedule->get(),
+            'schedule' => $schedule->current(),
 			'currentUser' => Auth::user()
         ]);
 	}

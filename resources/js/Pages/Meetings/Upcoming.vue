@@ -1,7 +1,8 @@
 <script setup>
-	import { ref, computed } from "vue"
+	import { ref, computed, reactive } from "vue"
 	import Modal from '@/Components/Modal/Body.vue'
 	import ModalButton from '@/Components/Modal/Button.vue'
+	import AxiosButton from '@/Components/AxiosButton.vue'
 
 	const props = defineProps ({
 		upcomingDate: String,
@@ -91,7 +92,47 @@
 		.filter(x => x.id == props.currentUser.id)
 		.map(user => user.schedule_suggestions)[0])
 
-	const availabilityModal = (uid) => uid == 8 ? alert('hello') : ''
+	// Determine if this row in the table belongs to the current user
+	const currentUserRow = (memberId) => {
+		return memberId === props.currentUser.id
+	}
+
+	// Handle the click event when a user clicks on a row to update their schedule
+	const checkedDate = ref([])
+	const checkedList = ref([])
+
+	//Handle the click event when availability is already present. Array to update this availability
+	const updateCheckedDate = ref([])
+	const updateCheckedList = ref([])
+
+	const selectedDateToUpdate = (day, memberId) => {
+		if (currentUserRow(memberId)){
+			if (props.schedule.find(({date, user_id}) => date == day && user_id == memberId)){
+				updateCheckedDate.value.find(val => val === day) ? updateCheckedDate.value = updateCheckedDate.value.filter(item => item !== day) : updateCheckedDate.value.push(day)
+				updateCheckedDate.value = updateCheckedDate.value.sort((a,b) => new Date(a.replace(',','')) - new Date(b.replace(',','')))
+				updateCheckedList.value = updateCheckedDate.value.join(', ')
+			} else {
+				checkedDate.value.find(val => val === day) ? checkedDate.value = checkedDate.value.filter(item => item !== day) : checkedDate.value.push(day)
+				checkedDate.value = checkedDate.value.sort((a,b) => new Date(a.replace(',','')) - new Date(b.replace(',','')))
+				checkedList.value = checkedDate.value.join(', ')
+
+			}
+		}	
+	}
+
+	//axios requests to update user availability
+	const addAvailability = (statedAvailability) => {
+		//new availability
+		checkedDate.value.forEach(day => props.schedule.push({ availability: statedAvailability, date: day, user_id: props.currentUser.id }))
+		//update existing availability
+		updateCheckedDate.value.forEach(day => props.schedule.find(({date,user_id}) => date == day && user_id == props.currentUser.id).availability = statedAvailability)
+
+		//set arrays containing selected user schedule dates to empty
+		checkedDate.value = []
+		checkedList.value = []
+		updateCheckedDate.value = []
+		updateCheckedList.value = []
+	}
 
 </script>
 
@@ -105,7 +146,7 @@
 		upcoming meeting is {{ upcomingDateRef }}
 	</div>
 
-
+<!-- Dropdown -->
 	<div>
 	Availability can be seen below:
 	<br>
@@ -115,6 +156,8 @@
 		<option value="14">Two weeks</option>
 		<option value="21">Three weeks</option>
 	</select>
+
+	<!-- Schedule -->
 
 	<table class="table-auto">
 		<thead>
@@ -126,16 +169,34 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr v-for="day in sevenDays">
+			<tr v-for="(day, index) in sevenDays">
 				<th>
 					<button data-bs-toggle="modal" data-bs-target="#schedule-modal" @click="updateDay($event)">{{ day }}</button>
 				</th>
-				<td v-for="member in members" :key="member.id" class="border-2" :class="{ 'border-yellow-300': member.id === props.currentUser.id }" :data-bs-toggle="member.id === props.currentUser.id ? 'modal' : ''" :data-bs-target="member.id === props.currentUser.id ? '#availability-modal' : ''">
+				<td v-for="member in members" :key="member.id" class="border-2" :class="{ 'border-yellow-300': currentUserRow(member.id), 'bg-red-500': available(day,member.id) == 'no' }" @click="selectedDateToUpdate(day,member.id)">
 					{{ available(day,member.id) }}
 				</td>
 			</tr>
 		</tbody>
 	</table>
+	</div>
+
+	<!-- div for user updating their schedule -->
+
+	<div v-if="checkedList.length != 0 || updateCheckedList.length != 0">
+		<div v-if="checkedList.length != 0">
+			Scheduling the following dates:
+			<br>
+			{{ checkedList }}
+		</div>
+		<div v-if="updateCheckedList.length !=0">
+			Updating the following dates:
+			<br>
+			{{ updateCheckedList }}
+		</div>
+		<axios-button class="bg-green-400 hover:bg-green-600 focus:bg-green-700 active:bg-green-800" @axios-response="addAvailability('yes')">Available</axios-button>
+		<axios-button class="bg-orange-400 hover:bg-orange-600 focus:bg-orange-700 active:bg-orange-800" @axios-response="addAvailability('maybe')">Tentative</axios-button>
+		<axios-button class="bg-red-400 hover:bg-red-600 focus:bg-red-700 active:bg-red-800" @axios-response="addAvailability('no')">Unavailable</axios-button>
 	</div>
 
 	<!-- Suggestions -->
@@ -175,21 +236,6 @@
 		<template #buttons>
 			<modal-button class="bg-purple-400 hover:bg-purple-600 focus:bg-purple-700 active:bg-purple-800" data-bs-dismiss="modal" @axios-response="makeSuggestion(selectedDay, currentUser.id)">Suggest</modal-button>
 			<modal-button class="bg-blue-400 hover:bg-blue-600" data-bs-dismiss="modal" @axios-response="createMeeting(selectedDay)">Schedule</modal-button>
-		</template>
-	</modal>
-
-	<!-- Modal Component for updating availability -->
-	<modal ModalID="availability-modal">
-		<template #title>
-			Update your availability
-		</template>
-		<template #body>
-			{{ selectedDay }}	
-		</template>
-		<template #buttons>
-			<modal-button class="bg-green-400 hover:bg-green-600 focus:bg-green-700 active:bg-green-800" data-bs-dismiss="modal">Available</modal-button>
-			<modal-button class="bg-orange-400 hover:bg-orange-600 focus:bg-orange-700 active:bg-orange-800" data-bs-dismiss="modal">Tentative</modal-button>
-			<modal-button class="bg-red-400 hover:bg-red-600 focus:bg-red-700 active:bg-red-800" data-bs-dismiss="modal">Unavailable</modal-button>
 		</template>
 	</modal>
 
