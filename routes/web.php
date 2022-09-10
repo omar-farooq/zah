@@ -39,6 +39,7 @@ Route::controller(ScheduleController::class)->group(function() {
 	Route::post('/meetings/schedule/suggestions/add', 'addSuggestion');
 	Route::post('/meetings/schedule/suggestions/delete', 'removeSuggestion');
 	Route::post('/meetings/schedule/availability/add', 'addAvailability');
+	Route::put('/meetings/schedule/availability/update/{id}', 'updateAvailability');
 });
 
 require __DIR__.'/auth.php';

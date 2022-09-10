@@ -43,19 +43,23 @@ class ScheduleController extends Controller
 	*/
 
 	public function addAvailability(Request $request) {
-		Schedule::create($request->all());
+		$newSchedule = Schedule::create($request->all());
+		return response()->json([
+			'id' => $newSchedule->id
+		]);
 	}
 
 	/**
 	* Update availability
 	*
 	* @param \App\Http\Requests\StoreScheduleAvailability $request
+	* @param string id
 	*
 	* @return \Illuminate\Http\Response
 	*/
 
-	public function updateAvailability(Request $request) {
-		
+	public function updateAvailability(Request $request, $id) {
+		Schedule::find($id)->update($request->all());
 	}
 
 	/**

@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect, useRef } from 'react'
-export default function Modal({ModalID, title, body, buttons, modalOpenState, setModalOpenState, ref}) {
+export default function Modal({ModalID, title, body, buttons, modalOpenState, setModalOpenState, ref, children}) {
 
 	// use useState and useEffect to create a delay in setting the 'hidden' class on the modal
 	// This is so that the nice animations can run
@@ -44,7 +44,7 @@ export default function Modal({ModalID, title, body, buttons, modalOpenState, se
 					</div>
 
 					<div className="modal-body relative p-4">
-						{body}
+						{children}
 					</div>
 
 					<div

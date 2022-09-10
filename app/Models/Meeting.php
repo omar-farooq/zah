@@ -18,6 +18,6 @@ class Meeting extends Model
 	}
 
 	public function findUpcoming() {
-		return $this->where('time_of_meeting', '>', Carbon::now('Europe/London'))->first();		
+		return $this->where('time_of_meeting', '>', Carbon::now('Europe/London'))->orderBy('time_of_meeting', 'asc')->first();		
 	}
 }
