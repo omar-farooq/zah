@@ -24,9 +24,9 @@ class MeetingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function store(Meeting $meeting)
     {
-        //
+        return Inertia::render('Meetings/New');
     }
 
     /**
@@ -35,7 +35,7 @@ class MeetingController extends Controller
      * @param  \App\Http\Requests\StoreMeetingRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreMeetingRequest $request)
+    public function create(StoreMeetingRequest $request)
     {
         $meeting = new Meeting;
 		$meeting->time_of_meeting = $request->time;

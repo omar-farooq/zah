@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('meeting_agendas', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-			$table->text('item');
-			$table->foreignId('meeting_id');
-			$table->foreignId('user_id');
+            $table->text('item');
+            $table->foreignId('meeting_id')->nullable();
+            $table->foreignId('user_id');
         });
     }
 

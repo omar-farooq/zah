@@ -13,13 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tasks', function (Blueprint $table) {
+        Schema::create('minutes', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-			$table->timestamp('due_by')->nullable();
-			$table->text('item');
-            $table->boolean('completed')->default(0);
-            $table->foreignId('minute_id')->nullable();
+            $table->foreignId('meeting_id');
+            $table->text('minute_text');
         });
     }
 
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('minutes');
     }
 };

@@ -60,6 +60,22 @@ class User extends Authenticatable
 		return $this->hasOne(Membership::class);
 	 }
 
+     /**
+      * Relationship with Meeting Agends
+      *
+      */
+     public function meetingAgendas() {
+        return $this->hasMany(MeetingAgenda::class);
+     }
+     
+     /**
+      * Relationship with Tasks
+      *
+      */
+     public function tasks() {
+        return $this->hasMany(Task::class);
+     }
+
 	/**
 	 * Get Members
 	 *
