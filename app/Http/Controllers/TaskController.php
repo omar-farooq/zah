@@ -32,7 +32,7 @@ class TaskController extends Controller
 
         //return a JSON response
         return response()->json([
-            $results
+            'tasks' => $results
         ]);
     }
 

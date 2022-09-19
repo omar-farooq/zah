@@ -3,9 +3,6 @@ import Input from '@/Components/Input'
 import { Calendar } from 'primereact/calendar';
 import { Button } from 'primereact/button';
 import TenantMultiSelect from '@/Components/TenantMultiSelect'
-import "primereact/resources/themes/tailwind-light/theme.css"
-import "primereact/resources/primereact.min.css"
-import "primeicons/primeicons.css"
 
 export default function Tasks() {
 
@@ -42,7 +39,7 @@ export default function Tasks() {
     //Receive the current task items via an api call
     useEffect(() => {
         async function GetTasks() { 
-            let res = await axios.get('/tasks')
+            let res = await axios.get('/tasks?completed="0"')
             updateReactiveTaskList(res.data.tasks)
         }
         GetTasks()

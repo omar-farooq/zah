@@ -6,6 +6,7 @@ use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MeetingAgendaController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\MinuteController;
+use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenancyController;
@@ -57,6 +58,7 @@ Route::controller(ScheduleController::class)->group(function() {
 Route::resource('agenda', MeetingAgendaController::class);
 Route::resource('memberships', MembershipController::class);
 Route::resource('minutes', MinuteController::class);
+Route::resource('purchase-requests', PurchaseRequestController::class);
 Route::resource('tasks', TaskController::class);
 Route::resource('tenants', TenancyController::class);
 Route::resource('users', UserController::class);

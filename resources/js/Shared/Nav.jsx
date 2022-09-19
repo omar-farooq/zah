@@ -6,7 +6,7 @@ import NavSubMenu from '@/Components/NavSubMenu'
 export default function Nav() {
 
 	return (
-		<nav className="container flex bg-white py-8 mx-auto justify-around">
+		<nav className="flex bg-gray-900 py-2 mx-auto justify-around">
 			<div>
 				<h3 className="text-2xl font-medium text-blue-500">InProgress</h3>
 			</div>

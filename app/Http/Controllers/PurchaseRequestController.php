@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePurchaseRequestRequest;
 use App\Http\Requests\UpdatePurchaseRequestRequest;
 use App\Models\PurchaseRequest;
+use Inertia\Inertia;
 
 class PurchaseRequestController extends Controller
 {
@@ -25,7 +26,7 @@ class PurchaseRequestController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Purchases/RequestForm');
     }
 
     /**
