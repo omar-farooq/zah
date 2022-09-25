@@ -23,7 +23,7 @@
         "vite": "^3.0.0"
     },
     "dependencies": {
-        "primeicons": "^5.0.0",
+        "primeicons": "^6.0.1",
         "primereact": "^8.5.0",
         "react-select": "^5.4.0"
     }

@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MeetingAgendaController;
 use App\Http\Controllers\MembershipController;
@@ -55,6 +56,7 @@ Route::controller(ScheduleController::class)->group(function() {
 	Route::put('/meetings/schedule/availability/update/{id}', 'updateAvailability');
 });
 
+Route::resource('approval', ApprovalController::class);
 Route::resource('agenda', MeetingAgendaController::class);
 Route::resource('memberships', MembershipController::class);
 Route::resource('minutes', MinuteController::class);

@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::create('approvals', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-			$table->text('body');
-			$table->morphs('commentable');
-			$table->foreignId('user_id');
+            $table->morphs('approvable');
+            $table->foreignId('user_id');
+            $table->string('approval', 10);
         });
     }
 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comments');
+        Schema::dropIfExists('approvals');
     }
 };

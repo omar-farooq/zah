@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePurchaseRequestRequest;
 use App\Http\Requests\UpdatePurchaseRequestRequest;
 use App\Models\PurchaseRequest;
+use Auth;
 use Inertia\Inertia;
+use Redirect;
 
 class PurchaseRequestController extends Controller
 {
@@ -37,7 +39,17 @@ class PurchaseRequestController extends Controller
      */
     public function store(StorePurchaseRequestRequest $request)
     {
-        //
+        $new_purchase_request = Auth::User()->purchaseRequests()->create($request->all());
+
+        if($request->file('image')) {
+            $imageName = time() . '.' .$request->image->getClientOriginalName();
+            $request->image->move(public_path('images'), $imageName);
+            $new_purchase_request['image'] = $imageName;
+            $new_purchase_request->save();
+        }
+
+            return Redirect::route('purchase-requests.show', $new_purchase_request);
+
     }
 
     /**
@@ -48,7 +60,8 @@ class PurchaseRequestController extends Controller
      */
     public function show(PurchaseRequest $purchaseRequest)
     {
-        //
+        $authUser = Auth::user();
+        return Inertia::render('Purchases/ViewPurchaseRequest', compact('purchaseRequest', 'authUser'));
     }
 
     /**
