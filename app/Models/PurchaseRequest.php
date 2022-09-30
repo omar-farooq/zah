@@ -22,7 +22,7 @@ class PurchaseRequest extends Model
         'rejected'
     ];
 
-    protected $with = ['user', 'approvals', 'comments'];
+    protected $with = ['user', 'approvals'];
 
     /*
      * Relationship with user

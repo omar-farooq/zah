@@ -1,6 +1,6 @@
 import { PrimeIcons } from 'primereact/api'
 
-export default function ApprovalButtons({model_name, model_id, approvalHook}) {
+export default function ApprovalButtons({model, approvalHook}) {
 
     //hook from the parent
     //Note that this must be the whole object for the auth user from the model's relationship array
@@ -26,7 +26,7 @@ export default function ApprovalButtons({model_name, model_id, approvalHook}) {
 
     //create an entry in the database and update the state
     async function createApproval (approval) {
-        let res = await axios.post('/approval', {approvable_type: model_name, approvable_id: model_id, approval: approval})
+        let res = await axios.post('/approval', {approvable_type: model.name, approvable_id: model.id, approval: approval})
         setAuthUserApproval({id: res.data.id, approval: approval})
     }
 

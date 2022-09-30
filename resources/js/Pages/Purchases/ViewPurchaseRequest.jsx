@@ -8,14 +8,15 @@ export default function PurchaseRequest(props) {
 
     //variables
     const requestItem = props.purchaseRequest
+    const model = {name: "App\\Models\\PurchaseRequest", id: requestItem.id}
     let verified = false
     let requesterIsViewing = false
     let authUser = ''
     let authUserApprovalObject = ""
 
-    if(props.authUser != null) 
+    if(props.auth) 
     {
-        authUser = props.authUser
+        authUser = props.auth.user
         verified = authUser.membership.start_date != null && authUser.membership.end_date == null
         requesterIsViewing = authUser.id === requestItem.user.id
 
@@ -27,8 +28,9 @@ export default function PurchaseRequest(props) {
 
     //hooks
     const [authUserApproval, setAuthUserApproval] = useState(authUserApprovalObject)
+    const [comments, setComments] = useState(props.comments.data)
 
-    console.log(requestItem)
+    console.log(props)
     return (
         <RequestLayout>
             <Title>Purchase Request</Title>
@@ -40,7 +42,7 @@ export default function PurchaseRequest(props) {
                                 <div className="ml-auto mt-2">
                                     {
                                         verified ?
-                                        <ApprovalButtons approvalHook={[authUserApproval, setAuthUserApproval]} model_name="App\Models\PurchaseRequest" model_id={requestItem.id} />
+                                        <ApprovalButtons approvalHook={[authUserApproval, setAuthUserApproval]} model={model} />
                                         : <span>only members can vote</span>
                                     }
                                 </div>
@@ -61,8 +63,8 @@ export default function PurchaseRequest(props) {
 
                 <FormTile>
                     {requesterIsViewing ? "You" : requestItem.user.name} requested this <i>"{requestItem.reason}" </i>
-                    <CommentBox />
-                    <CommentDisplay />
+                    <CommentBox model={model} commentHook={[comments, setComments]} />
+                    <CommentDisplay comments={comments} />
                 </FormTile>
             </TileContainer>
                

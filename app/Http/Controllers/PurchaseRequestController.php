@@ -60,8 +60,8 @@ class PurchaseRequestController extends Controller
      */
     public function show(PurchaseRequest $purchaseRequest)
     {
-        $authUser = Auth::user();
-        return Inertia::render('Purchases/ViewPurchaseRequest', compact('purchaseRequest', 'authUser'));
+        $comments = $purchaseRequest->comments()->paginate(2);
+        return Inertia::render('Purchases/ViewPurchaseRequest', compact('purchaseRequest', 'comments'));
     }
 
     /**

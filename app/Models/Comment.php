@@ -10,14 +10,23 @@ class Comment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'comment',
+        'body',
         'commentable_type',
         'commentable_id',
         'user_id'
     ];
 
+    protected $with = [
+        'user'
+    ];
+
     public function commentable()
     {
         return $this->morphTo();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

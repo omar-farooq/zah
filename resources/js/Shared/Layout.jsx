@@ -5,13 +5,13 @@ import "primereact/resources/primereact.min.css"
 import "primeicons/primeicons.css"
 
 const Layout = ({ children }) => {
-	return (
-		<React.Fragment>
-			<Nav />
-			<main className="bg-gray-100">
+    return (
+        <React.Fragment>
+            <Nav />
+            <main className="bg-gray-100">
                 {children}
             </main>
-		</React.Fragment>
-	);
+        </React.Fragment>
+    );
 };
 export default Layout;
