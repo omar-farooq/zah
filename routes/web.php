@@ -13,6 +13,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenancyController;
 use App\Http\Controllers\UserController;
+use App\Models\PurchaseRequest;
 use Inertia\Inertia;
 
 /*
@@ -55,6 +56,11 @@ Route::controller(ScheduleController::class)->group(function() {
 	Route::post('/meetings/schedule/suggestions/delete', 'removeSuggestion');
 	Route::post('/meetings/schedule/availability/add', 'addAvailability');
 	Route::put('/meetings/schedule/availability/update/{id}', 'updateAvailability');
+});
+
+//Comments
+Route::get('/purchase-requests/{purchaseRequest}/comments', function (PurchaseRequest $purchaseRequest) {
+    return $purchaseRequest->comments()->paginate(2);
 });
 
 Route::resource('approval', ApprovalController::class);

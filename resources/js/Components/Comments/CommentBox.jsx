@@ -13,8 +13,23 @@ export default function CommentBox({model, commentHook}) {
         }
         let res = await axios.post('/comments', {body: textareaValue, commentable_type: model.name, commentable_id: model.id})
         setTextareaValue('')
-        setComments([{body: textareaValue, id: res.data.user_id, user: {name: res.data.user_name}}, ...comments])
-        console.log(res)
+        setComments(
+            {
+                ...comments, 
+                data: 
+                [
+                    {
+                        body: textareaValue, 
+                        id: res.data.user_id, 
+                        user: 
+                        {
+                            name: res.data.user_name
+                        }
+                    }, 
+                    ...comments.data
+                ]
+            }
+        )
     }
 
     return (

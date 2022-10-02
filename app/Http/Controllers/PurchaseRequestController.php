@@ -60,8 +60,7 @@ class PurchaseRequestController extends Controller
      */
     public function show(PurchaseRequest $purchaseRequest)
     {
-        $comments = $purchaseRequest->comments()->paginate(2);
-        return Inertia::render('Purchases/ViewPurchaseRequest', compact('purchaseRequest', 'comments'));
+        return Inertia::render('Purchases/ViewPurchaseRequest', compact('purchaseRequest'));
     }
 
     /**

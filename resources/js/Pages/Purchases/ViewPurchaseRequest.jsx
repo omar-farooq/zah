@@ -1,8 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FormTile, FlexAlignLeft, PreviewImageContainer, PreviewTile, RequestLayout, RequestName, Source, TileContainer, Title } from '@/Layouts/RequestLayout'
 import ApprovalButtons from '@/Components/ApprovalButtons'
-import CommentBox from '@/Components/CommentBox'
-import CommentDisplay from '@/Components/CommentDisplay'
+import Comments from '@/Components/Comments'
 
 export default function PurchaseRequest(props) {
 
@@ -14,7 +13,7 @@ export default function PurchaseRequest(props) {
     let authUser = ''
     let authUserApprovalObject = ""
 
-    if(props.auth) 
+    if(props.auth.user) 
     {
         authUser = props.auth.user
         verified = authUser.membership.start_date != null && authUser.membership.end_date == null
@@ -28,9 +27,7 @@ export default function PurchaseRequest(props) {
 
     //hooks
     const [authUserApproval, setAuthUserApproval] = useState(authUserApprovalObject)
-    const [comments, setComments] = useState(props.comments.data)
 
-    console.log(props)
     return (
         <RequestLayout>
             <Title>Purchase Request</Title>
@@ -63,8 +60,7 @@ export default function PurchaseRequest(props) {
 
                 <FormTile>
                     {requesterIsViewing ? "You" : requestItem.user.name} requested this <i>"{requestItem.reason}" </i>
-                    <CommentBox model={model} commentHook={[comments, setComments]} />
-                    <CommentDisplay comments={comments} />
+                    <Comments model={model} />
                 </FormTile>
             </TileContainer>
                
