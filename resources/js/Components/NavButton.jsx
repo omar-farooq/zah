@@ -1,11 +1,18 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useRef } from 'react'
+import useComponentVisible from '@/Hooks/useComponentVisible'
 import NavSubMenu from '@/Components/NavSubMenu'
 
 export default function NavButton(props) {
-	const [submenuState, setSubmenuState] = useState(false)
+	const [submenuOpen, setSubmenuOpen] = useState(false)
+
+    const navRef = useRef();
+
+    useComponentVisible(navRef, () => {
+        if(submenuOpen) setSubmenuOpen(false)
+    })
 
 	function toggleSubmenu() {
-		setSubmenuState(!submenuState)
+		setSubmenuOpen(!submenuOpen)
 	}
 
 	function closeSubmenu() {
@@ -14,8 +21,10 @@ export default function NavButton(props) {
 
 	return (
 			<Fragment>
-				<button onClick={toggleSubmenu} onBlur={closeSubmenu}>{props.name}</button>
-				<NavSubMenu key={props.submenu} submenu={props.submenu} hidden={submenuState} />
+                <div id="nav-wrapper" ref={navRef}>
+    				<button onClick={toggleSubmenu} className="text-white mt-1">{props.name}</button>
+	    			<NavSubMenu key={props.submenu} submenu={props.submenu} submenuState={[submenuOpen, setSubmenuOpen]} />
+                </div>
 			</Fragment>
 	)
 }

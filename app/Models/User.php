@@ -86,6 +86,14 @@ class User extends Authenticatable
      }
      
      /**
+      * Relationship with Maintenance Requests
+      *
+      */
+     public function maintenanceRequests() {
+        return $this->hasMany(MaintenanceRequest::class);
+     }
+     
+     /**
       * Relationship with Tasks
       *
       */

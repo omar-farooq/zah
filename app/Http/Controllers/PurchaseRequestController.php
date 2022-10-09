@@ -71,7 +71,7 @@ class PurchaseRequestController extends Controller
      */
     public function edit(PurchaseRequest $purchaseRequest)
     {
-        //
+        return Inertia::render('Purchases/EditRequestForm', compact('purchaseRequest'));
     }
 
     /**
@@ -83,7 +83,20 @@ class PurchaseRequestController extends Controller
      */
     public function update(UpdatePurchaseRequestRequest $request, PurchaseRequest $purchaseRequest)
     {
-        //
+        $purchaseRequest->update($request->all());
+
+       /* 
+        if($request->file('image') != $purchaseRequest->image) {
+            $imageName = time() . '.' .$request->image->getClientOriginalName();
+            $request->image->move(public_path('images'), $imageName);
+            $purchaseRequest['image'] = $imageName;
+            $purchaseRequest->save();
+        }
+        */
+            
+        $purchaseRequest->approvals->each->delete();
+        return Redirect::route('purchase-requests.show', $purchaseRequest);
+
     }
 
     /**

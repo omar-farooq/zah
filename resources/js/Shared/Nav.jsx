@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react'
 import NavButton from '@/Components/NavButton'
-import {NavMenu} from '@/Components/NavMenu'
+import NavMenu from '@/Components/NavMenu'
 import NavSubMenu from '@/Components/NavSubMenu'
 
 export default function Nav() {

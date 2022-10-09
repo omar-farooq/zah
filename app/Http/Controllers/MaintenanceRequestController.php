@@ -25,7 +25,7 @@ class MaintenanceRequestController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Maintenance/RequestForm');
     }
 
     /**
@@ -36,7 +36,9 @@ class MaintenanceRequestController extends Controller
      */
     public function store(StoreMaintenanceRequestRequest $request)
     {
-        //
+        $new_maintenance_request = Auth::User()->maintenanceRequests()->create($request->all());
+
+        return Redirect::route('maintenance-requests.show', $new_maintenance_request);
     }
 
     /**

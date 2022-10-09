@@ -14,7 +14,6 @@ export default function Comments({model}) {
         }
         fetchComments()
     },[])
-        console.log(comments)
     
     return (
         <>
