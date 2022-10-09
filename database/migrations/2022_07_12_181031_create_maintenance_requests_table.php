@@ -22,9 +22,13 @@ return new class extends Migration
             $table->text('required_maintenance');
             $table->text('reason');
             $table->string('contractor');
+            $table->string('contractor_phone')->nullable();
+            $table->string('contractor_email')->nullable();
             $table->string('type');
             $table->foreignId('user_id');
-            $table->boolean('emergency');
+            $table->boolean('emergency')->default(0);
+            $table->boolean('approved')->default(0);
+            $table->boolean('rejected')->default(0);
         });
     }
 

@@ -17,7 +17,7 @@ const NavMenu = [
         submenu: [
             {id: 1, name: 'All Maintenance', link: '#'},
             {id: 2, name: 'Upcoming', link: '#'},
-            {id: 3, name: 'Request', link: '#'},
+            {id: 3, name: 'Request', link: '/maintenance-requests/create'},
             {id: 4, name: 'Pending Approval', link: '#'}
         ]
     },

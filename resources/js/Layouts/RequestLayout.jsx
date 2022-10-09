@@ -14,9 +14,9 @@ export function FormLabel({children}) {
     )
 }
 
-export function FormTile({children}) {
+export function FormTile({children, position}) {
     return (
-        <div className="p-8 bg-white dark:bg-gray-800 flex flex-col lg:w-full xl:w-3/5">
+        <div className={`p-8 bg-white dark:bg-gray-800 flex flex-col lg:w-full xl:w-3/5 ${position == 'centre' ? 'm-auto' : ''}`}>
             {children}
         </div>
     )
@@ -93,9 +93,9 @@ export function TileContainer({children}) {
     )
 }
 
-export function Title({children}) {
+export function Title({children, position}) {
     return (
-        <div className="flex justify-start flex-col items-start space-y-2">
+        <div className={`flex justify-start flex-col items-start space-y-2 ${position == 'centre' ? 'm-auto' : ''}`}>
             <p className="text-3xl lg:text-4xl font-semibold leading-7 lg:leading-9 text-gray-800 dark:text-gray-50">{children}</p>
         </div>
     )

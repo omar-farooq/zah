@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\MaintenanceRequestController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MeetingAgendaController;
 use App\Http\Controllers\MembershipController;
@@ -66,6 +67,7 @@ Route::get('/purchase-requests/{purchaseRequest}/comments', function (PurchaseRe
 Route::resource('approval', ApprovalController::class);
 Route::resource('agenda', MeetingAgendaController::class);
 Route::resource('comments', CommentController::class);
+Route::resource('maintenance-requests', MaintenanceRequestController::class);
 Route::resource('memberships', MembershipController::class);
 Route::resource('minutes', MinuteController::class);
 Route::resource('purchase-requests', PurchaseRequestController::class);
