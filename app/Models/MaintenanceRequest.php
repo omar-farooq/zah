@@ -15,12 +15,31 @@ class MaintenanceRequest extends Model
         'required_maintenance',
         'reason',
         'contractor',
+        'contractor_email',
+        'contractor_phone',
         'type',
         'user_id',
+        'approved',
+        'rejected',
         'emergency'
     ];
 
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'start',
+        'finish'
+    ];
+
     protected $with = ['user', 'approvals'];
+
+
+    /*
+     * Waiting Approval
+     */
+    public function notYetApproved() {
+        return $this->where('approved', 0)->where('rejected', 0)->get();
+    }
 
     /*
      *Relationship with user

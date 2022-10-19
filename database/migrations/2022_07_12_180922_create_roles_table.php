@@ -15,7 +15,9 @@ return new class extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
-			$table->tinyText('name');
+            $table->timestamps();
+            $table->tinyText('name');
+            $table->foreignId('user_id');
         });
     }
 

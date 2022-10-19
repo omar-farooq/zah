@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Schedule;
 use App\Models\ScheduleSuggestion;
 use App\Services\ScheduleService;
+use Carbon\Carbon;
 use Inertia\Inertia;
 
 class ScheduleController extends Controller
@@ -58,9 +59,20 @@ class ScheduleController extends Controller
 	* @return \Illuminate\Http\Response
 	*/
 
-	public function updateAvailability(Request $request, $id) {
-		Schedule::find($id)->update($request->all());
-	}
+    public function updateAvailability(Request $request) {
+
+        foreach($request->dates as $date) {
+            Schedule::where('date', Carbon::parse($date)->format('Y-m-d H:i:s'))
+                ->where('user_id', Auth::id())
+                ->first()
+                ->update(['availability' => $request->availability]);
+        }
+
+        $schedule = new Schedule();
+        return response()->json(
+            $schedule->current()
+		);
+    }
 
 	/**
 	* Create a suggestion

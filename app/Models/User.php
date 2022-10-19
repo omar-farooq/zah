@@ -49,7 +49,9 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $with = [
-        'membership'
+        'membership',
+        'role',
+        'delegatedRole'
     ];
 
 	/**
@@ -99,6 +101,22 @@ class User extends Authenticatable
       */
      public function tasks() {
         return $this->hasMany(Task::class);
+     }
+
+     /**
+      * Relationship with Roles
+      *
+      */
+     public function role() {
+        return $this->hasOne(Role::class);
+     }
+
+     /**
+      * Relationship with Delegated Roles
+      *
+      */
+     public function delegatedRole() {
+        return $this->hasOne(DelegatedRole::class);
      }
 
     /**

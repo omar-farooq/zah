@@ -24,7 +24,14 @@ class StoreMaintenanceRequestRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'required_maintenance' => 'required|max:255',
+            'reason' => 'required|max:255',
+            'cost' => 'required|numeric',
+            'contractor' => 'required',
+            'contractor_email' => 'email',
+            'type' => 'required',
+            'start' => 'required|date',
+            'finish' => 'date'
         ];
     }
 }

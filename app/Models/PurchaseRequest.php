@@ -24,6 +24,15 @@ class PurchaseRequest extends Model
 
     protected $with = ['user', 'approvals'];
 
+
+    /*
+     * Waiting approval
+     *
+     */
+    public function notYetApproved() {
+        return $this->where('approved', 0)->where('rejected', 0)->get();
+    }
+
     /*
      * Relationship with user
      *

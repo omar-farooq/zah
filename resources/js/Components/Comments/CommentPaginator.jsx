@@ -125,6 +125,7 @@ export default function CommentPaginator({commentHook}) {
     }
 
     return (
+        comments.data.length == 0  ? <div>No comments yet. Be the first to comment</div> : 
         <Paginator template={template} totalRecords={comments.total} rows={comments.per_page}  />
     )
 }

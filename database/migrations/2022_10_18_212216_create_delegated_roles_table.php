@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('role_user', function(Blueprint $table) {
-            $table->foreignId('role_id');
+        Schema::create('delegated_roles', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+            $table->tinyText('name');
             $table->foreignId('user_id');
-			$table->boolean('is_delegation')->default(0);
-			$table->timestamps();
         });
-
     }
 
     /**
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('role_user');
+        Schema::dropIfExists('delegated_roles');
     }
 };

@@ -10,11 +10,13 @@ use App\Http\Controllers\MeetingAgendaController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\MinuteController;
 use App\Http\Controllers\PurchaseRequestController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenancyController;
 use App\Http\Controllers\UserController;
 use App\Models\PurchaseRequest;
+use App\Models\MaintenanceRequest;
 use Inertia\Inertia;
 
 /*
@@ -56,12 +58,16 @@ Route::controller(ScheduleController::class)->group(function() {
 	Route::post('/meetings/schedule/suggestions/add', 'addSuggestion');
 	Route::post('/meetings/schedule/suggestions/delete', 'removeSuggestion');
 	Route::post('/meetings/schedule/availability/add', 'addAvailability');
-	Route::put('/meetings/schedule/availability/update/{id}', 'updateAvailability');
+	Route::put('/meetings/schedule/availability/update', 'updateAvailability');
 });
 
 //Comments
 Route::get('/purchase-requests/{purchaseRequest}/comments', function (PurchaseRequest $purchaseRequest) {
-    return $purchaseRequest->comments()->paginate(2);
+    return $purchaseRequest->comments()->paginate(5);
+});
+
+Route::get('/maintenance-requests/{maintenanceRequest}/comments', function (MaintenanceRequest $maintenanceRequest) {
+    return $maintenanceRequest->comments()->paginate(5);
 });
 
 Route::resource('approval', ApprovalController::class);
@@ -71,6 +77,7 @@ Route::resource('maintenance-requests', MaintenanceRequestController::class);
 Route::resource('memberships', MembershipController::class);
 Route::resource('minutes', MinuteController::class);
 Route::resource('purchase-requests', PurchaseRequestController::class);
+Route::resource('roles', RoleController::class);
 Route::resource('tasks', TaskController::class);
 Route::resource('tenants', TenancyController::class);
 Route::resource('users', UserController::class);

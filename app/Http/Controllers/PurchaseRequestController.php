@@ -16,9 +16,12 @@ class PurchaseRequestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(PurchaseRequest $purchaseRequest)
     {
-        //
+        return Inertia::render('PurchaseRequests/Browse', [
+            'purchaseRequests' => $purchaseRequest->orderBy('created_at', 'desc')->paginate(4),
+            'unapprovedRequests' => $purchaseRequest->notYetApproved()
+        ]);    
     }
 
     /**

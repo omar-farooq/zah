@@ -6,24 +6,24 @@ import RequestFormButton from '@/Components/RequestFormButton'
 import Input from '@/Components/RequestFormInput'
 import Checkbox from '@/Components/RequestFormCheckbox'
 
-export default function MaintenanceRequestForm() {
+export default function EditMaintenanceRequest({maintenanceRequest}) {
 
-    const [price, setPrice] = useState('')
-    const [startTime, setStartTime] = useState('')
-    const [endTime, setEndTime] = useState('')
-    const [maintenance, setMaintenance] = useState('Repair')
+    const [price, setPrice] = useState(maintenanceRequest.cost)
+    const [startTime, setStartTime] = useState(new Date(maintenanceRequest.start))
+    const [endTime, setEndTime] = useState(new Date(maintenanceRequest.finish))
+    const [maintenance, setMaintenance] = useState(maintenanceRequest.type)
 
     const { data, setData, post, processing, errors } = useForm({
-        required_maintenance: '',
-        reason: '',
-        cost: '',
-        contractor: '',
-        contractor_phone: '',
-        contractor_email: '',
-        type: 'Repair',
-        start: '',
-        finish: '',
-        emergency: '0'
+        required_maintenance: maintenanceRequest.required_maintenance,
+        reason: maintenanceRequest.reason,
+        cost: maintenanceRequest.cost,
+        contractor: maintenanceRequest.contractor,
+        contractor_phone: maintenanceRequest.contractor_phone,
+        contractor_email: maintenanceRequest.conractor_email,
+        type: maintenanceRequest.type,
+        start: maintenanceRequest.start,
+        finish: maintenanceRequest.finish,
+        emergency: maintenanceRequest.emergency
     })
 
     function submit(e) {
@@ -33,7 +33,7 @@ export default function MaintenanceRequestForm() {
 
     return (
             <RequestLayout>
-                <Title position='centre'>Request Maintenance</Title> 
+                <Title position='centre'>Edit Maintenance</Title> 
                 <TileContainer>
         
                     <FormTile position='centre'> 
@@ -45,6 +45,7 @@ export default function MaintenanceRequestForm() {
                                 name="Requirement" 
                                 id="RequirementInput" 
                                 placeholder="Required Maintenance" 
+                                defaultValue={maintenanceRequest.required_maintenance}
                                 changeAction={(e) => {setData('required_maintenance', e.target.value)}} 
                             />
                             <ShowErrors>
@@ -56,6 +57,7 @@ export default function MaintenanceRequestForm() {
                                 name="Reason" 
                                 id="ReasonInput" 
                                 placeholder="Reason" 
+                                defaultValue={maintenanceRequest.reason}
                                 changeAction={(e) => {setData('reason', e.target.value)}} 
                             />
                             <ShowErrors>
@@ -72,6 +74,7 @@ export default function MaintenanceRequestForm() {
                                     type="number" 
                                     step="0.01" 
                                     placeholder="Cost" 
+                                    defaultValue={maintenanceRequest.cost}
                                     changeAction={(e) => {e.target.value == '' ? setPrice('') : setPrice(parseFloat(e.target.value).toFixed(2)); setData('cost', e.target.value)}} 
                                 />
                                 <ShowErrors>{errors.cost}</ShowErrors>
@@ -90,6 +93,7 @@ export default function MaintenanceRequestForm() {
                                     }} 
                                     showTime
                                     value={startTime}
+                                    defaultValue={maintenanceRequest.start}
                                     placeholder="Start Time" 
                                 />
                                 <ShowErrors>{errors.start}</ShowErrors>
@@ -114,6 +118,7 @@ export default function MaintenanceRequestForm() {
                                 <Input 
                                     type="text"
                                     placeholder="Contractor" 
+                                    defaultValue={maintenanceRequest.contractor}
                                     changeAction={(e) => {setData('contractor', e.target.value)}} 
                                 />
 
@@ -125,12 +130,14 @@ export default function MaintenanceRequestForm() {
                                 <Input
                                     type="text"
                                     placeholder="phone"
+                                    defaultValue={maintenanceRequest.contractor_phone}
                                     changeAction={(e) => {setData('contractor_phone', e.target.value)}}
                                 />
 
                                 <Input
                                     type="text"
                                     placeholder="email"
+                                    defaultValue={maintenanceRequest.contractor_email}
                                     changeAction={(e) => {setData('contractor_email', e.target.value)}}
                                 />
                                 <ShowErrors>{errors.contractor_email}</ShowErrors>
@@ -168,10 +175,11 @@ export default function MaintenanceRequestForm() {
                         <InputContainer>
                             <Checkbox
                                 changeAction={(e) => setData('emergency', e.target.checked)} 
+                                defaultValue={maintenanceRequest.emergency}
                             />
                         </InputContainer>
 
-                        <RequestFormButton text="Make Request" submitAction={submit} /> 
+                        <RequestFormButton text="Update Request" submitAction={submit} /> 
                     </FormTile>
                 </TileContainer>
             </RequestLayout>

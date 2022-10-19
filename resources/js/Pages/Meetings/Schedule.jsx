@@ -65,70 +65,47 @@ export default function Schedule(props) {
     }
 
     //function to create a meeting
-    const createMeeting = () => {
+    const createMeeting = async () => {
         let hours = document.getElementById('suggest-or-schedule-time').value.split(':')[0]
         let minutes = document.getElementById('suggest-or-schedule-time').value.split(':')[1]
         let UTCTime = (Number(hours - 1)) + ':' + minutes
         let localTime = hours + ':' + minutes
-        axios.post('/meetings/create', {time: selectedDay + " " + UTCTime}
-        )
-        .then((response) => {
-            if (new Date(selectedDay + " " + localTime) < new Date(upcomingDate)){
-                setUpcomingDate(selectedDay + " " + localTime)
-            }
-            
-        })
+        await axios.post('/meetings/create', {time: selectedDay + " " + UTCTime})
+        if (new Date(selectedDay + " " + localTime) < new Date(upcomingDate) || upcomingDate == 'null'){
+            setUpcomingDate(selectedDay + " " + localTime)
+        }
         setModalOpenState('false')
     }
 
     //function to add availability
-    //update first as we're making a copy of the schedule and replacing it
-    //then add to the new schedule
-    async function addAvailability (statedAvailability) {
-        updateAvailability(statedAvailability)
-        .then(addNewAvailability(statedAvailability))
-        .then(resetAvailabilityStates())
+    function addAvailability (statedAvailability) {
+        if(nonEmptyAvailability.length > 0) {
+            updateAvailability(statedAvailability)
+        }
+        if(emptyAvailability.length > 0) {
+            addNewAvailability(statedAvailability)
+        }
+        resetAvailabilityStates()
     }
 
 
         //axios request to insert new availability
         //Don't have to format the day before inserting into the database as Carbon handles that
-    const addNewAvailability = (statedAvailability) => {
-        return new Promise(() => {
-            if(emptyAvailability.length > 0) {
-                emptyAvailability.forEach(day =>
-                
-                    axios.post('/meetings/schedule/availability/add', {date: day, user_id: props.currentUser.id, availability: statedAvailability})
-                    .then((response) => {
-                            updateReactiveSchedule(reactiveSchedule => [...reactiveSchedule,{ id: response.data.id, availability: statedAvailability, date: parseToLocalDate(day), user_id: props.currentUser.id}])
-                    })
-
-                )
-            }
-        })
+    const addNewAvailability = async (statedAvailability) => {
+        let response
+        for await (const day of emptyAvailability) {
+            response = await axios.post('/meetings/schedule/availability/add', {date: day, user_id: props.currentUser.id, availability: statedAvailability})
+            updateReactiveSchedule(reactiveSchedule => [...reactiveSchedule,{ id: response.data.id, availability: statedAvailability, date: parseToLocalDate(day), user_id: props.currentUser.id}])
+        }
     }
 
-        //axios request to update user availability
-    const updateAvailability = (statedAvailability) => {
-        return new Promise(() => {
-            if(nonEmptyAvailability.length > 0) {
-                nonEmptyAvailability.forEach(day => {
-                    let newSchedule = [...reactiveSchedule]
-                    newSchedule.find(obj => { obj.date == parseToLocalDate(day) && obj.user_id == props.currentUser.id 
-                        ? 
-                            axios.put('/meetings/schedule/availability/update/' + obj.id,{
-                                availability: statedAvailability,
-                            })
-                            .then((response) => {
-                                obj.availability = statedAvailability
-                                updateReactiveSchedule(newSchedule)
-                            })
-                        :
-                            null
-                    })
-                })
-            }
+    //axios request to update user availability
+    const updateAvailability = async (statedAvailability) => {
+        let response = await axios.put('/meetings/schedule/availability/update', {
+            dates: nonEmptyAvailability,
+            availability: statedAvailability,
         })
+        updateReactiveSchedule(response.data)
     }
 
     function resetAvailabilityStates() {
@@ -137,28 +114,24 @@ export default function Schedule(props) {
     }
 
     //Function for axios suggestions
-    const makeSuggestion = () => {
+    const makeSuggestion = async () => {
         //convert to UTC time for the database
         let hours = document.getElementById('suggest-or-schedule-time').value.split(':')[0]
         let minutes = document.getElementById('suggest-or-schedule-time').value.split(':')[1]
         let UTCTime = (Number(hours - 1)) + ':' + minutes
         let localTime = hours + ':' + minutes
-        axios.post('/meetings/schedule/suggestions/add', 
+        let res = await axios.post('/meetings/schedule/suggestions/add', 
             {suggested_date: selectedDay + " " + UTCTime, user_id: props.currentUser.id}
         )
-        .then((response) =>
             setAuthUserScheduleSuggestions([...authUserScheduleSuggestions,
-                {id: response.data.id, suggested_date: selectedDay + " " + localTime, user_id:props.currentUser.id}]
+                {id: res.data.id, suggested_date: selectedDay + " " + localTime, user_id:props.currentUser.id}]
             )
-        )
         setModalOpenState('false')
     }
 
-    const deleteSuggestion = (suggestionID) => {
-        axios.post('/meetings/schedule/suggestions/delete', {id: suggestionID})
-        .then((response) => {
-            setAuthUserScheduleSuggestions(authUserScheduleSuggestions.filter(remaining => remaining.id != suggestionID))
-        })
+    const deleteSuggestion = async (suggestionID) => {
+        await axios.post('/meetings/schedule/suggestions/delete', {id: suggestionID})
+        setAuthUserScheduleSuggestions(authUserScheduleSuggestions.filter(remaining => remaining.id != suggestionID))
     }
 
     return (

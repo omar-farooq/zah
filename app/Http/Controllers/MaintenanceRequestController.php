@@ -16,9 +16,12 @@ class MaintenanceRequestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(MaintenanceRequest $maintenanceRequest)
     {
-        //
+        return Inertia::render('MaintenanceRequests/Browse', [
+            'maintenanceRequests' => $maintenanceRequest->orderBy('created_at', 'desc')->paginate(10),
+            'unapprovedRequests' => $maintenanceRequest->notYetApproved()
+        ]);
     }
 
     /**
@@ -52,7 +55,7 @@ class MaintenanceRequestController extends Controller
      */
     public function show(MaintenanceRequest $maintenanceRequest)
     {
-        //
+        return Inertia::render('Maintenance/ViewMaintenanceRequest', compact('maintenanceRequest'));
     }
 
     /**
@@ -63,7 +66,7 @@ class MaintenanceRequestController extends Controller
      */
     public function edit(MaintenanceRequest $maintenanceRequest)
     {
-        //
+        return Inertia::render('MaintenanceRequests/Edit', compact('maintenanceRequest'));
     }
 
     /**
