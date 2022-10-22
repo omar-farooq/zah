@@ -15,4 +15,24 @@ class RoleAssignment extends Model
         'approved',
         'rejected'
     ];
+
+    protected $with = ['approvals'];
+
+    /*
+     * Relationship with approvals
+     *
+     */
+    public function approvals()
+    {
+        return $this->morphMany(Approval::class, 'approvable');
+    }
+
+    /*
+     * Get all assignments that are ongoing
+     *
+     */
+    public function inVote() 
+    {
+        return $this->where('approved', 0)->where('rejected', 0)->get();
+    }
 }

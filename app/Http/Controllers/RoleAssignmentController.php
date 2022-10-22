@@ -2,25 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
-use App\Models\RoleAssignment;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use App\Models\RoleAssignment;
 
-class RoleController extends Controller
+class RoleAssignmentController extends Controller
 {
     /**
-     * Display current users and their roles
+     * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(User $user, RoleAssignment $roleAssignment)
+    public function index()
     {
-        return Inertia::render('Users/Roles', [
-            'members' =>  $user->currentMember()->get(),
-            'nominations' => $roleAssignment->inVote()
-        ]);
+        //
     }
 
     /**
@@ -39,9 +33,9 @@ class RoleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, RoleAssignment $roleAssignment)
     {
-        //
+        $roleAssignment->create($request->all());
     }
 
     /**

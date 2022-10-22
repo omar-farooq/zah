@@ -18,8 +18,8 @@ return new class extends Migration
             $table->timestamps();
             $table->foreignId('user_id');
             $table->foreignId('role_id');
-            $table->tinyInteger('approved');
-            $table->tinyInteger('rejected');
+            $table->tinyInteger('approved')->default(0);
+            $table->tinyInteger('rejected')->default(0);
         });
     }
 
