@@ -18,6 +18,7 @@ use App\Http\Controllers\TenancyController;
 use App\Http\Controllers\UserController;
 use App\Models\PurchaseRequest;
 use App\Models\MaintenanceRequest;
+use App\Models\Meeting;
 use Inertia\Inertia;
 
 /*
@@ -49,11 +50,6 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::controller(MeetingController::class)->group(function() {
-    Route::post('/meetings/create', 'create');
-    Route::get('/meetings/new', 'store');    
-});
-
 Route::controller(ScheduleController::class)->group(function() {
 	Route::get('/meetings/schedule', 'browse');	
 	Route::post('/meetings/schedule/suggestions/add', 'addSuggestion');
@@ -75,6 +71,7 @@ Route::resource('approval', ApprovalController::class);
 Route::resource('agenda', MeetingAgendaController::class);
 Route::resource('comments', CommentController::class);
 Route::resource('maintenance-requests', MaintenanceRequestController::class);
+Route::resource('meetings', MeetingController::class);
 Route::resource('memberships', MembershipController::class);
 Route::resource('minutes', MinuteController::class);
 Route::resource('purchase-requests', PurchaseRequestController::class);

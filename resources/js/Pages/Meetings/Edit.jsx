@@ -1,26 +1,21 @@
 import { useState, Fragment } from 'react'
-import Select from 'react-select'
-import CreatableSelect from 'react-select/creatable'
 import Agenda from '@/Components/Agenda'
+import CreatableSelect from 'react-select/creatable'
 import Minutes from '@/Components/Minutes'
+import Select from 'react-select'
 import Tasks from '@/Components/Tasks'
 
-export default function NewMeeting() {
+export default function NewMeeting({meeting, tenants}) {
     const [register, updateRegister] = useState([])
     const [lateRegister, updateLateRegister] = useState([])
-    const options = [
-           {value: 'person1', label: 'person 1'},
-           {value: 'person2', label: 'person 2'},
-           {value: 'person3', label: 'person 3'},
-           ]
 
-    const notInAttendance = options.filter(option => !(register.some(item => item.value === option.value) || lateRegister.some(item => item.value === option.value)))
+    const notInAttendance = tenants.filter(option => !(register.some(item => item.value === option.value) || lateRegister.some(item => item.value === option.value)))
 
     return (
         <>
+            <div> Start Time: {meeting.time_of_meeting} </div>
             <div> Attending
                 <Select
-                    defaultValue={[options[1]]}
                     isMulti
                     name="attendance"
                     options={notInAttendance}
@@ -58,7 +53,7 @@ export default function NewMeeting() {
             </div>
             <div className="mt-10">
                 Minutes
-                <Minutes />
+                <Minutes meetingID={meeting.id} />
             </div>
             <div className="mt-10">
                 Tasks

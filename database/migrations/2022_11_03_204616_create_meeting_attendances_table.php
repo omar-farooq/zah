@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('meetings', function (Blueprint $table) {
+        Schema::create('meeting_attendances', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
-            $table->timestamp('time_of_meeting')->nullable();
-            $table->mediumText('notes')->nullable();
-            $table->boolean('completed')->default(0);
-            $table->boolean('cancelled')->default(0);
+            $table->foreignId('user_id')->nullable();
+            $table->foreignId('meeting_id');
+            $table->boolean('late')->default(0);
+            $table->boolean('guest')->default(0);
+            $table->string('name')->nullable();
         });
     }
 
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('meetings');
+        Schema::dropIfExists('meeting_attendances');
     }
 };

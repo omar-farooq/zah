@@ -70,7 +70,7 @@ export default function Schedule(props) {
         let minutes = document.getElementById('suggest-or-schedule-time').value.split(':')[1]
         let UTCTime = (Number(hours - 1)) + ':' + minutes
         let localTime = hours + ':' + minutes
-        await axios.post('/meetings/create', {time: selectedDay + " " + UTCTime})
+        await axios.post('/meetings', {time: selectedDay + " " + UTCTime})
         if (new Date(selectedDay + " " + localTime) < new Date(upcomingDate) || upcomingDate == 'null'){
             setUpcomingDate(selectedDay + " " + localTime)
         }

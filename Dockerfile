@@ -12,7 +12,7 @@ RUN docker-php-ext-install bcmath pdo_mysql
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Install Nginx
-COPY --from=nginx:alpine / /
+COPY --from=nginxinc/nginx-unprivileged:alpine-slim / /
 COPY ./webserver/default.conf /etc/nginx/conf.d/default.conf
 RUN adduser --disabled-password -G www-data www-data
 
@@ -34,6 +34,6 @@ CMD ["sh", "-c", "/usr/local/sbin/php-fpm -D && nginx -g 'daemon off;'"]
 # For Development environments
 FROM node:alpine AS development
 COPY --from=zah_base / /
-RUN adduser --disabled-password -G www-data omar
+#RUN adduser --disabled-password -G www-data omar
+USER www-data
 CMD ["sh", "-c", "/usr/local/sbin/php-fpm -D && nginx -g 'daemon off;'"]
-USER $uid:$GID

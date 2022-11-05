@@ -2,8 +2,9 @@ const NavMenu = [
 	{id: 1, name: 'Meetings', 
         submenu: [
             {id: 1, name: 'Summary', link: '#'},
-            {id: 2, name: 'Minutes', link: '#'},
-            {id: 3, name: 'Schedule', link: '/meetings/schedule'}
+            {id: 2, name: 'Join', link: '/meetings/create'},
+            {id: 3, name: 'Previous Minutes', link: '/meetings'},
+            {id: 4, name: 'Schedule', link: '/meetings/schedule'}
         ]
     },
 	{id: 2, name: 'Purchases', 

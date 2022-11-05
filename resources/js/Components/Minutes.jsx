@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from '@inertiajs/inertia-react'
 import TextArea from '@/Components/TextArea'
 
-export default function Minutes() {
+export default function Minutes({meetingID}) {
 
     //minutes listed
     const [reactiveMinutes, updateReactiveMinutes] = useState([])
@@ -17,7 +17,7 @@ export default function Minutes() {
            return
         }
 
-        let response = await axios.post('/minutes', {minute_text: inputValue, meeting_id: 1});
+        let response = await axios.post('/minutes', {minute_text: inputValue, meeting_id: meetingID});
         setInputValue('')
         updateReactiveMinutes([...reactiveMinutes, {id: response.data.id, minute_text: inputValue}])
     }
@@ -29,7 +29,7 @@ export default function Minutes() {
     //Receive the current minutes via an api call
     useEffect(() => {
         async function GetMinutes() { 
-            let res = await axios.get('/minutes')
+            let res = await axios.get('/minutes?meeting_id=' + meetingID)
             updateReactiveMinutes(res.data.minutes)
         }
         GetMinutes()
