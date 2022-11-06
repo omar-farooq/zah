@@ -1,63 +1,103 @@
-import { useState, Fragment, useEffect } from 'react'
+import { useState, Fragment, useEffect, useReducer } from 'react'
+import { DateTimeToUKLocale, LongDateFormat, LongDateTimeFormat } from '@/Shared/Functions'
 import Modal from '@/Components/Modal'
 import ButtonColoured from '@/Components/ButtonColoured'
 
 export default function Schedule(props) {
-    //hooks
-    const [week, setWeek] = useState(0);
-    const [authUserScheduleSuggestions, setAuthUserScheduleSuggestions] = useState(props.members
-                                                                            .filter(x => x.id == props.currentUser.id)
-                                                                            .map(user => user.schedule_suggestions)[0]
-                                                                          )
-    //selection from the date column
-    const [selectedDay, setSelectedDay] = useState('')
-
-    //selection from the user's own column where availability hasn't been set
-    const [emptyAvailability, setNewAvailability] = useState([])
-
-    //selection from the user's own column where availability has already been set
-    const [nonEmptyAvailability, setUpdateAvailability] = useState([])
-
+    
     //handle the modal open/close state
     const [modalOpenState, setModalOpenState] = useState('false')
 
-    //make the schedule reactive
-    const [reactiveSchedule, updateReactiveSchedule] = useState(props.schedule)
+    //reducer to handle schedule state
+    const initialSchedule = {
+        allAvailability: props.schedule,
+        overwriteSelected: [],
+        scheduledSelected: [],
+        selectedDay: '',
+        upcomingMeeting: props.upcomingDate,
+        userSuggestions: props.members.reduce((a,b) => {
+            if(b.id == props.currentUser.id) {
+                return [b.schedule_suggestions][0]
+            } else {
+                return [...a]
+            }
+        },[]),
+        week: 0,
+    }
 
-    //Upcoming meeting
-    const [upcomingDate, setUpcomingDate] = useState(props.upcomingDate)
+    function reducer(scheduleState, action) {
+        switch (action.type) {
+            case 'selectAvailability':
+                if(scheduleState.allAvailability.find(({date, user_id}) => date == DateTimeToUKLocale(action.day) && user_id == props.currentUser.id)) {
+                    if(scheduleState.overwriteSelected.find(val => val == action.day)) {
+                        return {...scheduleState, overwriteSelected: scheduleState.overwriteSelected.filter(item => item != action.day)}
+                    } else {
+                        return {...scheduleState, overwriteSelected: [...scheduleState.overwriteSelected, action.day]}
+                    }
+                } else {
+                    if(scheduleState.scheduledSelected.find(val => val == action.day)) {
+                        return {...scheduleState, scheduledSelected: scheduleState.scheduledSelected.filter(item => item != action.day)}
+                    } else {
+                        return {...scheduleState, scheduledSelected: [...scheduleState.scheduledSelected, action.day]}
+                    }
+                }
+
+            case 'cancelSelection':
+                return {...scheduleState, overwriteSelected: [], scheduledSelected: []}
+
+            case 'changeAvailability':
+                return {
+                    ...scheduleState,
+                    allAvailability: action.allAvailability,
+                    overwriteSelected: [],
+                    scheduledSelected: []
+                }
+
+            case 'selectDayForMeeting':
+                return {...scheduleState, selectedDay: action.selectedDay}
+
+            case 'selectWeekToDisplay':
+                return {...scheduleState, week: action.selectedWeek}
+
+            case 'setNewUpcomingMeeting':
+                return {...scheduleState, upcomingMeeting: action.datetime}
+
+            case 'addSuggestion':
+                return {...scheduleState, userSuggestions: [...scheduleState.userSuggestions, action.newSuggestion]}
+
+            case 'deleteSuggestion':
+                return {...scheduleState, userSuggestions: scheduleState.userSuggestions.filter(x => x.id != action.suggestionID)}
+
+            default:
+                throw new Error();
+        }
+    }
+
+    const [schedule, dispatch] = useReducer(reducer, initialSchedule)
+
 
     const openModal = (e) => setSelectedDay(e.target.textContent)
 
-    const today = new Date()
-    let options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }
-
     const sevenDays = () => {
-        const fourWeeks = Array(35).fill().map((_, i) => new Date().setDate(today.getDate() + i)).map(x => new Date(x).toLocaleDateString('en-GB', options))
-        return fourWeeks.slice(parseInt(week),parseInt(week) + 7)
-    }
-
-    //Useful function to convert the formatted date back to the original format in the database
-    function parseToLocalDate(day) {
-        return new Date(day.replace(',','')).toLocaleString('en-GB')
+        const fourWeeks = Array(35).fill().map((_, i) => LongDateFormat(new Date().setDate(new Date().getDate() + i)))
+        return fourWeeks.slice(parseInt(schedule.week),parseInt(schedule.week) + 7)
     }
 
     //function to display availability
-    let available = (day, uid) => {
-        const arr = reactiveSchedule.filter(x => x.user_id == uid && x.date == parseToLocalDate(day))
+    const available = (day, uid) => {
+        let arr = schedule.allAvailability.filter(x => x.user_id == uid && x.date == DateTimeToUKLocale(day))
         return arr.map(({availability}) => availability)[0]
     }
 
-    let customAvailability = (day, uid) => {
-        const arr = reactiveSchedule.filter(x => x.user_id == uid && x.date == parseToLocalDate(day))
-        const allAvailability = arr.map(({availability}) => availability)[0]
-        return allAvailability != 'no' && allAvailability != 'yes' && allAvailability != 'maybe' ? allAvailability : ""
+    //Also display availability that's not no, yes or maybe
+    const customAvailability = (day, uid) => {
+        let arr = schedule.allAvailability.filter(x => x.user_id == uid && x.date == DateTimeToUKLocale(day))
+        const allUserAvailability = arr.map(({availability}) => availability)[0]
+        return allUserAvailability != 'no' && allUserAvailability != 'yes' && allUserAvailability != 'maybe' ? allUserAvailability : ""
     }
 
     // Return list of suggesters and their suggestions
-    let suggesters = props.members
-        .filter(x => x.id != props.currentUser.id)
-        .filter(member => member.schedule_suggestions.length > 0)
+    let suggesters = props.members.filter(x => x.id != props.currentUser.id && x.schedule_suggestions.length > 0)
     
     //Determine if this row in the table belongs to the current user
     const currentUserRow = (memberId) => {
@@ -66,72 +106,37 @@ export default function Schedule(props) {
 
     //function to create a meeting
     const createMeeting = async () => {
-        let hours = document.getElementById('suggest-or-schedule-time').value.split(':')[0]
-        let minutes = document.getElementById('suggest-or-schedule-time').value.split(':')[1]
-        let UTCTime = (Number(hours - 1)) + ':' + minutes
-        let localTime = hours + ':' + minutes
-        await axios.post('/meetings', {time: selectedDay + " " + UTCTime})
-        if (new Date(selectedDay + " " + localTime) < new Date(upcomingDate) || upcomingDate == 'null'){
-            setUpcomingDate(selectedDay + " " + localTime)
+        let time = document.getElementById('suggest-or-schedule-time').value
+        await axios.post('/meetings', {time: schedule.selectedDay + " " + time})
+        if (new Date(schedule.selectedDay + " " + time) < new Date(schedule.upcomingMeeting) || schedule.upcomingMeeting == 'null'){
+            dispatch({type: 'setNewUpcomingMeeting', datetime: schedule.selectedDay + " " + time})
         }
         setModalOpenState('false')
-    }
-
-    //function to add availability
-    function addAvailability (statedAvailability) {
-        if(nonEmptyAvailability.length > 0) {
-            updateAvailability(statedAvailability)
-        }
-        if(emptyAvailability.length > 0) {
-            addNewAvailability(statedAvailability)
-        }
-        resetAvailabilityStates()
-    }
-
-
-        //axios request to insert new availability
-        //Don't have to format the day before inserting into the database as Carbon handles that
-    const addNewAvailability = async (statedAvailability) => {
-        let response
-        for await (const day of emptyAvailability) {
-            response = await axios.post('/meetings/schedule/availability/add', {date: day, user_id: props.currentUser.id, availability: statedAvailability})
-            updateReactiveSchedule(reactiveSchedule => [...reactiveSchedule,{ id: response.data.id, availability: statedAvailability, date: parseToLocalDate(day), user_id: props.currentUser.id}])
-        }
     }
 
     //axios request to update user availability
     const updateAvailability = async (statedAvailability) => {
         let response = await axios.put('/meetings/schedule/availability/update', {
-            dates: nonEmptyAvailability,
+            addDates: schedule.scheduledSelected,
+            updateDates: schedule.overwriteSelected,
             availability: statedAvailability,
         })
-        updateReactiveSchedule(response.data)
-    }
-
-    function resetAvailabilityStates() {
-        setNewAvailability([])
-        setUpdateAvailability([])
+        dispatch({type: 'changeAvailability', allAvailability: response.data})
     }
 
     //Function for axios suggestions
     const makeSuggestion = async () => {
-        //convert to UTC time for the database
-        let hours = document.getElementById('suggest-or-schedule-time').value.split(':')[0]
-        let minutes = document.getElementById('suggest-or-schedule-time').value.split(':')[1]
-        let UTCTime = (Number(hours - 1)) + ':' + minutes
-        let localTime = hours + ':' + minutes
+        let time = document.getElementById('suggest-or-schedule-time').value
         let res = await axios.post('/meetings/schedule/suggestions/add', 
-            {suggested_date: selectedDay + " " + UTCTime, user_id: props.currentUser.id}
+            {suggested_date: schedule.selectedDay + " " + time, user_id: props.currentUser.id}
         )
-            setAuthUserScheduleSuggestions([...authUserScheduleSuggestions,
-                {id: res.data.id, suggested_date: selectedDay + " " + localTime, user_id:props.currentUser.id}]
-            )
+        dispatch({type: 'addSuggestion', newSuggestion: {id: res.data.id, suggested_date: LongDateTimeFormat(schedule.selectedDay + " " + time), user_id:props.currentUser.id}})
         setModalOpenState('false')
     }
 
     const deleteSuggestion = async (suggestionID) => {
         await axios.post('/meetings/schedule/suggestions/delete', {id: suggestionID})
-        setAuthUserScheduleSuggestions(authUserScheduleSuggestions.filter(remaining => remaining.id != suggestionID))
+        dispatch({type: 'deleteSuggestion', suggestionID: suggestionID})
     }
 
     return (
@@ -139,11 +144,11 @@ export default function Schedule(props) {
         {/*Upcoming Date*/}
 
         {
-        upcomingDate == 'null' 
+        schedule.upcomingMeeting == 'null' 
         ?
             <div>no upcoming meeting scheduled</div>
         :
-            <div>Next meeting {upcomingDate}</div>
+            <div>Next meeting {schedule.upcomingMeeting}</div>
         }
 
         {/* Dropdown */}
@@ -151,7 +156,7 @@ export default function Schedule(props) {
                 Availability can be seen below:
                 <br />
                     <select
-                        onChange={e => setWeek(e.currentTarget.value)}
+                        onChange={e => dispatch({type: 'selectWeekToDisplay', selectedWeek: e.currentTarget.value})}
                     >
                         <option value="0">This week</option>
                         <option value="7">Next week</option>
@@ -181,7 +186,12 @@ export default function Schedule(props) {
                         return (
                             <tr key={index}>
                                 <th>
-                                    <button onClick={() => { setSelectedDay(day);setModalOpenState(!modalOpenState) }}>{day.slice(0,-5)}</button>
+                                    <button onClick={() => { 
+                                        dispatch({type: 'selectDayForMeeting', selectedDay: day}); 
+                                        setModalOpenState(!modalOpenState) 
+                                    }}>
+                                        {day.slice(0,-5)}
+                                    </button>
                                 </th>
                                 
                                 {props.members.map(member => {
@@ -194,26 +204,7 @@ export default function Schedule(props) {
                                                 ${available(day,member.id) === 'no' && 'bg-red-400'}
                                                 ${available(day,member.id) === 'maybe' && 'bg-orange-400'}
                                             `} 
-                                            onClick={() => currentUserRow(member.id) 
-                                                ? 
-                                                    reactiveSchedule.find(({date, user_id}) => date == parseToLocalDate(day) && user_id == member.id)
-                                                    ?
-                                                        nonEmptyAvailability.find(val => val == day) 
-                                                        ? 
-                                                            setUpdateAvailability(nonEmptyAvailability.filter(item => item != day))
-                                                        : 
-                                                            setUpdateAvailability([...nonEmptyAvailability, day])
-
-                                                    :
-                                                        emptyAvailability.find(val => val === day) 
-                                                        ? 
-                                                            setNewAvailability(emptyAvailability.filter(item => item != day))
-                                                        : 
-                                                            setNewAvailability([...emptyAvailability, day])
-                                                        
-                                                : 
-                                                    null 
-                                            }
+                                            onClick={() => currentUserRow(member.id) ? dispatch({type: 'selectAvailability', day: day}) :''}
                                         >
                                             {customAvailability(day,member.id)}
                                         </td>
@@ -229,27 +220,27 @@ export default function Schedule(props) {
             
 
             {/* Div for users updating their schedule*/ }
-            {emptyAvailability.length != 0 || nonEmptyAvailability.length !=0 
+            {schedule.overwriteSelected.length != 0 || schedule.scheduledSelected.length !=0 
                 ? 
                 <div>
                 {
-                    emptyAvailability.length != 0
+                    schedule.scheduledSelected.length != 0
                         ?
                             <div>
                                 Adding availability to the following dates:
                                 <br />
-                                {emptyAvailability.sort((a,b) => new Date(a.replace(',','')) - new Date(b.replace(',',''))).join(', ')}
+                                {schedule.scheduledSelected.sort((a,b) => new Date(a.replace(',','')) - new Date(b.replace(',',''))).join(', ')}
                             </div>
                         :
                             null
                 }
                 {
-                    nonEmptyAvailability.length != 0
+                    schedule.overwriteSelected.length != 0
                         ?
                             <div>
                                 Updating the following dates:
                                 <br />
-                                {nonEmptyAvailability.sort((a,b) => new Date(a.replace(',','')) - new Date(b.replace(',',''))).join(', ')}
+                                {schedule.overwriteSelected.sort((a,b) => new Date(a.replace(',','')) - new Date(b.replace(',',''))).join(', ')}
                             </div>
                         :
                             null
@@ -262,7 +253,7 @@ export default function Schedule(props) {
                     hovercolour="hover:bg-green-600"
                     focuscolour="focus:bg-green-700"
                     activecolour="focus:bg-green-800"
-                    onclick={ () => addAvailability('yes')  }
+                    onclick={ () => updateAvailability('yes')  }
                 />
 
                 {/*tentaive on selected days*/}
@@ -272,7 +263,7 @@ export default function Schedule(props) {
                     hovercolour="hover:bg-orange-600"
                     focuscolour="focus:bg-orange-700"
                     activecolour="focus:bg-orange-800"
-                    onclick={ () => addAvailability('maybe')  }
+                    onclick={ () => updateAvailability('maybe')  }
                 />
 
                 {/*unavailable on selected days*/}
@@ -282,7 +273,7 @@ export default function Schedule(props) {
                     hovercolour="hover:bg-red-600"
                     focuscolour="focus:bg-red-700"
                     activecolour="focus:bg-red-800"
-                    onclick={ () => addAvailability('no')  }
+                    onclick={ () => updateAvailability('no')  }
                 />
 
                 {/*Cancel changes*/}
@@ -292,7 +283,7 @@ export default function Schedule(props) {
                     hovercolour="hover:bg-gray-600"
                     focuscolour="focus:bg-gray-700"
                     activecolour="focus:bg-gray-800"
-                    onclick={ () => {setNewAvailability([]); setUpdateAvailability([])} }
+                    onclick={ () => dispatch({type: 'cancelSelection'})  }
                 />
 
                 </div> 
@@ -314,7 +305,7 @@ export default function Schedule(props) {
                                         {suggester.schedule_suggestions.map(suggestedObj => {
                                             return(
                                                 <li key={suggestedObj.id}>
-                                                    {suggestedObj.suggested_date}
+                                                    {LongDateTimeFormat(suggestedObj.suggested_date)}
                                                 </li>
                                             )
                                         })}
@@ -328,15 +319,15 @@ export default function Schedule(props) {
                             
                 }       
 
-                { authUserScheduleSuggestions.length > 0 
+                { schedule.userSuggestions.length > 0 
                 ?
                     <>
                     <p>Your Suggestions</p>
                         <ul>
-                            {authUserScheduleSuggestions.map(suggested => {
+                            {schedule.userSuggestions.map(suggested => {
                                 return(
                                     <li key={suggested.id}>
-                                        {parseToLocalDate(suggested.suggested_date)}
+                                        {LongDateTimeFormat(suggested.suggested_date)}
                                         <button 
                                             className="ml-2" 
                                             onClick={() => deleteSuggestion(suggested.id)}
@@ -380,7 +371,7 @@ export default function Schedule(props) {
                     modalOpenState={modalOpenState}
                     setModalOpenState={setModalOpenState}
             >
-            {selectedDay} <input type="time" className="ml-3" defaultValue="18:30" id="suggest-or-schedule-time"></input> ?
+            {schedule.selectedDay} <input type="time" className="ml-3" defaultValue="18:30" id="suggest-or-schedule-time"></input> ?
             </Modal>
         </Fragment>
     )

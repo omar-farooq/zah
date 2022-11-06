@@ -54,7 +54,6 @@ Route::controller(ScheduleController::class)->group(function() {
 	Route::get('/meetings/schedule', 'browse');	
 	Route::post('/meetings/schedule/suggestions/add', 'addSuggestion');
 	Route::post('/meetings/schedule/suggestions/delete', 'removeSuggestion');
-	Route::post('/meetings/schedule/availability/add', 'addAvailability');
 	Route::put('/meetings/schedule/availability/update', 'updateAvailability');
 });
 

@@ -36,21 +36,6 @@ class ScheduleController extends Controller
 	}
 
 	/**
-	* Create availability
-	*
-	* @param \App\Http\Requests\StoreScheduleAvailability $request
-	*
-	* @return \Illuminate\Http\Response
-	*/
-
-	public function addAvailability(Request $request) {
-		$newSchedule = Schedule::create($request->all());
-		return response()->json([
-			'id' => $newSchedule->id
-		]);
-	}
-
-	/**
 	* Update availability
 	*
 	* @param \App\Http\Requests\StoreScheduleAvailability $request
@@ -61,11 +46,23 @@ class ScheduleController extends Controller
 
     public function updateAvailability(Request $request) {
 
-        foreach($request->dates as $date) {
-            Schedule::where('date', Carbon::parse($date)->format('Y-m-d H:i:s'))
-                ->where('user_id', Auth::id())
-                ->first()
-                ->update(['availability' => $request->availability]);
+        if(isset($request->updateDates)) {
+            foreach($request->updateDates as $date) {
+                Schedule::where('date', Carbon::parse($date)->format('Y-m-d H:i:s'))
+                    ->where('user_id', Auth::id())
+                    ->first()
+                    ->update(['availability' => $request->availability]);
+            }   
+        }
+
+        if(isset($request->addDates)) {
+            foreach($request->addDates as $date) {
+                $newSchedule = new Schedule;
+                $newSchedule->date = $date;
+                $newSchedule->user_id = Auth::id();
+                $newSchedule->availability = $request->availability;
+                $newSchedule->save();
+            }
         }
 
         $schedule = new Schedule();
