@@ -19,7 +19,7 @@ class MeetingAgendaController extends Controller
     public function index(MeetingAgenda $agenda)
     {
         return response()->json([
-            'agenda' => $agenda->all()
+            'agenda' => $agenda->where('meeting_id', '!=', NULL)->get()
       ]); 
     }
 

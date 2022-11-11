@@ -23,6 +23,13 @@
         "vite": "^3.0.0"
     },
     "dependencies": {
+        "@emotion/react": "^11.10.5",
+        "@mantine/core": "^5.7.1",
+        "@mantine/dates": "^5.7.1",
+        "@mantine/form": "^5.7.1",
+        "@mantine/hooks": "^5.7.1",
+        "@mantine/notifications": "^5.7.1",
+        "dayjs": "^1.11.6",
         "primeicons": "^6.0.1",
         "primereact": "^8.5.0",
         "react-select": "^5.4.0"

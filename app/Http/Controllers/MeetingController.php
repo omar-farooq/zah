@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreMeetingRequest;
 use App\Http\Requests\UpdateMeetingRequest;
 use App\Models\Meeting;
+use App\Models\MeetingAgenda;
+use App\Models\MeetingAttendance;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class MeetingController extends Controller
@@ -93,7 +96,8 @@ class MeetingController extends Controller
      */
     public function update(UpdateMeetingRequest $request, Meeting $meeting)
     {
-        //
+        MeetingAgenda::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
+        $meeting->update(['completed' => 1]);
     }
 
     /**
@@ -105,6 +109,43 @@ class MeetingController extends Controller
     public function destroy(Meeting $meeting)
     {
         //
+    }
+
+    /**
+     *
+     * @param Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function markAttendance (Request $request) {
+        if(!empty($request->Attendees)) {
+            foreach($request->Attendees as $attendee) {
+                $meetingAttendance = new MeetingAttendance;
+                $meetingAttendance->user_id = $attendee['value'];
+                $meetingAttendance->meeting_id = $request->meetingID;
+                $meetingAttendance->save();
+            }
+        }
+
+        if(!empty($request->LateAttendees)) {
+            foreach($request->LateAttendees as $attendee) {
+                $meetingAttendance = new MeetingAttendance;
+                $meetingAttendance->user_id = $attendee['value'];
+                $meetingAttendance->meeting_id = $request->meetingID;
+                $meetingAttendance->late = 1;
+                $meetingAttendance->save();
+            }
+        }
+
+        if(!empty($request->Guests)) {
+            foreach($request->Guests as $guest) {
+                $meetingAttendance = new MeetingAttendance;
+                $meetingAttendance->name = $guest['value'];
+                $meetingAttendance->meeting_id = $request->meetingID;
+                $meetingAttendance->guest = 1;
+                $meetingAttendance->save();
+            }
+        }
+
     }
 
 }

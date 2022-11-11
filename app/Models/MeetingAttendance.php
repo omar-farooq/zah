@@ -16,13 +16,19 @@ class MeetingAttendance extends Model
         'guest'
     ];
 
+    protected $with = [
+       'user' 
+    ];
+
+    public $timestamps = false;
+
     /*
      * Relationship with users
      *
      */
-    public function users()
+    public function user()
     {
-        return $this->hasMany(User::Class);
+        return $this->belongsTo(User::Class);
     }
 
     /*

@@ -1,4 +1,5 @@
 import { useState, Fragment } from 'react'
+import { SecretaryReport } from '@/Components/Meeting'
 import Agenda from '@/Components/Agenda'
 import CreatableSelect from 'react-select/creatable'
 import Minutes from '@/Components/Minutes'
@@ -8,8 +9,14 @@ import Tasks from '@/Components/Tasks'
 export default function NewMeeting({meeting, tenants}) {
     const [register, updateRegister] = useState([])
     const [lateRegister, updateLateRegister] = useState([])
+    const [guests, updateGuests] = useState([])
 
     const notInAttendance = tenants.filter(option => !(register.some(item => item.value === option.value) || lateRegister.some(item => item.value === option.value)))
+
+    const handleSubmit = async () => {
+        axios.post('/meetings/register-attendance', {meetingID: meeting.id, Attendees: register, LateAttendees: lateRegister, Guests: guests})
+        axios.patch('/meetings/'+meeting.id)
+    }
 
     return (
         <>
@@ -44,7 +51,13 @@ export default function NewMeeting({meeting, tenants}) {
                     className="w-1/4"
                     isMulti
                     noOptionsMessage={() => "Type to add Guest"}
+                    onChange={(e) => updateGuests([...e])}
                 />
+            </div>
+
+            <div className="mt-10">
+                Secretary's Report:
+                <SecretaryReport />
             </div>
 
             <div className="mt-10">
@@ -59,6 +72,10 @@ export default function NewMeeting({meeting, tenants}) {
                 Tasks
                 <Tasks />
             </div>
+
+            <button onClick={() => handleSubmit()}>
+                Save
+            </button>
         </>
     )
 }

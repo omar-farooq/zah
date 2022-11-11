@@ -13,6 +13,7 @@ use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\RoleAssignmentController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\SecretaryReportController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenancyController;
 use App\Http\Controllers\UserController;
@@ -57,6 +58,8 @@ Route::controller(ScheduleController::class)->group(function() {
 	Route::put('/meetings/schedule/availability/update', 'updateAvailability');
 });
 
+Route::post('/meetings/register-attendance', [MeetingController::class, 'markAttendance']);
+
 //Comments
 Route::get('/purchase-requests/{purchaseRequest}/comments', function (PurchaseRequest $purchaseRequest) {
     return $purchaseRequest->comments()->paginate(5);
@@ -76,6 +79,7 @@ Route::resource('minutes', MinuteController::class);
 Route::resource('purchase-requests', PurchaseRequestController::class);
 Route::resource('role-assignment', RoleAssignmentController::class);
 Route::resource('roles', RoleController::class);
+Route::resource('secretary-reports', SecretaryReportController::class);
 Route::resource('tasks', TaskController::class);
 Route::resource('tenants', TenancyController::class);
 Route::resource('users', UserController::class);
