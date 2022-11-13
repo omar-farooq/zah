@@ -36,7 +36,7 @@ export default function PurchaseRequest(props) {
                     <FlexAlignLeft>
                         <div className="flex content-between min-w-full">
                             <RequestName name={requestItem.name} />
-                                <div className="ml-auto mt-2">
+                                <div className="ml-auto mt-2 flex flex-row space-x-1">
                                     {
                                         verified ?
                                         <ApprovalButtons approvalHook={[authUserApproval, setAuthUserApproval]} model={model} />

@@ -28,10 +28,11 @@ class StoreMaintenanceRequestRequest extends FormRequest
             'reason' => 'required|max:255',
             'cost' => 'required|numeric',
             'contractor' => 'required',
-            'contractor_email' => 'email',
+            'contractor_email' => 'nullable|email',
             'type' => 'required',
-            'start' => 'required|date',
-            'finish' => 'date'
+            'start_time' => 'required|Date',
+            'finish_time' => 'nullable|Date|after:start_time',
+            'start_date' => 'required|Date',
         ];
     }
 }

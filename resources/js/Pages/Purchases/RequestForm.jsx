@@ -1,10 +1,18 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from '@inertiajs/inertia-react'
 import { HiddenCurrencyInput, ShowErrors, InputContainer, FormLabel, RequestLayout, Title, TileContainer, PreviewTile, FormTile } from '@/Layouts/RequestLayout'
 import RequestFormButton from '@/Components/RequestFormButton'
 import Input from '@/Components/RequestFormInput'
 
 export default function PurchaseRequestForm() {
+
+    //Change background colour
+    useEffect(() => {
+        document.getElementsByTagName('main')[0].className = 'bg-gray-100'
+        return function changePage() {
+            document.getElementsByTagName('main')[0].className = ''
+        }
+    },[])
 
     const [name, setName] = useState('')
     const [price, setPrice] = useState('')

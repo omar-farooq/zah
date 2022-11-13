@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Input from '@/Components/Input'
-import { Calendar } from 'primereact/calendar';
-import { Button } from 'primereact/button';
+import { DatePicker } from '@mantine/dates';
+import { CheckIcon } from '@heroicons/react/24/solid';
 import TenantMultiSelect from '@/Components/TenantMultiSelect'
 
 export default function Tasks() {
@@ -66,10 +66,10 @@ export default function Tasks() {
             <ul>
                 {reactiveTaskList.map(task =>
                     task.completed == 0 ?
-                    <li key={task.id}>
+                    <li key={task.id} className="flex flex-row">
                         {task.item} assigned to {task.users.map(x => x.name )} due by {task.due_by} 
                         <button className="hidden" onClick={() => deleteTaskItem(task.id)}>X</button>
-                        <Button icon="pi pi-check" className="p-button-text p-button-rounded p-button-success" onClick={() => completeTaskItem(task.id)} />
+                        <CheckIcon className="h-6 w-6 text-green-400 cursor-pointer hover:text-green-600 ml-2" onClick={() => completeTaskItem(task.id)} />
                     </li>
 
                     :
@@ -84,7 +84,11 @@ export default function Tasks() {
             <form onSubmit={handleSubmit}>
                 <Input type="text" value={inputValue} required={true} handleChange={handleChange} />
                 <div className="field col-12 md:col-4">
-                    <Calendar id="icon" value={date} onChange={(e) => setDate(e.value)} showIcon dateFormat="dd/mm/yy" placeholder="Due by (optional)" />
+                    <DatePicker 
+                        value={date}
+                        onChange={(e) => setDate(e)} 
+                        placeholder="Due by (optional)" 
+                    />
                 </div>
                 <TenantMultiSelect placeholder="Assign to..." tenantFunctions={[selectedTenants, setSelectedTenants]} idFunctions={[taskUserIds, setTaskUserIds]}/>
                 <input type="submit" value="Assign Task" />

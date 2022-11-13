@@ -38,7 +38,7 @@ export default function MaintenanceRequest(props) {
                     <FlexAlignLeft>
                         <div className="flex content-between min-w-full">
                             <RequestName name={requestService.required_maintenance} />
-                                <div className="ml-auto mt-2">
+                                <div className="ml-auto mt-2 flex flex-row space-x-1">
                                     {
                                         verified ?
                                         <ApprovalButtons approvalHook={[authUserApproval, setAuthUserApproval]} model={model} />
@@ -52,8 +52,15 @@ export default function MaintenanceRequest(props) {
 
                     <FlexAlignLeft>
                         <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50 mt-4"><b>Type:</b> {requestService.type}</p>
-                        <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50"><b>Maintenance Start</b>: {DateTimeToUKLocale(requestService.start)}</p>
-                        <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50"><b>Maintenance Finish</b>: {DateTimeToUKLocale(requestService.finish)}</p>
+                        <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50"><b>Dates</b>: {
+                            DateTimeToUKLocale(requestService.start_date).split(',')[0]}
+                        {requestService.end_date != requestService.start_date
+                            ? " - " + DateTimeToUKLocale(requestService.end_date).split(',')[0]
+                            : ''
+                        }
+                        </p>
+                        <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50"><b>Maintenance Start</b>: {DateTimeToUKLocale(requestService.start_time).split(',').splice(1)}</p>
+                        <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50"><b>Maintenance Finish</b>: {requestService.finish_time ? DateTimeToUKLocale(requestService.finish_time).split(',').splice(1) : 'Finish time not specified'}</p>
                         <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50"><b>Contractor:</b> {requestService.contractor}</p>
                         <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50">Email: {requestService.contractor_email} Phone: {requestService.contractor_phone}</p>
                         {requesterIsViewing ? "You" : requestService.user.name} requested this {requestService.reason}

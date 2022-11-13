@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import CommentBox from './CommentBox'
 import CommentDisplay from './CommentDisplay'
 import CommentPaginator from './CommentPaginator'
-import { ProgressSpinner } from 'primereact/progressspinner';
+import { Loader } from '@mantine/core'
 
 export default function Comments({model}) {
     const [comments, setComments] = useState('')
@@ -25,7 +25,7 @@ export default function Comments({model}) {
                     <CommentPaginator commentHook={[comments, setComments]} />
                 </>
                 :
-                    <ProgressSpinner />
+                    <Loader size="xl" />
             }
         </>
             

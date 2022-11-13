@@ -1,14 +1,11 @@
-import { PrimeIcons } from 'primereact/api'
+import { HandThumbDownIcon, HandThumbUpIcon } from '@heroicons/react/24/solid'
+import { HandThumbDownIcon as HandThumbDownIconEmpty, HandThumbUpIcon as HandThumbUpIconEmpty } from '@heroicons/react/24/outline'
 
 export default function ApprovalButtons({model, approvalHook}) {
 
     //hook from the parent
     //Note that this must be the whole object for the auth user from the model's relationship array
     const [authUserApproval, setAuthUserApproval] = approvalHook
-
-    //define the class
-    const thumbsUp = authUserApproval?.approval == 'approved' ? "pi-thumbs-up-fill text-green-600" : "pi-thumbs-up"
-    const thumbsDown = authUserApproval?.approval == 'rejected' ? "pi-thumbs-down-fill text-red-600" : "pi-thumbs-down"
 
     //handle when the thumbs up is clicked
     const handleApproval = () => {
@@ -38,8 +35,8 @@ export default function ApprovalButtons({model, approvalHook}) {
 
     return (
         <>
-            <span className={`pi ${thumbsUp} mr-3 cursor-pointer`} onClick={handleApproval} />
-            <span className={`pi ${thumbsDown} cursor-pointer`} onClick={handleRejection} />
+            {authUserApproval?.approval == 'approved' ? <HandThumbUpIcon className="h-6 w-6 text-green-500 cursor-pointer" onClick={handleApproval} /> : <HandThumbUpIconEmpty className="h-6 w-6 cursor-pointer" onClick={handleApproval} />}
+            {authUserApproval?.approval == 'rejected' ? <HandThumbDownIcon className="h-6 w-6 text-red-500 cursor-pointer" onClick={handleRejection} /> : <HandThumbDownIconEmpty className="h-6 w-6 cursor-pointer"  onClick={handleRejection} />}
         </>
     )
 }

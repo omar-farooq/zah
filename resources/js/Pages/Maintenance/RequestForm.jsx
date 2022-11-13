@@ -1,16 +1,16 @@
-import { useState } from 'react'
-import { useForm } from '@inertiajs/inertia-react'
-import { Calendar } from 'primereact/calendar'
+import { ClockIcon } from '@heroicons/react/24/outline'
+import { DatePicker, DateRangePicker, TimeRangeInput } from '@mantine/dates'
 import { HiddenCurrencyInput, ShowErrors, InputContainer, FormLabel, RequestLayout, Title, TileContainer, PreviewTile, FormTile } from '@/Layouts/RequestLayout'
-import RequestFormButton from '@/Components/RequestFormButton'
-import Input from '@/Components/RequestFormInput'
+import { useForm } from '@inertiajs/inertia-react'
+import { useState, useEffect } from 'react'
 import Checkbox from '@/Components/RequestFormCheckbox'
+import Input from '@/Components/RequestFormInput'
+import RequestFormButton from '@/Components/RequestFormButton'
 
 export default function MaintenanceRequestForm() {
 
     const [price, setPrice] = useState('')
-    const [startTime, setStartTime] = useState('')
-    const [endTime, setEndTime] = useState('')
+    const [dateRange, setDateRange] = useState('single')
     const [maintenance, setMaintenance] = useState('Repair')
 
     const { data, setData, post, processing, errors } = useForm({
@@ -21,10 +21,21 @@ export default function MaintenanceRequestForm() {
         contractor_phone: '',
         contractor_email: '',
         type: 'Repair',
-        start: '',
-        finish: '',
+        start_date: '',
+        end_date: '',
+        start_time: '',
+        finish_time: '',
         emergency: '0'
     })
+
+    /* Fix the TimeInput as it's broken out of the box */
+    useEffect(() => {
+        document.querySelectorAll('.mantine-TimeInput-timeInput').forEach(input => {
+            input.style.width="50px",
+            input.style.height="30px",
+            input.style.border="0px"
+        })
+    },[])
 
     function submit(e) {
         e.preventDefault()
@@ -79,34 +90,63 @@ export default function MaintenanceRequestForm() {
 
                         </InputContainer>
 
-                        <FormLabel> Date/time</FormLabel>
+                        <FormLabel>Date/Time</FormLabel>
                         <InputContainer>
-                            <div className="m-auto">
-                                <Calendar 
-                                    id="time24h" 
-                                    onChange={(e) => {
-                                        setData('start', e.value);
-                                        setStartTime(e.value)
-                                    }} 
-                                    showTime
-                                    value={startTime}
-                                    placeholder="Start Time" 
-                                />
-                                <ShowErrors>{errors.start}</ShowErrors>
+                            <label htmlFor="single">Single Day</label>
+                            <input 
+                                type="radio" 
+                                id="single" 
+                                value="single" 
+                                name="dateRange" 
+                                checked={dateRange == 'single'} 
+                                onChange={(e) => {setDateRange('single'); setData({...data, start_date: '', end_date: ''})}} 
+                                className="ml-0.5" 
+                            />
+                            <label htmlFor="multiple" className="ml-5">Multiple Days</label>
+                            <input 
+                                type="radio" 
+                                id="multiple" 
+                                value="multiple" 
+                                name="dateRange" 
+                                checked={dateRange == 'multiple'} 
+                                onChange={(e) => {setDateRange('multiple'); setData({...data, start_date: '', end_date: ''})}} 
+                                className="ml-0.5" 
+                            />
 
-                                <Calendar 
-                                    id="time24h" 
-                                    onChange={(e) => { 
-                                        setData('finish', e.value);
-                                        setEndTime(e.value)
-                                    }} 
-                                    showTime 
-                                    value={endTime}
-                                    placeholder="Finish Time" 
+                            <div className="m-auto">
+                            {
+                                dateRange == 'single' ?
+                                    <DatePicker 
+                                        placeholder="Date of Maintenance" 
+                                        label="Maintenance Date" 
+                                        withAsterisk
+                                        onChange={(e) => setData({...data, start_date: e, end_date: e})}
+                                        minDate={new Date}
+                                    />
+
+                                : dateRange == 'multiple' ?
+                                    <DateRangePicker 
+                                        placeholder="Dates of Maintenance" 
+                                        label="Maintenance Dates" 
+                                        withAsterisk 
+                                        onChange={(e) => setData({...data, start_date: e[0], end_date: e[1]})}
+                                        minDate={new Date}
+                                    />
+
+                                : ''
+                            }
+                                <TimeRangeInput 
+                                    label="Maintenance Time" 
+                                    onChange={(e) => setData({...data, start_time: e[0], finish_time: e[1]})} 
+                                    clearable 
+                                    withAsterisk
+                                    icon={<ClockIcon className="h-5 w-5" />}
                                 />
+                                <ShowErrors>{errors.start_time}</ShowErrors>
+                                <ShowErrors>{errors.finish_time}</ShowErrors>
                             </div>
                         </InputContainer>
-        
+
                         <FormLabel>Contractor details</FormLabel>
                         <InputContainer>
                             <div>

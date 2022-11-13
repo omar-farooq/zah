@@ -16,8 +16,10 @@ return new class extends Migration
         Schema::create('maintenance_requests', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->timestamp('start');
-            $table->timestamp('finish');
+            $table->time('start_time');
+            $table->time('finish_time');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->decimal('cost', $precision = 8, $scale = 2);
             $table->text('required_maintenance');
             $table->text('reason');

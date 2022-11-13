@@ -9,8 +9,10 @@ class MaintenanceRequest extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'start',
-        'finish',
+        'start_time',
+        'finish_time',
+        'start_date',
+        'end_date',
         'cost',
         'required_maintenance',
         'reason',
@@ -27,8 +29,10 @@ class MaintenanceRequest extends Model
     protected $dates = [
         'created_at',
         'updated_at',
-        'start',
-        'finish'
+        'start_time',
+        'finish_time',
+        'start_date',
+        'end_date'
     ];
 
     protected $with = ['user', 'approvals'];
