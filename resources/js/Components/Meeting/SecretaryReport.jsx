@@ -2,7 +2,8 @@ import { useRef, useState, useEffect } from 'react'
 import { MantineProvider, Text, Group, Button, createStyles } from '@mantine/core'
 import { Dropzone, MIME_TYPES } from '@mantine/dropzone'
 import { NotificationsProvider, showNotification } from '@mantine/notifications'
-import { XMarkIcon, CloudArrowDownIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline'
+import { SuccessNotificationSettings } from '@/Shared/Functions'
+import { DocumentArrowDownIcon, XMarkIcon, ArrowDownIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline'
 import Input from '@/Components/Input'
 
 const useStyles = createStyles((theme) => ({
@@ -16,12 +17,8 @@ const useStyles = createStyles((theme) => ({
               paddingBottom: 50,
             },
 
-      icon: {
-              color: theme.colorScheme === 'dark' ? theme.colors.dark[3] : theme.colors.gray[4],
-            },
-
       control: {
-              'background-color': '#228be6 !important',
+              backgroundColor: '#228be6 !important',
               position: 'absolute',
               width: 250,
               left: 'calc(50% - 125px)',
@@ -38,7 +35,8 @@ export default function SecretaryReport() {
     const [secretaryReport, setSecretaryReport] = useState({
         id: '',
         report: '',
-        attachment: ''
+        attachment: '',
+        uploaded: ''
     })
 
     // Check if a report exists that's eligible to be edited
@@ -46,7 +44,7 @@ export default function SecretaryReport() {
     useEffect(() => {
         const fetchReport = async () => {
             let oldReport = await axios.get('/secretary-reports?not-saved-in-meeting=true')
-            setSecretaryReport({id: oldReport.data.id, report: oldReport.data.report, attachment: oldReport.data.attachment})
+            setSecretaryReport({id: oldReport.data.id, report: oldReport.data.report, uploaded: oldReport.data.attachment})
        }
        fetchReport()
     }, []);
@@ -57,29 +55,17 @@ export default function SecretaryReport() {
         if(secretaryReport.id) {
            try {
                let res = await axios.patch('/secretary-reports/'+secretaryReport.id, secretaryReport)
-               showNotification({
-                   title: res.data.status,
-                   message: res.data.message,
-                   autoClose: 2000,
-                   color: 'green',
-                   style: { backgroundColor: '#c7d99b' },
-                   sx: { backgroundColor: 'c7d99b' },
-                   styles: (theme) => ({
-                        title: { color: theme.black },
-                        description: { color: theme.black },
-                        closeButton: {
-                            color: theme.black
-                        }
-                   })
-               })
+               showNotification(SuccessNotificationSettings(res.data.status, res.data.message, theme))
+               
            } catch (error) {
                console.log(error)
   //             messages.current.show({severity: 'error', summary: 'Error!'})
            }
         } else {
-            let res = await axios.post('/secretary-reports', secretaryReport)
-    //        messages.current.show({severity: res.data.status, summary: res.data.message})
-            setSecretaryReport({...secretaryReport, id: res.data.id})
+            let config = { headers: { 'content-type': 'multipart/form-data' }}
+            let res = await axios.post('/secretary-reports', secretaryReport, config)
+            setSecretaryReport({...secretaryReport, id: res.data.id, attachment: '', uploaded: res.data.uploaded_report})
+            showNotification(SuccessNotificationSettings(res.data.status, res.data.message, theme))
         }
     }
 
@@ -93,7 +79,7 @@ export default function SecretaryReport() {
                         <div className={classes.wrapper}>
                             <Dropzone
                                 openRef={openRef}
-                                onDrop={(e) => {console.log(e)}}
+                                onDrop={(e) => {setSecretaryReport({...secretaryReport, attachment: e[0]})}}
                                 className={classes.dropzone}
                                 radius="sm"
                                 accept={[MIME_TYPES.pdf]}
@@ -103,10 +89,10 @@ export default function SecretaryReport() {
                                 <div style={{ pointerEvents: 'none' }}>
                                     <Group position="center">
                                         <Dropzone.Accept>
-                                            <CloudArrowDownIcon className="w-6 h-6" />
+                                            <ArrowDownIcon className="w-12 h-12" />
                                         </Dropzone.Accept>
                                         <Dropzone.Reject>
-                                            <XMarkIcon className="text-red-500" />
+                                            <XMarkIcon className="text-red-500 w-12 h-12" />
                                         </Dropzone.Reject>
                                         <Dropzone.Idle>
                                             <CloudArrowUpIcon className="w-12 h-12" />
@@ -116,10 +102,18 @@ export default function SecretaryReport() {
                                     <Text align="center" weight={700} size="lg" mt="xl">
                                         <Dropzone.Accept>Drop report here</Dropzone.Accept>
                                         <Dropzone.Reject>Pdf file less than 30mb</Dropzone.Reject>
-                                        <Dropzone.Idle>Upload Report</Dropzone.Idle>
+                                        <Dropzone.Idle>{
+                                            secretaryReport.attachment ? 'attached ' + secretaryReport.attachment.name 
+                                            : secretaryReport.uploaded ? 'Upload a different report'
+                                            : 'Upload Report'}</Dropzone.Idle>
                                     </Text>
                                     <Text align="center" size="sm" mt="xs" color="dimmed">
-                                        Drag&apos;n&apos;drop report here to upload. We can accept only <i>.pdf</i> files that
+                                        {
+                                            secretaryReport.attachment 
+                                            ? 'Drop a different report to change. '
+                                            : 'Drag & drop report here to upload. '
+                                        }
+                                        We can accept only <i>.pdf</i> files that
                                         are less than 30mb in size.
                                     </Text>
                                 </div>
@@ -133,6 +127,7 @@ export default function SecretaryReport() {
                     </form>
                 </NotificationsProvider>
             </MantineProvider>
+            <a href={`/secretary-reports/${secretaryReport.id}`}><DocumentArrowDownIcon className="h-12 w-12" />Download Report</a>
         </>
     )
 }

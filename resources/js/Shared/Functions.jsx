@@ -1,3 +1,7 @@
+/***
+ * Date and Time Functions
+ */
+
 //Date/Time into UK locale.
 export function DateTimeToUKLocale(date) {
     let localDate = new Date(date).toLocaleString('en-GB')
@@ -27,3 +31,23 @@ export function LongDateTimeFormat(date) {
     )
 }
 
+/***
+ * Notifcations
+ */
+export function SuccessNotificationSettings(status, message, theme) {
+    return ({
+        title: status,
+        message: message,
+        autoClose: 2000,
+        color: 'green',
+        style: { backgroundColor: '#c7d99b' },
+        sx: { backgroundColor: '#c7d99b' },
+        styles: (theme) => ({
+            title: { color: theme.black },
+            description: { color: theme.black },
+            closeButton: {
+                color: theme.black
+            }
+        })
+    })
+}

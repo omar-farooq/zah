@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SecretaryReport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Auth;
 
 class SecretaryReportController extends Controller
@@ -47,8 +48,16 @@ class SecretaryReportController extends Controller
     public function store(Request $request)
     {
         $newReport = Auth::User()->secretaryReports()->create($request->all());
+        if($request->file('attachment')) {
+            $reportName = 'Secretary_Report_' . date('Ymd') . '.pdf';
+            Storage::putFileAs('documents/secretary_reports', $request->file('attachment'), $reportName);
+            $newReport['attachment'] = $reportName;
+            $newReport->save();
+        }
+
         return response()->json([
             'id' => $newReport->id,
+            'uploaded_report' => $reportName,
             'status' => 'success',
             'message' => 'Report Created'
         ]);
@@ -62,7 +71,7 @@ class SecretaryReportController extends Controller
      */
     public function show(SecretaryReport $secretaryReport)
     {
-        //
+        return Storage::download('documents/secretary_reports/' . $secretaryReport->attachment);
     }
 
     /**
