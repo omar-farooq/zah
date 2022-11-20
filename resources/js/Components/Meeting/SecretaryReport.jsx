@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
-import { MantineProvider, Text, Group, Button, createStyles } from '@mantine/core'
+import { MantineProvider, Text, Group, Button, createStyles, Textarea } from '@mantine/core'
 import { Dropzone, MIME_TYPES } from '@mantine/dropzone'
 import { NotificationsProvider, showNotification } from '@mantine/notifications'
 import { SuccessNotificationSettings } from '@/Shared/Functions'
@@ -38,6 +38,7 @@ export default function SecretaryReport() {
         attachment: '',
         uploaded: ''
     })
+    const [composeType, setComposeType] = useState('write')
 
     // Check if a report exists that's eligible to be edited
     // (i.e.) hasn't yet been saved to a meeting
@@ -73,57 +74,88 @@ export default function SecretaryReport() {
         <>
             <MantineProvider withNormalizeCSS withGlobalStyles>
                 <NotificationsProvider>
-                    <form onSubmit={handleSubmit}>
-                        <Input type="text" value={secretaryReport.report? secretaryReport.report : ''} handleChange={(e) => setSecretaryReport({...secretaryReport, report: e.target.value})} />
-
-                        <div className={classes.wrapper}>
-                            <Dropzone
-                                openRef={openRef}
-                                onDrop={(e) => {setSecretaryReport({...secretaryReport, attachment: e[0]})}}
-                                className={classes.dropzone}
-                                radius="sm"
-                                accept={[MIME_TYPES.pdf]}
-                                maxSize={30 * 1024 ** 2}
-                            >
-        
-                                <div style={{ pointerEvents: 'none' }}>
-                                    <Group position="center">
-                                        <Dropzone.Accept>
-                                            <ArrowDownIcon className="w-12 h-12" />
-                                        </Dropzone.Accept>
-                                        <Dropzone.Reject>
-                                            <XMarkIcon className="text-red-500 w-12 h-12" />
-                                        </Dropzone.Reject>
-                                        <Dropzone.Idle>
-                                            <CloudArrowUpIcon className="w-12 h-12" />
-                                        </Dropzone.Idle>
-                                    </Group>
-
-                                    <Text align="center" weight={700} size="lg" mt="xl">
-                                        <Dropzone.Accept>Drop report here</Dropzone.Accept>
-                                        <Dropzone.Reject>Pdf file less than 30mb</Dropzone.Reject>
-                                        <Dropzone.Idle>{
-                                            secretaryReport.attachment ? 'attached ' + secretaryReport.attachment.name 
-                                            : secretaryReport.uploaded ? 'Upload a different report'
-                                            : 'Upload Report'}</Dropzone.Idle>
-                                    </Text>
-                                    <Text align="center" size="sm" mt="xs" color="dimmed">
-                                        {
-                                            secretaryReport.attachment 
-                                            ? 'Drop a different report to change. '
-                                            : 'Drag & drop report here to upload. '
-                                        }
-                                        We can accept only <i>.pdf</i> files that
-                                        are less than 30mb in size.
-                                    </Text>
-                                </div>
-                            </Dropzone>
-
-                            <Button className={classes.control} size="md" radius="xl" onClick={() => openRef.current?.()}>
-                                Select files
-                            </Button>
+                    <form onSubmit={handleSubmit} className="grid grid-cols-8 gap-4">
+                        <div className="text-xl col-start-3 col-end-6">Secretary's Report</div>
+                        <div className="col-start-3 col-end-6">
+                            <label htmlFor="write">Write Report</label>
+                            <input 
+                                type="radio" 
+                                value="write" 
+                                id="write" 
+                                checked={composeType == 'write'}
+                                onChange={(e) => setComposeType('write')}
+                            />
+                            <label htmlFor="upload">Upload Report</label>
+                            <input 
+                                type="radio" 
+                                value="upload" 
+                                id="upload" 
+                                checked={composeType == 'upload'}
+                                onChange={(e) => setComposeType('upload')}
+                            />
                         </div>
-                        <input type="submit" value="save" />
+
+                        {composeType == 'write' &&
+                        <Textarea 
+                            value={secretaryReport.report? secretaryReport.report : ''} 
+                            onChange={(e) => setSecretaryReport({...secretaryReport, report: e.target.value})} 
+                            autosize
+                            label="Write Report"
+                            minRows={3}
+                            className="col-start-3 col-end-7"
+                        />}
+                        
+                        {composeType == 'upload' &&
+                        <div className="col-start-1 col-end-9">
+                            <div className={classes.wrapper}>
+                                <Dropzone
+                                    openRef={openRef}
+                                    onDrop={(e) => {setSecretaryReport({...secretaryReport, attachment: e[0]})}}
+                                    className={classes.dropzone}
+                                    radius="sm"
+                                    accept={[MIME_TYPES.pdf]}
+                                    maxSize={30 * 1024 ** 2}
+                                >
+        
+                                    <div style={{ pointerEvents: 'none' }}>
+                                        <Group position="center">
+                                            <Dropzone.Accept>
+                                                <ArrowDownIcon className="w-12 h-12" />
+                                            </Dropzone.Accept>
+                                            <Dropzone.Reject>
+                                                <XMarkIcon className="text-red-500 w-12 h-12" />
+                                            </Dropzone.Reject>
+                                            <Dropzone.Idle>
+                                                <CloudArrowUpIcon className="w-12 h-12" />
+                                            </Dropzone.Idle>
+                                        </Group>
+
+                                        <Text align="center" weight={700} size="lg" mt="xl">
+                                            <Dropzone.Accept>Drop report here</Dropzone.Accept>
+                                            <Dropzone.Reject>Pdf file less than 30mb</Dropzone.Reject>
+                                            <Dropzone.Idle>{
+                                                secretaryReport.attachment ? 'attached ' + secretaryReport.attachment.name 
+                                                : secretaryReport.uploaded ? 'Upload a different report'
+                                                : 'Upload Report'}</Dropzone.Idle>
+                                        </Text>
+                                        <Text align="center" size="sm" mt="xs" color="dimmed">
+                                            {
+                                                secretaryReport.attachment 
+                                                ? 'Drop a different report to change. '
+                                                : 'Drag & drop report here to upload. '
+                                            }
+                                            We can accept only <i>.pdf</i> files that
+                                            are less than 30mb in size.
+                                        </Text>
+                                    </div>
+                                </Dropzone>
+
+                                <Button className={classes.control} size="md" radius="xl" onClick={() => openRef.current?.()}>
+                                    Select files
+                                </Button>
+                            </div>
+                        </div>}
+                        <Button type="submit" color="dark" className="col-start-4 col-end-6 bg-black">Save</Button>
                     </form>
                 </NotificationsProvider>
             </MantineProvider>

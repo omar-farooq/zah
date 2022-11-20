@@ -20,7 +20,8 @@ class PurchaseRequestController extends Controller
     {
         return Inertia::render('PurchaseRequests/Browse', [
             'purchaseRequests' => $purchaseRequest->orderBy('created_at', 'desc')->paginate(4),
-            'unapprovedRequests' => $purchaseRequest->notYetApproved()
+            'unapprovedRequests' => $purchaseRequest->notYetApproved(),
+            'title' => 'All Purchase Requests'
         ]);    
     }
 
@@ -31,7 +32,9 @@ class PurchaseRequestController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Purchases/RequestForm');
+        return Inertia::render('Purchases/RequestForm', [
+            'title' => 'Make a Purchase Request'
+        ]);
     }
 
     /**
@@ -63,7 +66,10 @@ class PurchaseRequestController extends Controller
      */
     public function show(PurchaseRequest $purchaseRequest)
     {
-        return Inertia::render('Purchases/ViewPurchaseRequest', compact('purchaseRequest'));
+        return Inertia::render('Purchases/ViewPurchaseRequest', [
+            'purchaseRequest' => $purchaseRequest,
+            'title' => 'Request to purchase ' .$purchaseRequest->name
+        ]);
     }
 
     /**

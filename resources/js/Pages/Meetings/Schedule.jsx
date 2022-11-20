@@ -167,7 +167,7 @@ export default function Schedule(props) {
 
                 {/* Schedule */}
 
-                <table className="table-auto">
+                <table className="table-fixed bg-white">
                     <thead>
                         <tr>
                             <th className="px-8"></th>
@@ -199,7 +199,8 @@ export default function Schedule(props) {
                                         <td 
                                             key={member.id} 
                                             className={`
-                                                border-2 
+                                                border-2
+                                                border-black
                                                 ${available(day,member.id) === 'yes' && 'bg-green-400'}
                                                 ${available(day,member.id) === 'no' && 'bg-red-400'}
                                                 ${available(day,member.id) === 'maybe' && 'bg-orange-400'}

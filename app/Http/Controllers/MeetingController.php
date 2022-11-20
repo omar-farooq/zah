@@ -21,6 +21,7 @@ class MeetingController extends Controller
     public function index(Meeting $meeting)
     {
         return Inertia::render('Meetings/ListMinutes', [
+            'title' => 'Previous Minutes',
             'meetings' => $meeting->where('cancelled',1)->orWhere('completed',1)->get()
         ]);
     }
@@ -52,6 +53,7 @@ class MeetingController extends Controller
             return Inertia::render('Meetings/NotYetScheduled');
         } else {
             return Inertia::render('Meetings/Edit', [
+                'title' => 'Meeting',
                 'meeting' => $meeting->scheduledNotYetStarted(),
                 'tenants' => $user->where('is_tenant',1)->get()->map(function($user, $key) {
                     return [
@@ -72,6 +74,7 @@ class MeetingController extends Controller
     public function show(Meeting $meeting)
     {
         return Inertia::render('Meetings/Historical', [
+            'title' => 'Historical Meeting',
             'meeting' => $meeting->load(['meetingAgenda','minutes', 'attendees'])
         ]);
     }

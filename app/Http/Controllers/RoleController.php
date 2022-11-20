@@ -18,6 +18,7 @@ class RoleController extends Controller
     public function index(User $user, RoleAssignment $roleAssignment)
     {
         return Inertia::render('Users/Roles', [
+            'title' => 'Member Roles',
             'members' =>  $user->currentMember()->get(),
             'nominations' => $roleAssignment->inVote()
         ]);

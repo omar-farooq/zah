@@ -1,6 +1,7 @@
+import { ComponentTitle, Form } from '@/Components/Meeting'
 import { useState, useEffect } from 'react'
 import { useForm } from '@inertiajs/inertia-react'
-import TextArea from '@/Components/TextArea'
+import { Button, Textarea } from '@mantine/core'
 
 export default function Minutes({meetingID}) {
 
@@ -43,18 +44,27 @@ export default function Minutes({meetingID}) {
 
     return (
         <>
-            <ul>
+            <ComponentTitle>Minutes</ComponentTitle>
+            <ul className="col-start-3 col-end-7">
                 {reactiveMinutes.map(minute =>
-                    <li key={minute.id}>
-                        {minute.minute_text} <button onClick={() => deleteMinute(minute.id)}>X</button>
+                    <li key={minute.id} className='bg-white flex justify-between m-2 border-2 border-sky-500 rounded'>
+                        <div className="ml-2 whitespace-pre-line">{minute.minute_text}</div> 
+                        <button onClick={() => deleteMinute(minute.id)}>X</button>
                     </li>
                 )}
             </ul>
 
-            <form onSubmit={handleSubmit}>
-                <TextArea type="text" value={inputValue} required={true} handleChange={handleChange}> </TextArea>
-                <input type="submit" value="Submit" />
-            </form>
+            <Form onSubmit={handleSubmit} >
+                <Textarea 
+                    value={inputValue} 
+                    required={true} 
+                    onChange={handleChange} 
+                    minRows={4}
+                    autosize
+                    className="w-3/4 mt-1"
+                />
+                <Button color="dark" type="submit" className="bg-black w-1/4 mt-4">Add Minute</Button>
+            </Form>
         </>
     )
 }

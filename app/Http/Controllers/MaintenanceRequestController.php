@@ -19,6 +19,7 @@ class MaintenanceRequestController extends Controller
     public function index(MaintenanceRequest $maintenanceRequest)
     {
         return Inertia::render('MaintenanceRequests/Browse', [
+            'title' => 'Maintenance Requests - Pending Approval',
             'maintenanceRequests' => $maintenanceRequest->orderBy('created_at', 'desc')->paginate(10),
             'unapprovedRequests' => $maintenanceRequest->notYetApproved()
         ]);
@@ -31,7 +32,9 @@ class MaintenanceRequestController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Maintenance/RequestForm');
+        return Inertia::render('Maintenance/RequestForm', [
+            'title' => 'Request Maintenance',
+        ]);
     }
 
     /**
@@ -55,7 +58,10 @@ class MaintenanceRequestController extends Controller
      */
     public function show(MaintenanceRequest $maintenanceRequest)
     {
-        return Inertia::render('Maintenance/ViewMaintenanceRequest', compact('maintenanceRequest'));
+        return Inertia::render('Maintenance/ViewMaintenanceRequest', [
+            'maintenanceRequest' => $maintenanceRequest,
+            'title' => 'Maintenance Request for ' . $maintenanceRequest->required_maintenance
+        ]);
     }
 
     /**
@@ -66,7 +72,10 @@ class MaintenanceRequestController extends Controller
      */
     public function edit(MaintenanceRequest $maintenanceRequest)
     {
-        return Inertia::render('MaintenanceRequests/Edit', compact('maintenanceRequest'));
+        return Inertia::render('MaintenanceRequests/Edit', [
+            'maintenanceRequest' => $maintenanceRequest,
+            'title' => 'Edit Maintenance Request'
+        ]);
     }
 
     /**

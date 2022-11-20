@@ -27,6 +27,7 @@ class ScheduleController extends Controller
 	public function browse(Schedule $schedule, User $users, ScheduleService $scheduleService)
 	{
         return Inertia::render('Meetings/Schedule', [
+            'title' => 'Meeting Schedule',
             'upcomingDate' => $scheduleService->upcoming()['upcomingDate'],
             'upcomingID' => $scheduleService->upcoming()['upcomingID'],
             'members' => $users->currentMember()->with('scheduleSuggestions')->get(),

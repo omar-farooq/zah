@@ -7,12 +7,13 @@ import Input from '@/Components/RequestFormInput'
 export default function PurchaseRequestForm() {
 
     //Change background colour
+    /*
     useEffect(() => {
         document.getElementsByTagName('main')[0].className = 'bg-gray-100'
         return function changePage() {
             document.getElementsByTagName('main')[0].className = ''
         }
-    },[])
+    },[])*/
 
     const [name, setName] = useState('')
     const [price, setPrice] = useState('')

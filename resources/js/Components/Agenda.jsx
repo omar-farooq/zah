@@ -1,3 +1,5 @@
+import { Button, Textarea } from '@mantine/core'
+import { TrashIcon } from '@heroicons/react/24/outline'
 import { useState, useEffect } from 'react'
 import Input from '@/Components/Input'
 
@@ -42,17 +44,26 @@ export default function Agenda() {
 
     return (
         <>
-            <ul>
-                {reactiveAgenda.map(agenda =>
-                    <li key={agenda.id}>
-                        {agenda.item} <button onClick={() => deleteAgendaItem(agenda.id)}>X</button>
+            <div className="text-xl col-start-3 col-end-6">Agenda</div>
+            <ul className="col-start-3 col-end-7">
+                {reactiveAgenda.map((agenda,i) =>
+                    <li key={agenda.id} className={`${i % 2 == 0 ? 'border-black' : 'border-black'} bg-rose-700 text-white flex justify-between items-center m-1 border`}>
+                        <div className="ml-2 whitespace-pre-line">{agenda.item}</div> 
+                        <div><TrashIcon className="w-5 h-5 cursor-pointer mr-2" onClick={() => deleteAgendaItem(agenda.id)} /></div>
                     </li>
                 )}
             </ul>
 
-            <form onSubmit={handleSubmit}>
-                <Input type="text" value={inputValue} required={true} handleChange={handleChange} />
-                <input type="submit" value="Submit" />
+            <form onSubmit={handleSubmit} className="col-start-3 col-end-7 flex flex-col items-center">
+                <Textarea
+                    value={inputValue}
+                    onChange={handleChange}
+                    autosize
+                    minRows={4}
+                    required={true}
+                    className="w-3/4 mt-1"
+                />
+                <Button color="dark" type="submit" className="bg-black w-1/4 mt-4">Add Agenda Item </Button>
             </form>
         </>
     )
