@@ -59,24 +59,23 @@ export default function NewMeeting({meeting, tenants}) {
                 </div>
             </div>
 
+            <ComponentWrapper>
+                <Agenda />
+            </ComponentWrapper>
+
             <div className="mt-10 w-full">
                 <SecretaryReport />
             </div>
 
             <ComponentWrapper>
-                <Agenda />
-            </ComponentWrapper>
-
-            <ComponentWrapper>
                 <Minutes meetingID={meeting.id} />
             </ComponentWrapper>
 
-            <div className="mt-10 w-full">
-                Tasks
+            <ComponentWrapper>
                 <Tasks />
-            </div>
+            </ComponentWrapper>
 
-            <Button className="mb-10 mt-6" variant="outline" onClick={() => handleSubmit()}>
+            <Button className="mb-14 mt-14 w-1/4" variant="outline" onClick={() => handleSubmit()}>
                 Submit Meeting
             </Button>
         </>

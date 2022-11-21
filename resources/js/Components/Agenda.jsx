@@ -44,10 +44,10 @@ export default function Agenda() {
 
     return (
         <>
-            <div className="text-xl col-start-3 col-end-6">Agenda</div>
+            <div className="text-xl col-start-3 col-end-5 bg-rose-700 text-white flex justify-center">Agenda</div>
             <ul className="col-start-3 col-end-7">
                 {reactiveAgenda.map((agenda,i) =>
-                    <li key={agenda.id} className={`${i % 2 == 0 ? 'border-black' : 'border-black'} bg-rose-700 text-white flex justify-between items-center m-1 border`}>
+                    <li key={agenda.id} className={`${i % 2 == 0 ? 'border-black' : 'border-black'} bg-white text-black flex justify-between items-center m-1 border`}>
                         <div className="ml-2 whitespace-pre-line">{agenda.item}</div> 
                         <div><TrashIcon className="w-5 h-5 cursor-pointer mr-2" onClick={() => deleteAgendaItem(agenda.id)} /></div>
                     </li>

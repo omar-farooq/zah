@@ -75,7 +75,7 @@ export default function SecretaryReport() {
             <MantineProvider withNormalizeCSS withGlobalStyles>
                 <NotificationsProvider>
                     <form onSubmit={handleSubmit} className="grid grid-cols-8 gap-4">
-                        <div className="text-xl col-start-3 col-end-6">Secretary's Report</div>
+                        <div className="text-xl col-start-3 col-end-5 bg-sky-700 text-white flex justify-center">Secretary's Report</div>
                         <div className="col-start-3 col-end-6">
                             <label htmlFor="write">Write Report</label>
                             <input 
@@ -155,7 +155,7 @@ export default function SecretaryReport() {
                                 </Button>
                             </div>
                         </div>}
-                        <Button type="submit" color="dark" className="col-start-4 col-end-6 bg-black">Save</Button>
+                        <Button type="submit" color="dark" className="col-start-4 col-end-6 bg-black w-1/2 place-self-center">Save</Button>
                     </form>
                 </NotificationsProvider>
             </MantineProvider>

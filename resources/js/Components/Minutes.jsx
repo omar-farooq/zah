@@ -44,10 +44,12 @@ export default function Minutes({meetingID}) {
 
     return (
         <>
-            <ComponentTitle>Minutes</ComponentTitle>
+            <ComponentTitle bg="bg-emerald-700">
+                Minutes
+            </ComponentTitle>
             <ul className="col-start-3 col-end-7">
                 {reactiveMinutes.map(minute =>
-                    <li key={minute.id} className='bg-white flex justify-between m-2 border-2 border-sky-500 rounded'>
+                    <li key={minute.id} className='bg-white flex justify-between border m-1 bg-white border-sky-700 text-slate-700'>
                         <div className="ml-2 whitespace-pre-line">{minute.minute_text}</div> 
                         <button onClick={() => deleteMinute(minute.id)}>X</button>
                     </li>

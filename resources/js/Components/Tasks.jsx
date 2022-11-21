@@ -1,3 +1,6 @@
+import { Button } from '@mantine/core'
+import { DateTimeToUKLocale } from '@/Shared/Functions'
+import { ComponentTitle } from '@/Components/Meeting'
 import { useState, useEffect } from 'react'
 import Input from '@/Components/Input'
 import { DatePicker } from '@mantine/dates';
@@ -28,8 +31,8 @@ export default function Tasks() {
         setInputValue('')
         setSelectedTenants([])
         setTaskUserIds([])
-        setDate('')
-        updateReactiveTaskList([...reactiveTaskList, {id: response.data.id, item: inputValue, due_by: date.toString(), users: selectedTenants, completed: 0}])
+        setDate(null)
+        updateReactiveTaskList([...reactiveTaskList, {id: response.data.id, item: inputValue, due_by: date ? date.toString() : '', users: selectedTenants, completed: 0}])
     }
 
     const handleChange = () => {
@@ -63,35 +66,60 @@ export default function Tasks() {
 
     return (
         <>
-            <ul>
-                {reactiveTaskList.map(task =>
-                    task.completed == 0 ?
-                    <li key={task.id} className="flex flex-row">
-                        {task.item} assigned to {task.users.map(x => x.name )} due by {task.due_by} 
-                        <button className="hidden" onClick={() => deleteTaskItem(task.id)}>X</button>
-                        <CheckIcon className="h-6 w-6 text-green-400 cursor-pointer hover:text-green-600 ml-2" onClick={() => completeTaskItem(task.id)} />
-                    </li>
+            <ComponentTitle bg="bg-amber-600">
+                Tasks
+            </ComponentTitle>
+            <table className="table-auto col-start-3 col-end-7 mb-4 border border-collapse border-slate-800 bg-white">
+                <thead>
+                    <tr>
+                        <th className="border border-collapse border-slate-600">Task</th>
+                        <th className="border border-collapse border-slate-600">Assigned to</th>
+                        <th className="border border-collapse border-slate-600">Due by</th>
+                        <th className="border border-collapse border-slate-600"/>
+                    </tr>
+                </thead>
+                <tbody>
+                    {reactiveTaskList.map(task =>
+                        <tr key={task.id} className={`${task.completed == 0 ? '' : 'line-through decoration-green-500 decoration-2'}`}>
+                            <td className="border border-collapse border-slate-600" >{task.item}</td>
+                            <td className="border border-collapse border-slate-600">{task.users.map(x => x.name)}</td>
+                            <td className="border border-collapse border-slate-600">{task.due_by ? new Date(task.due_by).toDateString() : ''}</td>
+                            <td className="border border-collapse border-slate-600"><CheckIcon className="h-6 w-6 text-green-400 cursor-pointer hover:text-green-600 ml-2" onClick={() => completeTaskItem(task.id)} /></td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
 
-                    :
-
-                    <li key={task.id} className="line-through decoration-green-500 decoration-1">
-                        {task.item} assigned to {task.users.map(x => x.name )}
-                    </li>
-
-                )}
-            </ul>
-
-            <form onSubmit={handleSubmit}>
-                <Input type="text" value={inputValue} required={true} handleChange={handleChange} />
-                <div className="field col-12 md:col-4">
+            <form onSubmit={handleSubmit} className="col-start-3 col-end-7 grid grid-cols-4 gap-2">
+                <div className="col-start-1 col-end-5">
+                    <Input 
+                        type="text" 
+                        value={inputValue} 
+                        required={true} 
+                        handleChange={(e) => setInputValue(e.target.value)} 
+                        className="w-full"
+                        placeholder="Enter task"
+                    />
+                </div>
+                <div className="col-start-1 col-end-3">
+                    <TenantMultiSelect 
+                        placeholder="Assign to..." 
+                        tenantFunctions={[selectedTenants, setSelectedTenants]} 
+                        idFunctions={[taskUserIds, setTaskUserIds]} 
+                    />
+                </div>
+                <div className="field col-12 md:col-4 col-start-3 col-end-5">
                     <DatePicker 
                         value={date}
                         onChange={(e) => setDate(e)} 
-                        placeholder="Due by (optional)" 
+                        placeholder="Due by (optional)"
+                        label="Due By"
+                        minDate={new Date}
                     />
                 </div>
-                <TenantMultiSelect placeholder="Assign to..." tenantFunctions={[selectedTenants, setSelectedTenants]} idFunctions={[taskUserIds, setTaskUserIds]}/>
-                <input type="submit" value="Assign Task" />
+
+                <Button color="dark" type="submit" className="bg-black mt-4 col-start-2 col-end-4 w-1/2 place-self-center">Assign Task</Button>
+                
             </form>
         </>
     )
