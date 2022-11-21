@@ -4,7 +4,8 @@ import NavMenu from './NavMenu'
 
 const useStyles = createStyles((theme) => ({
   navbar: {
-    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
+//    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
+    backgroundColor: 'rgb(17 24 39)',
     paddingBottom: 0,
   },
 
@@ -44,7 +45,7 @@ export function NavbarNested() {
   const links = NavMenu.map((item) => <LinksGroup {...item} key={item.label} />);
 
   return (
-    <Navbar height={800} width={{ sm: 300 }} p="md" className={classes.navbar}>
+    <Navbar width={{ sm: 300 }} p="md" className={`${classes.navbar} h-auto`}>
       <Navbar.Section className={classes.header}>
         <Group position="apart">
           <Code sx={{ fontWeight: 700 }}>v3.1.2</Code>

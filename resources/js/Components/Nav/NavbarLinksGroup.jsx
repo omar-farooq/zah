@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Group, Box, Collapse, ThemeIcon, UnstyledButton, createStyles } from '@mantine/core';
 import { ChevronRightIcon, ChevronLeftIcon, CalendarDaysIcon } from '@heroicons/react/24/outline'
 import NavLink from '@/Components/Nav/NavLink' 
+import { Link } from '@inertiajs/inertia-react'
 
 const useStyles = createStyles((theme) => ({
   control: {
@@ -9,7 +10,7 @@ const useStyles = createStyles((theme) => ({
     display: 'block',
     width: '100%',
     padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
-    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
+//    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
     fontSize: theme.fontSizes.sm,
 
     '&:hover': {
@@ -26,7 +27,7 @@ const useStyles = createStyles((theme) => ({
     paddingLeft: 31,
     marginLeft: 30,
     fontSize: theme.fontSizes.sm,
-    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
+//    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
     borderLeft: `1px solid ${
       theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
     }`,
@@ -42,14 +43,14 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function LinksGroup({ Icon, label, initiallyOpened, links }) {
+export function LinksGroup({ icon: Icon, label, initiallyOpened, links }) {
   const { classes, theme } = useStyles();
   const hasLinks = Array.isArray(links);
   const [opened, setOpened] = useState(initiallyOpened || false);
   const ChevronIcon = theme.dir === 'ltr' ? ChevronRightIcon : ChevronLeftIcon;
   const items = (hasLinks ? links : []).map((link) => (
     <NavLink
-      className={classes.link}
+      className={`${classes.link} text-slate-300`}
       href={link.link}
       key={link.label}
     >
@@ -58,26 +59,51 @@ export function LinksGroup({ Icon, label, initiallyOpened, links }) {
   ));
 
   return (
-    <>
-      <UnstyledButton onClick={() => setOpened((o) => !o)} className={classes.control}>
-        <Group position="apart" spacing={0}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <ThemeIcon variant="light" size={30}>
-				test
-            </ThemeIcon>
-            <Box ml="md">{label}</Box>
-          </Box>
-          {hasLinks && (
-            <ChevronIcon
-			  className="h-5, w-5"
-              style={{
-                transform: opened ? `rotate(${theme.dir === 'rtl' ? -90 : 90}deg)` : 'none',
-              }}
-            />
-          )}
-        </Group>
-      </UnstyledButton>
-      {hasLinks ? <Collapse in={opened}>{items}</Collapse> : null}
-    </>
+      hasLinks ?
+        <>
+          <UnstyledButton onClick={() => setOpened((o) => !o)} className={`${classes.control} text-slate-300`}>
+            <Group position="apart" spacing={0}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <ThemeIcon variant="light" size={30}>
+                    <Icon />
+                </ThemeIcon>
+                <Box ml="md">{label}</Box>
+              </Box>
+              {hasLinks && (
+                <ChevronIcon
+                  className="h-5, w-5"
+                  style={{
+                    transform: opened ? `rotate(${theme.dir === 'rtl' ? -90 : 90}deg)` : 'none',
+                  }}
+                />
+              )}
+            </Group>
+          </UnstyledButton>
+        <Collapse in={opened}>{items}</Collapse> 
+        </>
+        :
+        <>
+            <Link href="/">
+                <UnstyledButton onClick={() => setOpened((o) => !o)} className={`${classes.control} text-slate-300`}>
+                    <Group position="apart" spacing={0}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <ThemeIcon variant="light" size={30}>
+                                <Icon />
+                            </ThemeIcon>
+                            <Box ml="md">{label}</Box>
+                        </Box>
+                        {hasLinks && (
+                            <ChevronIcon
+                                className="h-5, w-5"
+                                style={{
+                                    transform: opened ? `rotate(${theme.dir === 'rtl' ? -90 : 90}deg)` : 'none',
+                                }}
+                            />
+                        )}
+                    </Group>
+                </UnstyledButton>
+            </Link>
+        </>
+      
   );
 }

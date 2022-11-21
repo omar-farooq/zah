@@ -69,7 +69,7 @@ export default function Tasks() {
             <ComponentTitle bg="bg-amber-600">
                 Tasks
             </ComponentTitle>
-            <table className="table-auto col-start-3 col-end-7 mb-4 border border-collapse border-slate-800 bg-white">
+            <table className="table-auto col-start-3 col-end-7 mb-4 border border-collapse border-slate-800 bg-orange-100">
                 <thead>
                     <tr>
                         <th className="border border-collapse border-slate-600">Task</th>

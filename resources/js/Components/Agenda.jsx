@@ -62,6 +62,7 @@ export default function Agenda() {
                     minRows={4}
                     required={true}
                     className="w-3/4 mt-1"
+                    classNames={{ input: 'bg-gray-100 border-black'}}
                 />
                 <Button color="dark" type="submit" className="bg-black w-1/4 mt-4">Add Agenda Item </Button>
             </form>
