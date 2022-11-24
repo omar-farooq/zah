@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { FormTile, FlexAlignLeft, PreviewImageContainer, PreviewTile, RequestLayout, RequestName, Source, TileContainer, Title } from '@/Layouts/RequestLayout'
-import ApprovalButtons from '@/Components/ApprovalButtons'
+import Approval from '@/Components/Approval'
 import Comments from '@/Components/Comments'
 
 export default function PurchaseRequest(props) {
@@ -27,6 +27,7 @@ export default function PurchaseRequest(props) {
 
     //hooks
     const [authUserApproval, setAuthUserApproval] = useState(authUserApprovalObject)
+    const [approvalStatus, setApprovalStatus] = useState(requestItem.approval_status)
 
     return (
         <RequestLayout>
@@ -37,11 +38,12 @@ export default function PurchaseRequest(props) {
                         <div className="flex content-between min-w-full">
                             <RequestName name={requestItem.name} />
                                 <div className="ml-auto mt-2 flex flex-row space-x-1">
-                                    {
-                                        verified ?
-                                        <ApprovalButtons approvalHook={[authUserApproval, setAuthUserApproval]} model={model} />
-                                        : <span>only members can vote</span>
-                                    }
+                                    <Approval 
+                                        authUserApprovalHook={[authUserApproval, setAuthUserApproval]} 
+                                        approvalStatusHook={[approvalStatus, setApprovalStatus]}
+                                        model={model} 
+                                        verified={verified} 
+                                    />
                                 </div>
                         </div>
 

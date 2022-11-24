@@ -21,8 +21,7 @@ class MaintenanceRequest extends Model
         'contractor_phone',
         'type',
         'user_id',
-        'approved',
-        'rejected',
+        'approval_status',
         'emergency'
     ];
 
@@ -42,7 +41,7 @@ class MaintenanceRequest extends Model
      * Waiting Approval
      */
     public function notYetApproved() {
-        return $this->where('approved', 0)->where('rejected', 0)->get();
+        return $this->where('approval_status', 'in voting')->get();
     }
 
     /*

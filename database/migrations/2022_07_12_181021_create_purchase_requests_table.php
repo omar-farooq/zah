@@ -25,8 +25,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->integer('quantity')->default(1);
             $table->foreignId('user_id');
-            $table->boolean('approved')->default(0);
-            $table->boolean('rejected')->default(0);
+            $table->string('approval_status')->default('in voting');
         });
     }
 

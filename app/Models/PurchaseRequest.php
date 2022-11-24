@@ -18,8 +18,7 @@ class PurchaseRequest extends Model
         'image',
         'quantity',
         'user_id',
-        'approved',
-        'rejected'
+        'approval_status',
     ];
 
     protected $with = ['user', 'approvals'];
@@ -30,7 +29,7 @@ class PurchaseRequest extends Model
      *
      */
     public function notYetApproved() {
-        return $this->where('approved', 0)->where('rejected', 0)->get();
+        return $this->where('approval_status', 'in voting')->get();
     }
 
     /*

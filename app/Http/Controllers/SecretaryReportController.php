@@ -69,9 +69,15 @@ class SecretaryReportController extends Controller
      * @param  \App\Models\SecretaryReport  $secretaryReport
      * @return \Illuminate\Http\Response
      */
-    public function show(SecretaryReport $secretaryReport)
+    public function show(Request $request, SecretaryReport $secretaryReport)
     {
-        return Storage::download('documents/secretary_reports/' . $secretaryReport->attachment);
+        if($request->query('type') == 'view') {
+            return Storage::get('documents/secretary_reports/' . $secretaryReport->attachment);
+        }else if($request->query('type') == 'download') {
+            return Storage::download('documents/secretary_reports/' . $secretaryReport->attachment);
+        } else {
+            return;
+        }
     }
 
     /**

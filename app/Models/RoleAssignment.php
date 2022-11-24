@@ -12,8 +12,7 @@ class RoleAssignment extends Model
     protected $fillable = [
         'user_id',
         'role_id',
-        'approved',
-        'rejected'
+        'approval_status'
     ];
 
     protected $with = ['approvals'];
@@ -33,6 +32,6 @@ class RoleAssignment extends Model
      */
     public function inVote() 
     {
-        return $this->where('approved', 0)->where('rejected', 0)->get();
+        return $this->where('approval_status', 'in voting')->get();
     }
 }

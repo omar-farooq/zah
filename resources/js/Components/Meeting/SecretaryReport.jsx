@@ -1,4 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
+import { Document, Page } from 'react-pdf/dist/esm/entry.vite'
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { MantineProvider, Text, Group, Button, createStyles, Textarea } from '@mantine/core'
 import { Dropzone, MIME_TYPES } from '@mantine/dropzone'
 import { NotificationsProvider, showNotification } from '@mantine/notifications'
@@ -39,6 +42,14 @@ export default function SecretaryReport() {
         uploaded: ''
     })
     const [composeType, setComposeType] = useState('write')
+
+    //Used for PDF viewer
+    const [numPages, setNumPages] = useState(null)
+    const [pageNumber, setPageNumber] = useState(1)
+
+    function onDocumentLoadSuccess({ numPages }) {
+        setNumPages(numPages)
+    }
 
     // Check if a report exists that's eligible to be edited
     // (i.e.) hasn't yet been saved to a meeting
@@ -155,11 +166,23 @@ export default function SecretaryReport() {
                                 </Button>
                             </div>
                         </div>}
-                        <Button type="submit" color="dark" className="col-start-4 col-end-6 bg-black w-1/2 place-self-center">Save</Button>
+                        <Button type="submit" color="dark" className="col-start-4 col-end-6 bg-black w-1/2 place-self-center mb-10">{composeType == 'write' ? 'Save' : 'Upload'}</Button>
                     </form>
                 </NotificationsProvider>
             </MantineProvider>
-            <a href={`/secretary-reports/${secretaryReport.id}`}><DocumentArrowDownIcon className="h-12 w-12" />Download Report</a>
+            <div className="flex flex-col items-center">
+                <Document file={`/secretary-reports/${secretaryReport.id}?type=view`} onLoadSuccess={onDocumentLoadSuccess}>
+                    <Page pageNumber={pageNumber} />
+                </Document>
+                <p>
+                    Page {pageNumber} of {numPages}
+                </p>
+                <a href={`/secretary-reports/${secretaryReport.id}?type=download`}>
+                    <div className="flex flex-col items-center">
+                        <DocumentArrowDownIcon className="h-12 w-12" />Download Report
+                    </div>
+                </a>
+            </div>
         </>
     )
 }

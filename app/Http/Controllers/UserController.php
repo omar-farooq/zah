@@ -12,11 +12,17 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(User $user)
+    public function index(User $user, Request $request)
     {
-        return response()->json([
-            'users' => $user->all()
-        ]);
+        if($request->memberCount == 'true') {
+            return response()->json(
+                $user->currentMember()->get()->count()
+            );
+        } else {
+            return response()->json([
+                'users' => $user->all()
+            ]);
+        }
     }
 
     /**

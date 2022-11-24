@@ -32,6 +32,7 @@
         "@mantine/hooks": "^5.7.1",
         "@mantine/notifications": "^5.7.1",
         "dayjs": "^1.11.6",
+        "react-pdf": "^6.2.0",
         "react-select": "^5.4.0"
     }
 }
