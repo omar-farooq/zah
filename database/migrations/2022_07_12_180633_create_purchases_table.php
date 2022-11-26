@@ -16,6 +16,9 @@ return new class extends Migration
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->foreignId('purchase_request_id');
+            $table->boolean('purchased')->default(0);
+            $table->boolean('delivered')->default(0);
         });
     }
 

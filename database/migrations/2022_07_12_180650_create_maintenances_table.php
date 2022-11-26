@@ -16,6 +16,10 @@ return new class extends Migration
         Schema::create('maintenances', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->foreignId('maintenance_request_id');
+            $table->decimal('final_cost', $precision = 8, $scale = 2)->nullable();
+            $table->text('additional_details')->nullable();
+            $table->boolean('paid')->default(0);
         });
     }
 

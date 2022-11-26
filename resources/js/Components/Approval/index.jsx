@@ -1,10 +1,30 @@
 import { useEffect, useState } from 'react'
 import ApprovalButtons from './ApprovalButtons'
+import ChairApproval from './ChairApproval'
 
-export default function Approval({model, authUserApprovalHook, approvalStatusHook, verified}) {
+export default function Approval({model, authUserApprovalHook, approvalStatusHook, verified, isChair}) {
     const [memberApprovalCount, setMemberApprovalCount] = useState('')
     const [authUserApproval, setAuthUserApproval] = authUserApprovalHook
     const [approvalStatus, setApprovalStatus] = approvalStatusHook
+    const [memberCount, setMemberCount] = useState('')
+
+    const updateModelApprovalStatus = async (approval) => {
+        let newStatus = await axios.patch('/update-approval-status', {
+            model: model.name,
+            id: model.id,
+            approval: approval 
+        })
+
+        setApprovalStatus(newStatus.data)
+    }
+
+    useEffect(() => {
+        const getMemberCount = async () => {
+            let count = await axios.get('/users?memberCount=true')
+            setMemberCount (count.data)
+        }
+        getMemberCount()
+    },[])
 
     useEffect(() => {
         const getApprovalCount = async () => {
@@ -14,14 +34,19 @@ export default function Approval({model, authUserApprovalHook, approvalStatusHoo
         getApprovalCount()
     },[authUserApproval])
 
-    let memberCount
     useEffect(() => {
-        const getMemberCount = async () => {
-            let count = await axios.get('/users?memberCount=true')
-            memberCount = count.data
+        if(memberCount && approvalStatus == 'in voting' && memberApprovalCount.approved > (memberCount / 2)) {
+            updateModelApprovalStatus('approved')
         }
-        getMemberCount()
-    },[])
+
+        if(memberCount && approvalStatus == 'in voting' && memberApprovalCount.rejected > (memberCount / 2)) {
+            updateModelApprovalStatus('rejected')
+        }
+
+        if(memberCount && approvalStatus == 'in voting' && memberApprovalCount.approved == (memberCount / 2) && memberApprovalCount.rejected == (memberCount / 2)) {
+            updateModelApprovalStatus('Chair to decide')
+        }
+    },[memberApprovalCount])
 
     return (
         approvalStatus == 'in voting' ?
@@ -31,7 +56,13 @@ export default function Approval({model, authUserApprovalHook, approvalStatusHoo
                 model={model}
             />
             : <span>only members can vote</span>
-        : <div>{approvalStatus}</div>
+        : approvalStatus == 'Chair to decide' && isChair ?
+            <ChairApproval 
+                model={model}
+                approvalStatusHook={[approvalStatus, setApprovalStatus]}
+            />
+
+        : <div className={`text-xl font-bold ${approvalStatus == 'rejected' ? 'text-red-600' : approvalStatus == 'approved' ? 'text-green-600' : 'text-amber-600'}`}>{approvalStatus}</div>
         
     )
 }

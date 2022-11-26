@@ -71,6 +71,9 @@ Route::get('/maintenance-requests/{maintenanceRequest}/comments', function (Main
     return $maintenanceRequest->comments()->paginate(5);
 });
 
+//Update Model Approval
+Route::patch('/update-approval-status', [ApprovalController::class, 'updateModelApproval']);
+
 Route::resource('approval', ApprovalController::class);
 Route::resource('agenda', MeetingAgendaController::class);
 Route::resource('comments', CommentController::class);

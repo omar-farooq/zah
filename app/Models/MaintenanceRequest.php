@@ -53,6 +53,14 @@ class MaintenanceRequest extends Model
     }
 
     /*
+     * Relationship with the approved maintenance
+     */
+    public function maintenance()
+    {
+        return $this->hasOne(Maintenance::Class);
+    }
+
+    /*
      * Relationship with approvals
      */
     public function approvals()

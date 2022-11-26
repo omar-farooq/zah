@@ -10,17 +10,15 @@ export default function PurchaseRequest(props) {
     const model = {name: "App\\Models\\PurchaseRequest", id: requestItem.id}
     let verified = false
     let requesterIsViewing = false
-    let authUser = ''
     let authUserApprovalObject = ""
 
     if(props.auth.user) 
     {
-        authUser = props.auth.user
-        verified = authUser.membership.start_date != null && authUser.membership.end_date == null
-        requesterIsViewing = authUser.id === requestItem.user.id
+        verified = props.auth.user.membership.start_date != null && props.auth.user.membership.end_date == null
+        requesterIsViewing = props.auth.user.id === requestItem.user.id
 
-        if(requestItem.approvals.filter(x => x.user_id === authUser.id).length > 0) {
-            authUserApprovalObject = requestItem.approvals.filter(x => x.user_id === authUser.id)[0]
+        if(requestItem.approvals.filter(x => x.user_id === props.auth.user.id).length > 0) {
+            authUserApprovalObject = requestItem.approvals.filter(x => x.user_id === props.auth.user.id)[0]
         }
 
     }
@@ -35,7 +33,7 @@ export default function PurchaseRequest(props) {
             <TileContainer>
                 <PreviewTile>
                     <FlexAlignLeft>
-                        <div className="flex content-between min-w-full">
+                        <div className={`${approvalStatus == 'Chair to decide' && props.auth.user.role.name == 'Chair' ? '' : 'flex'} content-between min-w-full`}>
                             <RequestName name={requestItem.name} />
                                 <div className="ml-auto mt-2 flex flex-row space-x-1">
                                     <Approval 
@@ -43,6 +41,7 @@ export default function PurchaseRequest(props) {
                                         approvalStatusHook={[approvalStatus, setApprovalStatus]}
                                         model={model} 
                                         verified={verified} 
+                                        isChair={props.auth.user.role.name == 'Chair'}
                                     />
                                 </div>
                         </div>

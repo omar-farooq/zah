@@ -91,9 +91,10 @@ export default function Roles({members, nominations, auth}) {
                                     <RoleNomination 
                                         nominee={members.find(member => member.id == nomination.user_id).name} 
                                         role={roles.find(role => role.id == nomination.role_id).label}
-                                        nominationId={nomination.id}
+                                        nomination={nomination}
                                         key={nomination.id}
                                         userInitialApproval={nomination.approvals?.find(approval => approval.user_id == auth.user.id)}
+                                        auth={auth}
                                     />
                                 )}
                                 </>

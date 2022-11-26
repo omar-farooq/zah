@@ -42,6 +42,15 @@ class PurchaseRequest extends Model
     }
 
     /*
+     * Relationship with the Purchase once approved
+     *
+     */
+    public function purchase()
+    {
+        return $this->hasOne(PurchaseRequest::Class);
+    }
+
+    /*
      * Relationship with approvals
      *
      *
@@ -52,7 +61,7 @@ class PurchaseRequest extends Model
     }
 
     /*
-     * Relationship with approvals
+     * Relationship with comments
      *
      *
      */

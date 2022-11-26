@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { FormTile, FlexAlignLeft, PreviewImageContainer, PreviewTile, RequestLayout, RequestName, Source, TileContainer, Title } from '@/Layouts/RequestLayout'
 import { CardTile } from '@/Components/Requests'
 import { DateTimeToUKLocale } from '@/Shared/Functions'
-import ApprovalButtons from '@/Components/ApprovalButtons'
+import Approval from '@/Components/Approval'
 import Comments from '@/Components/Comments'
 
 export default function MaintenanceRequest(props) {
@@ -12,23 +12,22 @@ export default function MaintenanceRequest(props) {
     const model = {name: "App\\Models\\MaintenanceRequest", id: requestService.id}
     let verified = false
     let requesterIsViewing = false
-    let authUser = ''
     let authUserApprovalObject = ""
 
     if(props.auth.user) 
     {
-        authUser = props.auth.user
-        verified = authUser.membership.start_date != null && authUser.membership.end_date == null
-        requesterIsViewing = authUser.id === requestService.user.id
+        verified = props.auth.user.membership.start_date != null && props.auth.user.membership.end_date == null
+        requesterIsViewing = props.auth.user.id === requestService.user.id
 
-        if(requestService.approvals.filter(x => x.user_id === authUser.id).length > 0) {
-            authUserApprovalObject = requestService.approvals.filter(x => x.user_id === authUser.id)[0]
+        if(requestService.approvals.filter(x => x.user_id === props.auth.user.id).length > 0) {
+            authUserApprovalObject = requestService.approvals.filter(x => x.user_id === props.auth.user.id)[0]
         }
 
     }
 
     //hooks
     const [authUserApproval, setAuthUserApproval] = useState(authUserApprovalObject)
+    const [approvalStatus, setApprovalStatus] = useState(requestService.approval_status)
 
     return (
         <RequestLayout>
@@ -36,14 +35,16 @@ export default function MaintenanceRequest(props) {
             <TileContainer>
                 <CardTile>
                     <FlexAlignLeft>
-                        <div className="flex content-between min-w-full">
+                        <div className={`${approvalStatus == 'Chair to decide' && props.auth.user.role.name == 'Chair' ? '' : 'flex'} content-between min-w-full`}>
                             <RequestName name={requestService.required_maintenance} />
                                 <div className="ml-auto mt-2 flex flex-row space-x-1">
-                                    {
-                                        verified ?
-                                        <ApprovalButtons approvalHook={[authUserApproval, setAuthUserApproval]} model={model} />
-                                        : <span>only members can vote</span>
-                                    }
+                                    <Approval 
+                                        authUserApprovalHook={[authUserApproval, setAuthUserApproval]} 
+                                        approvalStatusHook={[approvalStatus, setApprovalStatus]}
+                                        model={model} 
+                                        verified={verified}
+                                        isChair={props.auth.user.role.name == 'Chair'}
+                                    />
                                 </div>
                         </div>
 

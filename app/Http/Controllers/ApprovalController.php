@@ -4,10 +4,19 @@ namespace App\Http\Controllers;
 
 use Auth;
 use App\Models\Approval;
+use App\Services\ApprovalService;
 use Illuminate\Http\Request;
 
 class ApprovalController extends Controller
 {
+
+    /**
+     * Instantiate the Service
+     *
+     */
+    public function __construct() {
+        $this->approvalService = new ApprovalService;
+    }
 
     /**
      * Get approvals for model
@@ -64,5 +73,26 @@ class ApprovalController extends Controller
     public function destroy(Approval $approval)
     {
         //
+    }
+
+    /**
+     * Update a model's approval status if approval is greater than member count / 2
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateModelApproval(Request $request) 
+    {
+        $model = $request->model::where('id', $request->id)->first();
+        $model->approval_status = $request->approval;
+        $model->save();
+
+        if($request->approval == 'approved') {
+            $this->approvalService->approvalFollowUp($request->model, $request->id);
+        }
+
+        return response()->json(
+            $request->approval
+        );
     }
 }
