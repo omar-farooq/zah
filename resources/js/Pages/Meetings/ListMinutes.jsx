@@ -14,7 +14,10 @@ export default function ListMinutes ({meetings}) {
                         <Fragment key={meeting.id}>
                             <tr>
                                 <FirstTD data={meeting.time_of_meeting} />
-                                <LastTD href={"/meetings/"+meeting.id} />
+                                <LastTD 
+                                    href={"meetings"} 
+                                    itemID={meeting.id}
+                                />
                             </tr>
                         </Fragment>
                     )}

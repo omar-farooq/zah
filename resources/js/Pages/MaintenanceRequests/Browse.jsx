@@ -33,7 +33,12 @@ export default function Browse({maintenanceRequests, unapprovedRequests, auth}) 
                             <FirstTD data={x.required_maintenance} />
                             <TD data={x.cost} />
                             <TD data={x.type} />
-                            <LastTD authUserID={authUser.id} author={x.user_id}  href={`/maintenance-requests/${x.id}`} />
+                            <LastTD 
+                                authUserID={authUser.id} 
+                                author={x.user_id}  
+                                href={"maintenance-requests"} 
+                                itemID={x.id}
+                            />
                             </tr>
                         </Fragment>
                     )}

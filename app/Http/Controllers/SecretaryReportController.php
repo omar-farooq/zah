@@ -50,7 +50,7 @@ class SecretaryReportController extends Controller
         $newReport = Auth::User()->secretaryReports()->create($request->all());
         if($request->file('attachment')) {
             $reportName = 'Secretary_Report_' . date('Ymd') . '.pdf';
-            Storage::putFileAs('documents/secretary_reports', $request->file('attachment'), $reportName);
+            Storage::disk('public')->putFileAs('documents/secretary_reports', $request->file('attachment'), $reportName);
             $newReport['attachment'] = $reportName;
             $newReport->save();
         }
@@ -72,9 +72,9 @@ class SecretaryReportController extends Controller
     public function show(Request $request, SecretaryReport $secretaryReport)
     {
         if($request->query('type') == 'view') {
-            return Storage::get('documents/secretary_reports/' . $secretaryReport->attachment);
+            return Storage::disk('public')->get('documents/secretary_reports/' . $secretaryReport->attachment);
         }else if($request->query('type') == 'download') {
-            return Storage::download('documents/secretary_reports/' . $secretaryReport->attachment);
+            return Storage::disk('public')->download('documents/secretary_reports/' . $secretaryReport->attachment);
         } else {
             return;
         }
@@ -106,7 +106,15 @@ class SecretaryReportController extends Controller
                 'message' => 'id mismatch'
             ],409);
         } else {
-            $secretaryReport->update($request->all());
+            if($request->file('attachment')) {
+                Storage::disk('public')->delete('documents/secretary_reports/' . $secretaryReport->attachment); 
+                $reportName = 'Secretary_Report_' . date('Ymd') . '.pdf';
+                Storage::disk('public')->putFileAs('documents/secretary_reports', $request->file('attachment'), $reportName);
+                $secretaryReport['attachment'] = $reportName;
+                $secretaryReport->save();
+            }
+
+//            $secretaryReport->update($request->all());
             return response()->json([
                 'status' => 'success',
                 'message' => 'Secretary\'s Report has been updated'

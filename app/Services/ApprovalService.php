@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\Maintenance;
-use App\Models\MaintenanceRequest;
-use App\Models\Purchase;
+use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\PurchaseController;
 use App\Models\PurchaseRequest;
 use App\Models\Role;
 use App\Models\RoleAssignment;
@@ -28,11 +28,13 @@ class ApprovalService {
                 break;        
 
             case "App\Models\PurchaseRequest":
-                return $this->createPurchase($id);
+                $purchaseController = new PurchaseController();
+                return $purchaseController->store($id);
                 break;
 
             case "App\Models\MaintenanceRequest":
-                return $this->createMaintenance($id);
+                $maintenanceController = new MaintenanceController();
+                return $maintenanceController->store($id);
                 break;
         }
     }
@@ -43,13 +45,4 @@ class ApprovalService {
         Role::where('id', $roleAssignment->role_id)->update(['user_id' => $roleAssignment->user_id]);
     }
 
-    function createPurchase($id)
-    {
-//TO DO
-    }
-
-    function createMaintenance($id)
-    {
-//TO DO
-    }
 }

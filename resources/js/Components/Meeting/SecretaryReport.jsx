@@ -39,7 +39,7 @@ export default function SecretaryReport() {
         id: '',
         report: '',
         attachment: '',
-        uploaded: ''
+        uploaded: '',
     })
     const [composeType, setComposeType] = useState('write')
 
@@ -53,11 +53,11 @@ export default function SecretaryReport() {
 
     // Check if a report exists that's eligible to be edited
     // (i.e.) hasn't yet been saved to a meeting
-    useEffect(() => {
         const fetchReport = async () => {
             let oldReport = await axios.get('/secretary-reports?not-saved-in-meeting=true')
-            setSecretaryReport({id: oldReport.data.id, report: oldReport.data.report, uploaded: oldReport.data.attachment})
+            setSecretaryReport({id: oldReport.data.id, report: oldReport.data.report, uploaded: oldReport.data.attachment, _method: 'patch'})
        }
+    useEffect(() => {
        fetchReport()
     }, []);
 
@@ -65,14 +65,16 @@ export default function SecretaryReport() {
         e.preventDefault()
 
         if(secretaryReport.id) {
-           try {
-               let res = await axios.patch('/secretary-reports/'+secretaryReport.id, secretaryReport)
-               showNotification(SuccessNotificationSettings(res.data.status, res.data.message, theme))
+            try {
+                let config = { headers: { 'content-type': 'multipart/form-data' }}
+                let res = await axios.post('/secretary-reports/'+secretaryReport.id, secretaryReport, config)
+                showNotification(SuccessNotificationSettings(res.data.status, res.data.message, theme))
+                fetchReport()
                
-           } catch (error) {
-               console.log(error)
-  //             messages.current.show({severity: 'error', summary: 'Error!'})
-           }
+            } catch (error) {
+                console.log(error)
+  //            messages.current.show({severity: 'error', summary: 'Error!'})
+            }
         } else {
             let config = { headers: { 'content-type': 'multipart/form-data' }}
             let res = await axios.post('/secretary-reports', secretaryReport, config)
@@ -171,17 +173,21 @@ export default function SecretaryReport() {
                 </NotificationsProvider>
             </MantineProvider>
             <div className="flex flex-col items-center">
-                <Document file={`/secretary-reports/${secretaryReport.id}?type=view`} onLoadSuccess={onDocumentLoadSuccess}>
-                    <Page pageNumber={pageNumber} />
-                </Document>
-                <p>
-                    Page {pageNumber} of {numPages}
-                </p>
-                <a href={`/secretary-reports/${secretaryReport.id}?type=download`}>
-                    <div className="flex flex-col items-center">
-                        <DocumentArrowDownIcon className="h-12 w-12" />Download Report
-                    </div>
-                </a>
+                {secretaryReport.uploaded &&
+                    <>
+                        <Document file={`/secretary-reports/${secretaryReport.id}?type=view`} onLoadSuccess={onDocumentLoadSuccess}>
+                            <Page pageNumber={pageNumber} />
+                        </Document>
+                        <p>
+                            Page {pageNumber} of {numPages}
+                        </p>
+                        <a href={`/secretary-reports/${secretaryReport.id}?type=download`}>
+                            <div className="flex flex-col items-center">
+                                <DocumentArrowDownIcon className="h-12 w-12" />Download Report
+                            </div>
+                        </a>
+                    </>
+                }
             </div>
         </>
     )

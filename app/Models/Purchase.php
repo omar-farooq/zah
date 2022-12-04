@@ -11,10 +11,15 @@ class Purchase extends Model
     protected $fillable = [
         'purchase_request_id',
         'purchased',
-        'delivered'
+        'received',
+        'name',
+        'price',
+        'delivery_cost',
+        'description',
+        'reason',
+        'image',
+        'quantity'
     ];
-
-    protected $with = ['purchaseRequest'];
 
     public function purchaseRequest() {
         return $this->belongsTo(PurchaseRequest::class);

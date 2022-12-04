@@ -6,6 +6,7 @@ use App\Http\Requests\StorePurchaseRequestRequest;
 use App\Http\Requests\UpdatePurchaseRequestRequest;
 use App\Models\PurchaseRequest;
 use Auth;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Redirect;
 
@@ -16,13 +17,35 @@ class PurchaseRequestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(PurchaseRequest $purchaseRequest)
+    public function index(PurchaseRequest $purchaseRequest, Request $request)
     {
-        return Inertia::render('PurchaseRequests/Browse', [
-            'purchaseRequests' => $purchaseRequest->orderBy('created_at', 'desc')->paginate(4),
-            'unapprovedRequests' => $purchaseRequest->notYetApproved(),
-            'title' => 'All Purchase Requests'
-        ]);    
+        if(isset($request->cards)) {
+
+            $userApproved = [];
+            if($request->cards == 'needApproval') {
+                foreach($purchaseRequest->all() as $pr) {
+                    foreach($pr->approvals as $approval){
+                        if($approval->user_id == Auth::id()) {
+                            array_push($userApproved, $pr);
+                        }
+                    }
+                }
+                return response()->json(
+                    $purchaseRequest->all()->diff($userApproved)
+                );
+            }
+
+            if($request->cards == 'all') {
+                return response()->json(
+                    $purchaseRequest->orderBy('created_at', 'desc')->paginate(4)
+                );
+            }
+
+        } else {
+            return Inertia::render('PurchaseRequests/Browse', [
+                'title' => 'All Purchase Requests'
+            ]);    
+        }
     }
 
     /**
