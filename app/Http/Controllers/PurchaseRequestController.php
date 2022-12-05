@@ -7,6 +7,7 @@ use App\Http\Requests\UpdatePurchaseRequestRequest;
 use App\Models\PurchaseRequest;
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
 use Inertia\Inertia;
 use Redirect;
 
@@ -21,17 +22,11 @@ class PurchaseRequestController extends Controller
     {
         if(isset($request->cards)) {
 
-            $userApproved = [];
             if($request->cards == 'needApproval') {
-                foreach($purchaseRequest->all() as $pr) {
-                    foreach($pr->approvals as $approval){
-                        if($approval->user_id == Auth::id()) {
-                            array_push($userApproved, $pr);
-                        }
-                    }
-                }
                 return response()->json(
-                    $purchaseRequest->all()->diff($userApproved)
+                    $purchaseRequest->whereDoesntHave('approvals', function (Builder $q) {
+                        $q->where('user_id', Auth::id());
+                    })->paginate(4)
                 );
             }
 

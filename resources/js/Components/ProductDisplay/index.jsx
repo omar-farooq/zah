@@ -12,7 +12,6 @@ export default function ProductDisplay({title, productData, model}) {
         }
         getCards()
     },[])
-    console.log(cards)
 
     return (
         <>
