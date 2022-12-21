@@ -42,4 +42,8 @@ class Meeting extends Model
     public function attendees() {
         return $this->hasMany(MeetingAttendance::class);
     }
+
+    public function polls() {
+        return $this->hasMany(Poll::class);
+    }
 }

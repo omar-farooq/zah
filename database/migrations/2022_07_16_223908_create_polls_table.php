@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
 			$table->string('name');
-			$table->foreignId('meeting_id');
+			$table->foreignId('meeting_id')->nullable();
 			$table->timestamp('poll_end');
         });
     }

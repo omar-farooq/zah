@@ -1,6 +1,6 @@
 import { Button } from '@mantine/core'
 import { useState, useEffect, Fragment } from 'react'
-import { ComponentWrapper, SecretaryReport } from '@/Components/Meeting'
+import { ComponentWrapper, SecretaryReport, Polls } from '@/Components/Meeting'
 import Agenda from '@/Components/Agenda'
 import CreatableSelect from 'react-select/creatable'
 import Minutes from '@/Components/Minutes'
@@ -11,6 +11,9 @@ export default function NewMeeting({meeting, tenants}) {
     const [register, updateRegister] = useState([])
     const [lateRegister, updateLateRegister] = useState([])
     const [guests, updateGuests] = useState([])
+
+    //for the modal
+    const [opened, setOpened] = useState(false)
 
     const notInAttendance = tenants.filter(option => !(register.some(item => item.value === option.value) || lateRegister.some(item => item.value === option.value)))
 
@@ -73,6 +76,10 @@ export default function NewMeeting({meeting, tenants}) {
 
             <ComponentWrapper>
                 <Tasks />
+            </ComponentWrapper>
+
+            <ComponentWrapper>
+                <Polls />
             </ComponentWrapper>
 
             <Button className="mb-14 mt-14 w-1/4" variant="outline" onClick={() => handleSubmit()}>
