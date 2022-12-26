@@ -13,7 +13,13 @@ class PollOption extends Model
         'option'
     ];
 
+    protected $with = ['votes'];
+
     public function poll() {
         return $this->belongsTo(Poll::class);
+    }
+
+    public function votes() {
+        return $this->hasMany(Vote::class);
     }
 }

@@ -88,8 +88,8 @@ export default function SecretaryReport() {
             <MantineProvider withNormalizeCSS withGlobalStyles>
                 <NotificationsProvider>
                     <form onSubmit={handleSubmit} className="grid grid-cols-8 gap-4">
-                        <div className="text-xl col-start-3 col-end-5 bg-sky-700 text-white flex justify-center">Secretary's Report</div>
-                        <div className="col-start-3 col-end-6">
+                        <div className="text-xl col-start-1 lg:col-start-3 col-end-5 bg-sky-700 text-white flex justify-center">Secretary's Report</div>
+                        <div className="col-start-1 lg:col-start-3 col-end-6">
                             <label htmlFor="write">Write Report</label>
                             <input 
                                 type="radio" 
@@ -115,7 +115,7 @@ export default function SecretaryReport() {
                             autosize
                             label="Write Report"
                             minRows={3}
-                            className="col-start-3 col-end-7"
+                            className="col-start-2 lg:col-start-3 col-end-8 lg:col-end-7"
                         />}
                         
                         {composeType == 'upload' &&
@@ -168,7 +168,7 @@ export default function SecretaryReport() {
                                 </Button>
                             </div>
                         </div>}
-                        <Button type="submit" color="dark" className="col-start-4 col-end-6 bg-black w-1/2 place-self-center mb-10">{composeType == 'write' ? 'Save' : 'Upload'}</Button>
+                        <Button type="submit" color="dark" className="col-start-2 lg:col-start-4 col-end-8 lg:col-end-6 bg-black w-1/2 place-self-center mb-10">{composeType == 'write' ? 'Save' : 'Upload'}</Button>
                     </form>
                 </NotificationsProvider>
             </MantineProvider>

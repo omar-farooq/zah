@@ -47,7 +47,7 @@ export default function Minutes({meetingID}) {
             <ComponentTitle bg="bg-emerald-700">
                 Minutes
             </ComponentTitle>
-            <ul className="col-start-3 col-end-7">
+            <ul className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7">
                 {reactiveMinutes.map(minute =>
                     <li key={minute.id} className='bg-white flex justify-between border m-1 bg-white border-sky-700 text-slate-700'>
                         <div className="ml-2 whitespace-pre-line">{minute.minute_text}</div> 
@@ -56,7 +56,7 @@ export default function Minutes({meetingID}) {
                 )}
             </ul>
 
-            <Form onSubmit={handleSubmit} >
+            <form onSubmit={handleSubmit} className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7 flex flex-col items-center">
                 <Textarea 
                     value={inputValue} 
                     required={true} 
@@ -66,8 +66,8 @@ export default function Minutes({meetingID}) {
                     className="w-3/4 mt-1"
                     classNames={{ input: 'bg-gray-100 border-black'}}
                 />
-                <Button color="dark" type="submit" className="bg-black w-1/4 mt-4">Add Minute</Button>
-            </Form>
+                <Button color="dark" type="submit" className="bg-black w-1/3 lg:w-1/4 mt-4">Add Minute</Button>
+            </form>
         </>
     )
 }

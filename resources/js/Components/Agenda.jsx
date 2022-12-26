@@ -44,8 +44,8 @@ export default function Agenda() {
 
     return (
         <>
-            <div className="text-xl col-start-3 col-end-5 bg-rose-700 text-white flex justify-center">Agenda</div>
-            <ul className="col-start-3 col-end-7">
+            <div className="text-xl col-start-1 lg:col-start-3 col-end-5 bg-rose-700 text-white flex justify-center">Agenda</div>
+            <ul className="lg:col-start-3 lg:col-end-7 col-start-1 col-end-9">
                 {reactiveAgenda.map((agenda,i) =>
                     <li key={agenda.id} className={`${i % 2 == 0 ? 'border-black' : 'border-black'} bg-white text-black flex justify-between items-center m-1 border`}>
                         <div className="ml-2 whitespace-pre-line">{agenda.item}</div> 
@@ -54,7 +54,7 @@ export default function Agenda() {
                 )}
             </ul>
 
-            <form onSubmit={handleSubmit} className="col-start-3 col-end-7 flex flex-col items-center">
+            <form onSubmit={handleSubmit} className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7 flex flex-col items-center">
                 <Textarea
                     value={inputValue}
                     onChange={handleChange}
@@ -64,7 +64,7 @@ export default function Agenda() {
                     className="w-3/4 mt-1"
                     classNames={{ input: 'bg-gray-100 border-black'}}
                 />
-                <Button color="dark" type="submit" className="bg-black w-1/4 mt-4">Add Agenda Item </Button>
+                <Button color="dark" type="submit" className="bg-black w-1/3 lg:w-1/4 mt-4">Add Agenda Item </Button>
             </form>
         </>
     )

@@ -6,7 +6,9 @@ const Layout = ({ children, auth, title }) => {
     return (
         <React.Fragment>
             <div className="flex flex-row flex-grow">
-                <NavbarNested />
+                <div className="hidden lg:flex">
+                    <NavbarNested />
+                </div>
                 <div className="w-full">
                     <Topbar auth={auth} title={title} />
                     <main className="min-h-screen bg-gray-100 flex flex-col items-center">

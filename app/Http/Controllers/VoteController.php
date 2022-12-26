@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreVoteRequest;
-use App\Http\Requests\UpdateVoteRequest;
+use Illuminate\Http\Request;
 use App\Models\Vote;
 
 class VoteController extends Controller
@@ -19,46 +18,18 @@ class VoteController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \App\Http\Requests\StoreVoteRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreVoteRequest $request)
+    public function store(Request $request)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Vote  $vote
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Vote $vote)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Vote  $vote
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Vote $vote)
-    {
-        //
+        $vote = Vote::Create($request->all());
+        return response()->json([
+            'voteId' => $vote->id,
+            'optionId' => $vote->poll_option_id
+        ]);
     }
 
     /**
@@ -68,19 +39,12 @@ class VoteController extends Controller
      * @param  \App\Models\Vote  $vote
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateVoteRequest $request, Vote $vote)
+    public function update(Request $request, Vote $vote)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Vote  $vote
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Vote $vote)
-    {
-        //
+        $vote->update($request->all());
+        return response()->json([
+            'voteId' => $vote->id,
+            'optionId' => $vote->poll_option_id
+        ]);
     }
 }

@@ -21,15 +21,15 @@ const NavMenu = [
     },
 	{id: 2, label: 'Purchases', icon: ShoppingBagIcon,
         links: [
-            {id: 1, label: 'All Purchases', link: '#'},
+            {id: 1, label: 'All Purchases', link: '/purchases'},
             {id: 2, label: 'Request', link: '/purchase-requests/create'}, 
             {id: 3, label: 'Pending Approval', link: '/purchase-requests'}
         ]
     },
 	{id: 3, label: 'Maintenance', icon: WrenchIcon,
         links: [
-            {id: 1, label: 'All Maintenance', link: '#'},
-            {id: 2, label: 'Upcoming', link: '#'},
+            {id: 1, label: 'All Maintenance', link: '/maintenance'},
+            {id: 2, label: 'Upcoming', link: '/upcoming-mainteneance'},
             {id: 3, label: 'Request', link: '/maintenance-requests/create'},
             {id: 4, label: 'Pending Approval', link: '/maintenance-requests'}
         ]
@@ -37,12 +37,15 @@ const NavMenu = [
 	{id: 4, label: 'Treasury', icon: CurrencyPoundIcon,
         links: [
             {id: 1, label: 'Summary', link: '#'}, 
-            {id: 2, label: 'Reports', link: '#'}
+            {id: 2, label: 'Reports', link: '/treasury'},
+            {id: 3, label: 'Plans', link: '/treasury-plans'}
         ]
     },
     {id: 5, label: 'Members', icon: UserGroupIcon,
         links: [
             {id: 1, label: 'Roles', link: '/roles'},
+            {id: 1, label: 'Memberships', link: '/memberships'},
+            {id: 1, label: 'Discussion', link: '/forum'}
         ]
     },
 ] 

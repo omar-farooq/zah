@@ -69,7 +69,7 @@ export default function Tasks() {
             <ComponentTitle bg="bg-amber-600">
                 Tasks
             </ComponentTitle>
-            <table className="table-auto col-start-3 col-end-7 mb-4 border border-collapse border-slate-800 bg-orange-100">
+            <table className="table-auto col-start-1 lg:col-start-3 col-end-9 lg:col-end-7 mb-4 border border-collapse border-slate-800 bg-orange-100">
                 <thead>
                     <tr>
                         <th className="border border-collapse border-slate-600">Task</th>
@@ -90,7 +90,7 @@ export default function Tasks() {
                 </tbody>
             </table>
 
-            <form onSubmit={handleSubmit} className="col-start-3 col-end-7 grid grid-cols-4 gap-2">
+            <form onSubmit={handleSubmit} className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7 grid grid-cols-4 gap-2">
                 <div className="col-start-1 col-end-5">
                     <Input 
                         type="text" 
@@ -118,7 +118,7 @@ export default function Tasks() {
                     />
                 </div>
 
-                <Button color="dark" type="submit" className="bg-black mt-4 col-start-2 col-end-4 w-1/2 place-self-center">Assign Task</Button>
+                <Button color="dark" type="submit" className="bg-black mt-4 col-start-1 lg:col-start-2 col-end-5 lg:col-end-4 w-1/2 place-self-center">Assign Task</Button>
                 
             </form>
         </>

@@ -11,7 +11,7 @@ const useStyles = createStyles((theme) => ({
 
   header: {
 //    padding: theme.spacing.md,
-	padding: '25px',
+	padding: '47px',
     paddingTop: 0,
     marginLeft: -theme.spacing.md,
     marginRight: -theme.spacing.md,
@@ -45,11 +45,8 @@ export function NavbarNested() {
   const links = NavMenu.map((item) => <LinksGroup {...item} key={item.label} />);
 
   return (
-    <Navbar width={{ sm: 300 }} p="md" className={`${classes.navbar} h-auto`}>
+    <Navbar width={{ sm: 240 }} p="md" className={`${classes.navbar} h-auto`}>
       <Navbar.Section className={classes.header}>
-        <Group position="apart">
-          <Code sx={{ fontWeight: 700 }}>v3.1.2</Code>
-        </Group>
       </Navbar.Section>
 
       <Navbar.Section grow className={classes.links} component={ScrollArea}>

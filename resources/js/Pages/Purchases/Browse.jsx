@@ -7,13 +7,13 @@ export default function Browse() {
             <ProductDisplay 
                 title="Purchases Requiring Action"
                 productData="needAction"
-                productType="purchases"
+                model="purchases"
             />
 
             <ProductDisplay 
                 title="Purchased"
                 productData="received"
-                productType="purchases"
+                model="purchases"
             />
         </>
     )

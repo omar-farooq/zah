@@ -19,6 +19,7 @@ use App\Http\Controllers\SecretaryReportController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenancyController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VoteController;
 use App\Models\PurchaseRequest;
 use App\Models\MaintenanceRequest;
 use App\Models\Meeting;
@@ -92,5 +93,6 @@ Route::resource('secretary-reports', SecretaryReportController::class);
 Route::resource('tasks', TaskController::class);
 Route::resource('tenants', TenancyController::class);
 Route::resource('users', UserController::class);
+Route::resource('vote', VoteController::class);
 
 require __DIR__.'/auth.php';

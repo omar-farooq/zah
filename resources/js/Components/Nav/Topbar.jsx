@@ -26,7 +26,7 @@ export default function Topbar({ auth, header, title }) {
                             </div>
                         </div>
 
-                        <div className="hidden sm:flex sm:items-center sm:ml-6">
+                        <div className="hidden lg:flex lg:items-center lg:ml-6">
                             <div className="ml-3 relative">
                                 <Dropdown>
                                     <Dropdown.Trigger>
@@ -62,7 +62,7 @@ export default function Topbar({ auth, header, title }) {
                             </div>
                         </div>
 
-                        <div className="-mr-2 flex items-center sm:hidden">
+                        <div className="-mr-2 flex items-center lg:hidden">
                             <button
                                 onClick={() => setShowingNavigationDropdown((previousState) => !previousState)}
                                 className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
@@ -88,9 +88,9 @@ export default function Topbar({ auth, header, title }) {
                     </div>
                 </div>
 
-                <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
+                <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' lg:hidden'}>
                     <div className="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
+                        <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')} onclick={() => setShowingNavigationDropdown(!showingNavigationDropdown)}>
                             Dashboard
                         </ResponsiveNavLink>
                     </div>

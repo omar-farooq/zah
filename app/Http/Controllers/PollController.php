@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Poll;
 use App\Models\PollOption;
+use App\Models\Vote;
 
 class PollController extends Controller
 {

@@ -7,7 +7,7 @@ import Minutes from '@/Components/Minutes'
 import Select from 'react-select'
 import Tasks from '@/Components/Tasks'
 
-export default function NewMeeting({meeting, tenants}) {
+export default function NewMeeting({meeting, tenants, auth}) {
     const [register, updateRegister] = useState([])
     const [lateRegister, updateLateRegister] = useState([])
     const [guests, updateGuests] = useState([])
@@ -26,7 +26,7 @@ export default function NewMeeting({meeting, tenants}) {
         <>
             <div className="text-xl mt-3 mb-3"> Meeting: {meeting.time_of_meeting} </div>
             <div className="grid grid-cols-4 w-full gap-2">
-                <div className="col-start-2 col-end-4"> Attending
+                <div className="lg:col-start-2 lg:col-end-4 col-start-1 col-end-5"> Attending
                     <Select
                         isMulti
                         name="attendance"
@@ -39,7 +39,7 @@ export default function NewMeeting({meeting, tenants}) {
                     />
                 </div>
 
-                <div className="col-start-2 col-end-3"> 
+                <div className="lg:col-start-2 col-end-3 col-start-1"> 
                     <Select
                         isMulti
                         name="late"
@@ -52,7 +52,7 @@ export default function NewMeeting({meeting, tenants}) {
                     />
                 </div>
 
-                <div className="col-start-3 col-end-4">
+                <div className="col-start-3 lg:col-end-4 col-end-5">
                     <CreatableSelect
                         isMulti
                         placeholder="Guests"
@@ -79,7 +79,7 @@ export default function NewMeeting({meeting, tenants}) {
             </ComponentWrapper>
 
             <ComponentWrapper>
-                <Polls />
+                <Polls auth={auth} />
             </ComponentWrapper>
 
             <Button className="mb-14 mt-14 w-1/4" variant="outline" onClick={() => handleSubmit()}>

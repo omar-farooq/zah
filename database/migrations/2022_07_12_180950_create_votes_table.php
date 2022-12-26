@@ -17,8 +17,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
 			$table->foreignId('user_id');
-			$table->foreignId('poll_id');
-			$table->integer('poll_option');
+			$table->foreignId('poll_option_id');
         });
     }
 
