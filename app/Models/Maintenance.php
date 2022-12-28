@@ -15,7 +15,7 @@ class Maintenance extends Model
         'paid'
     ];
 
-    protected $with = ['maintenaceRequest'];
+    protected $with = ['maintenanceRequest'];
 
     /*
      * Relationship with the request

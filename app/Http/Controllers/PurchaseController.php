@@ -77,12 +77,18 @@ class PurchaseController extends Controller
      * @param  \App\Models\Purchase  $purchase
      * @return \Illuminate\Http\Response
      */
-    public function show(Purchase $purchase)
+    public function show(Purchase $purchase, Request $request)
     {
-        return Inertia::render('Purchases/ViewPurchase', [
-            'title' => 'Purchased',
-            'purchase' => $purchase
-        ]);
+        if(isset($request->getPurchase)) {
+            return response()->json(
+                $purchase
+            );
+        } else {
+            return Inertia::render('Purchases/ViewPurchase', [
+                'title' => 'Purchase History',
+                'purchaseID' => $purchase->id
+            ]);
+        }
     }
 
     /**
@@ -103,9 +109,9 @@ class PurchaseController extends Controller
      * @param  \App\Models\Purchase  $purchase
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePurchaseRequest $request, Purchase $purchase)
+    public function update(Request $request, Purchase $purchase)
     {
-        //
+        $purchase->update($request->all());
     }
 
     /**

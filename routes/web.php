@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MaintenanceRequestController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MeetingAgendaController;
@@ -80,6 +81,7 @@ Route::patch('/update-approval-status', [ApprovalController::class, 'updateModel
 Route::resource('approval', ApprovalController::class);
 Route::resource('agenda', MeetingAgendaController::class);
 Route::resource('comments', CommentController::class);
+Route::resource('maintenance', MaintenanceController::class);
 Route::resource('maintenance-requests', MaintenanceRequestController::class);
 Route::resource('meetings', MeetingController::class);
 Route::resource('memberships', MembershipController::class);

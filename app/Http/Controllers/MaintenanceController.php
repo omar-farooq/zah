@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreMaintenanceRequest;
-use App\Http\Requests\UpdateMaintenanceRequest;
 use App\Models\Maintenance;
+use App\Models\MaintenanceRequest;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class MaintenanceController extends Controller
 {
@@ -13,9 +14,26 @@ class MaintenanceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Maintenance $maintenance, Request $request)
     {
-        //
+        if(isset($request->table)) {
+
+            if($request->table == 'needAction') {
+                return response()->json(
+                    $maintenance->where('paid', '0')->orderBy('created_at', 'desc')->paginate(10),
+                );
+            }
+
+            if($request->table == 'paid') {
+                return response()->json(
+                    $maintenance->where('paid', '1')->orderBy('created_at', 'desc')->paginate(10),
+                );
+            }
+        } else {
+            return Inertia::render('Maintenance/Browse', [
+                'title' => 'All Maintenance'
+            ]);
+        }
     }
 
     /**
@@ -34,9 +52,14 @@ class MaintenanceController extends Controller
      * @param  \App\Http\Requests\StoreMaintenanceRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreMaintenanceRequest $request)
+    public function store($maintenance_request_id)
     {
-        //
+        $maintenanceRequest = MaintenanceRequest::find($maintenance_request_id);
+
+        Maintenance::create([
+            'maintenance_request_id' => $maintenance_request_id,
+            'final_cost' => $maintenanceRequest->cost,
+        ]);
     }
 
     /**
@@ -47,7 +70,10 @@ class MaintenanceController extends Controller
      */
     public function show(Maintenance $maintenance)
     {
-        //
+        return Inertia::render('Maintenance/ViewMaintenance', [
+            'titile' => 'Maintenance History',
+            'maintenance' => $maintenance
+        ]);
     }
 
     /**
@@ -68,9 +94,9 @@ class MaintenanceController extends Controller
      * @param  \App\Models\Maintenance  $maintenance
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateMaintenanceRequest $request, Maintenance $maintenance)
+    public function update(Request $request, Maintenance $maintenance)
     {
-        //
+        $maintenance->update($request->all());
     }
 
     /**
