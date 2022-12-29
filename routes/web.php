@@ -65,6 +65,7 @@ Route::controller(ScheduleController::class)->group(function() {
 });
 
 Route::post('/meetings/register-attendance', [MeetingController::class, 'markAttendance']);
+Route::get('/maintenance/upcoming', [MaintenanceController::class, 'upcoming']);
 
 //Comments
 Route::get('/purchase-requests/{purchaseRequest}/comments', function (PurchaseRequest $purchaseRequest) {
@@ -74,6 +75,7 @@ Route::get('/purchase-requests/{purchaseRequest}/comments', function (PurchaseRe
 Route::get('/maintenance-requests/{maintenanceRequest}/comments', function (MaintenanceRequest $maintenanceRequest) {
     return $maintenanceRequest->comments()->paginate(5);
 });
+
 
 //Update Model Approval
 Route::patch('/update-approval-status', [ApprovalController::class, 'updateModelApproval']);

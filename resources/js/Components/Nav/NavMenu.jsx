@@ -29,7 +29,7 @@ const NavMenu = [
 	{id: 3, label: 'Maintenance', icon: WrenchIcon,
         links: [
             {id: 1, label: 'All Maintenance', link: '/maintenance'},
-            {id: 2, label: 'Upcoming', link: '/mainteneance/upcoming'},
+            {id: 2, label: 'Upcoming', link: '/maintenance/upcoming'},
             {id: 3, label: 'Request', link: '/maintenance-requests/create'},
             {id: 4, label: 'Pending Approval', link: '/maintenance-requests'}
         ]

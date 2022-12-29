@@ -10,6 +10,23 @@ export function DateTimeToUKLocale(date) {
     )
 }
 
+//Date only into UK locale.
+export function DateToUKLocale(date) {
+    let localDate = new Date(date).toLocaleDateString('en-GB')
+    return (
+        localDate
+    )
+}
+
+//Time only into UK local
+export function TimeToUKLocale(date) {
+    let timeOptions = { hour: '2-digit', minute: '2-digit' }
+    let time = new Date(date).toLocaleTimeString('en-GB', timeOptions)
+    return (
+        time
+    )
+}
+
 //Long date format example: Friday, 11 November 2022
 export function LongDateFormat(date) {
     let options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Maintenance;
 use App\Models\MaintenanceRequest;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -25,8 +26,14 @@ class MaintenanceController extends Controller
             }
 
             if($request->table == 'paid') {
+                $searchTerm = $request->search;
                 return response()->json(
-                    $maintenance->where('paid', '1')->orderBy('created_at', 'desc')->paginate(10),
+                    $maintenance->where('paid', '1')
+                                ->whereHas('maintenanceRequest', function($query) use ($searchTerm) {
+                                    return $query->where('required_maintenance', 'like', '%'.$searchTerm.'%');
+                                })
+                                ->orderBy('created_at', 'desc')
+                                ->paginate(10),
                 );
             }
         } else {
@@ -34,6 +41,21 @@ class MaintenanceController extends Controller
                 'title' => 'All Maintenance'
             ]);
         }
+    }
+
+    /**
+     * Display upcoming maintenance
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function upcoming(Maintenance $maintenance)
+    {
+        return Inertia::render('Maintenance/Upcoming', [
+            'title' => 'Upcoming Maintenance',
+            'maintenance' => $maintenance->whereHas('maintenanceRequest', function($query) {
+                return $query->where('end_date', '>=', Carbon::now('Europe/London'));
+            })->get()
+        ]);
     }
 
     /**
@@ -71,7 +93,7 @@ class MaintenanceController extends Controller
     public function show(Maintenance $maintenance)
     {
         return Inertia::render('Maintenance/ViewMaintenance', [
-            'titile' => 'Maintenance History',
+            'title' => 'Maintenance History',
             'maintenance' => $maintenance
         ]);
     }

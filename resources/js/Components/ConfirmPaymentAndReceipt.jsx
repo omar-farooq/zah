@@ -46,6 +46,25 @@ export default function ConfirmPaymentAndReceipt({id, payableHook, openHook, mod
                 </>
             }
 
+            {model == 'maintenance' &&
+                <>
+                    <span>Confirm final cost:</span>
+                    <div className="flex flex-row">
+                        <span className="text-xl mt-2 mr-2">£</span>
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="Final Cost"
+                            defaultValue={payable.final_cost}
+                            onChange={(e) => {
+                                e.target.value == '' ? setPayable({...payable, final_cost: ''}) : setPayable({...payable, final_cost: parseFloat(e.target.value).toFixed(2)});
+                            }}
+                        />
+                    </div>
+                </>
+            }
+
             <div className="mt-4">
                 Attach Receipts:
                 <FileInput 
@@ -55,6 +74,22 @@ export default function ConfirmPaymentAndReceipt({id, payableHook, openHook, mod
                     icon={<DocumentArrowUpIcon />}
                 />
             </div>
+
+            {model == 'maintenance' &&
+                <>
+                    <div className="mt-4">
+                        Add any additional details:
+                        <textarea
+                            className="w-full"
+                            onChange={
+                                (e) => setPayable({...payable, additional_details: e.target.value})
+                            }
+                            defaultValue={payable.additional_details}
+                        >
+                        </textarea>
+                    </div>
+                </>
+            }
 
             <div className="mt-4">
                 <div className="flex flex-row">
