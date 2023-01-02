@@ -41,10 +41,10 @@ const NavMenu = [
             {id: 3, label: 'Plans', link: '/treasury-plans'}
         ]
     },
-    {id: 5, label: 'Members', icon: UserGroupIcon,
+    {id: 5, label: 'Users', icon: UserGroupIcon,
         links: [
-            {id: 1, label: 'Roles', link: '/roles'},
-            {id: 1, label: 'Memberships', link: '/memberships'},
+            {id: 1, label: 'Member Roles', link: '/roles'},
+            {id: 1, label: 'Manage', link: '/users'},
             {id: 1, label: 'Discussion', link: '/forum'}
         ]
     },

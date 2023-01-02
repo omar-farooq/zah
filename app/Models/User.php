@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_tenant'
     ];
 
     /**
@@ -51,7 +52,8 @@ class User extends Authenticatable
     protected $with = [
         'membership',
         'role',
-        'delegatedRole'
+        'delegatedRole',
+        'rent'
     ];
 
 	/**
@@ -152,6 +154,13 @@ class User extends Authenticatable
         return $this->hasMany(SecretaryReport::class);
      } 
 
+     /**
+      * Relationship with Rent
+      *
+      */
+     public function rent() {
+        return $this->hasOne(Rent::class);
+     }
 
 	/**
 	 * Get Members

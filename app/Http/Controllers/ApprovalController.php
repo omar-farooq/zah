@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Auth;
 use App\Models\Approval;
 use App\Services\ApprovalService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ApprovalController extends Controller
@@ -23,7 +24,26 @@ class ApprovalController extends Controller
      *
      */
     public function index(Request $request, Approval $approval) {
+
+        //get the logged in user's approval for membership
+        if($request->model == 'App\Models\Membership') {
+            return response()->json([
+                'delete' => $approval->where('approvable_type', $request->model)
+                                     ->where('created_at', '>', Carbon::now()->subDays(2))
+                                     ->where('approval', 'delete')
+                                     ->where('user_id', Auth::id())
+                                     ->get(),
+
+                'add' => $approval->where('approvable_type', $request->model)
+                                  ->where('created_at', '>', Carbon::now()->subDays(2))
+                                  ->where('approval', 'add')
+                                  ->where('user_id', Auth::id())
+                                  ->get()
+            ]);
+        }
+
         if(isset($request->model) && isset($request->id)) {
+
             return response()->json([
                 'approved' => $approval->where('approvable_type', $request->model)
                                        ->where('approvable_id',$request->id)
