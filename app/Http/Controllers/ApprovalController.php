@@ -60,6 +60,7 @@ class ApprovalController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * If the approval is for member voting then it goes into a separate check 
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -67,6 +68,8 @@ class ApprovalController extends Controller
     public function store(Request $request)
     {
         $newApproval = Auth::User()->approvals()->create($request->all());
+
+        $this->approvalService->checkApproval($request);
         return response()->json([
             'id' => $newApproval->id
         ]);
@@ -92,7 +95,7 @@ class ApprovalController extends Controller
      */
     public function destroy(Approval $approval)
     {
-        //
+        $approval->destroy($approval->id);
     }
 
     /**

@@ -52,10 +52,16 @@ export default function Manage({auth}) {
 
     const membershipVote = async (id, approval) => {
         await axios.post('/approval', {
-            'approvable_type': 'App\\Models\\Membership',
+            approvable_type: 'App\\Models\\Membership',
             approvable_id: id,
             approval: approval
         })
+        getMembershipApproval()
+        getUsers()
+    }
+
+    const unvote = async (id) => {
+        await axios.delete('/approval/'+id)
         getMembershipApproval()
     }
 
@@ -133,6 +139,7 @@ export default function Manage({auth}) {
             </div>
 
             <div className="text-3xl mt-4">Manage Members</div>
+            <div>Note: only votes in the last 48 hours count</div>
             <table className="table-fixed border-collapse border border-slate-400 mt-10">
                 <thead>
                     <tr>
@@ -161,25 +168,34 @@ export default function Manage({auth}) {
             </table>
 
             <div className="mt-6 w-1/3">
-                {membershipApproval.add?.length > 0 ?
-                    <div>voted to add </div>
-                :
-                <>
-                <span>Add Member</span>
-                <Select 
-                    options={
-                        users.reduce((a,b) => {
-                            if(!members.find(x => x.id == b.id)) {
-                                return [...a, {value: b.id, label: b.name}]
-                            }
-                            return a
-                        },[])
-                    }
-                    onChange={
-                        (e) => membershipVote(e.value, 'add') 
-                    }
-                />
-                </>
+                {membershipApproval.add?.length > 0 && users.length > 0 ?
+                        <>
+                            <div>voted to make {users.find(x => x.id == membershipApproval.add[0].approvable_id).name} a member</div>
+                            <Button 
+                                onClick={(e) => unvote(membershipApproval.add[0].id)}
+                                className="bg-red-600 hover:bg-red-700"
+                            >
+                                Change vote
+                            </Button>
+                        </>
+                    : users.length > 0 && !membershipApproval.add.length > 0 ?
+                        <>
+                            <span>Add Member</span>
+                            <Select 
+                                options={
+                                    users.reduce((a,b) => {
+                                        if(!members.find(x => x.id == b.id)) {
+                                            return [...a, {value: b.id, label: b.name}]
+                                        }
+                                        return a
+                                    },[])
+                                }
+                                onChange={
+                                    (e) => membershipVote(e.value, 'add') 
+                                }
+                            />
+                        </>
+                    : ''
                 }
 
             </div>
