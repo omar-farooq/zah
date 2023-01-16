@@ -5,27 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Purchase extends Model
+class Payment extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'purchase_request_id',
-        'purchased',
-        'received',
+        'amount',
+        'incoming',
         'name',
-        'price',
-        'delivery_cost',
-        'description',
-        'reason',
-        'image',
-        'quantity'
+        'description'
     ];
 
-    public function purchaseRequest() {
-        return $this->belongsTo(PurchaseRequest::class);
-    }
-
-    /**
+    /*
      * This is itemized by the Treasury for reports
      */
     public function treasuryItem()

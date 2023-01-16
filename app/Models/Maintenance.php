@@ -25,4 +25,12 @@ class Maintenance extends Model
     {
         return $this->belongsTo(MaintenanceRequest::Class);
     }
+
+    /**
+     * This is itemized by the Treasury for reports
+     */
+    public function treasuryItem()
+    {
+        return $this->morphOne(TreasuryItem::class, 'treasurable');
+    }
 }
