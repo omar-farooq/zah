@@ -1,13 +1,14 @@
 import { Button } from '@mantine/core'
 import { useState, useEffect, Fragment } from 'react'
-import { ComponentWrapper, SecretaryReport, Polls } from '@/Components/Meeting'
-import Agenda from '@/Components/Agenda'
+import { Agenda, ComponentWrapper, SecretaryReport, Polls } from '@/Components/Meeting'
 import CreatableSelect from 'react-select/creatable'
 import Minutes from '@/Components/Minutes'
 import Select from 'react-select'
 import Tasks from '@/Components/Tasks'
 
 export default function NewMeeting({meeting, tenants, auth}) {
+    
+    //Define the register array destructuring
     const [register, updateRegister] = useState([])
     const [lateRegister, updateLateRegister] = useState([])
     const [guests, updateGuests] = useState([])

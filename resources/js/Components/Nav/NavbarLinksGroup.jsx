@@ -49,13 +49,24 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }) {
   const [opened, setOpened] = useState(initiallyOpened || false);
   const ChevronIcon = theme.dir === 'ltr' ? ChevronRightIcon : ChevronLeftIcon;
   const items = (hasLinks ? links : []).map((link) => (
-    <NavLink
-      className={`${classes.link} text-slate-300`}
-      href={link.link}
-      key={link.label}
-    >
-      {link.label}
-    </NavLink>
+
+      //Joining a meeting isn't an inertia link as we're joining a channel, otherwise the broadcasting events bubble
+      link.label == 'Join' ?
+        <a
+            className={`${classes.link} text-slate-300`}
+            href={link.link}
+            key={link.label}
+        >
+          {link.label}
+        </a>
+      :
+        <NavLink
+          className={`${classes.link} text-slate-300`}
+          href={link.link}
+          key={link.label}
+        >
+          {link.label}
+        </NavLink>
   ));
 
   return (

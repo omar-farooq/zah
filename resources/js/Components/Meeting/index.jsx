@@ -1,3 +1,4 @@
+import Agenda from './Agenda'
 import Button from './Button'
 import ComponentTitle from './ComponentTitle'
 import ComponentWrapper from './ComponentWrapper'
@@ -7,4 +8,4 @@ import Form from './Form'
 import Polls from './Polls'
 import SecretaryReport from './SecretaryReport'
 
-export { Button, ComponentTitle, ComponentWrapper, CreatePoll, DisplayPoll, Form, Polls, SecretaryReport }
+export { Agenda, Button, ComponentTitle, ComponentWrapper, CreatePoll, DisplayPoll, Form, Polls, SecretaryReport }

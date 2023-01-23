@@ -1,26 +1,43 @@
 import { Button, Textarea } from '@mantine/core'
 import { TrashIcon } from '@heroicons/react/24/outline'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useReducer } from 'react'
 import Input from '@/Components/Input'
 
 export default function Agenda() {
 
-    //agenda items
-    const [reactiveAgenda, updateReactiveAgenda] = useState([])
+    const initialState = []
+
+    function reducer(reactiveAgenda, action) {
+        switch (action.type) {
+            case 'initialFetch':
+                return action.fetched
+            case 'add':
+                //add a failsafe to prevent the possibility of duplicates.
+                if(!reactiveAgenda.find(x => x.id == action.id)) {
+                    return [...reactiveAgenda, {id: action.id, item: action.item, user_id: action.user_id}]
+                } else {
+                    return reactiveAgenda
+                }
+            case 'delete':
+                return reactiveAgenda.filter(x => x.id != action.itemId)
+            default:
+                throw new Error();
+        }
+    }
+
+    const [reactiveAgenda, dispatch] = useReducer(reducer, initialState);
 
     //agenda form input
     const [inputValue, setInputValue] = useState('')
 
     //When user hits the submit button for new agenda
-    async function handleSubmit(e) {
+    function handleSubmit(e) {
         e.preventDefault()        
         if(inputValue.length < 3) {
            return
         }
-
-        let response = await axios.post('/agenda', {item: inputValue});
+        axios.post('/agenda', {item: inputValue});
         setInputValue('')
-        updateReactiveAgenda([...reactiveAgenda, {id: response.data.id, item: inputValue, user_id: response.data.user_id}])
     }
 
     const handleChange = () => {
@@ -29,17 +46,28 @@ export default function Agenda() {
 
     //Receive the current agenda items via an api call
     useEffect(() => {
-        async function AgendaItems() { 
-            let res = await axios.get('/agenda')
-            updateReactiveAgenda(res.data.agenda)
+		async function getAgendaItems() { 
+			let res = await axios.get('/agenda')
+            dispatch({type: 'initialFetch', fetched: res.data.agenda})
+		}
+        getAgendaItems()
+
+        //Join websocket channel and listen for updates. Update on event changes.
+        Echo.private(`meeting`)
+            .listen('.MeetingAgendaCreated', (e) => {
+                dispatch({type: 'add', id: e.model.id, item: e.model.item, user_id: e.model.user_id})
+            })
+            .listen('.MeetingAgendaDeleted', (e) => {
+                dispatch({type: 'delete', itemId: e.model.id})
+            })
+        return function cleanup() {
+            Echo.leaveChannel('meeting')
         }
-        AgendaItems()
-    }, [])
+    },[])
 
     //Handle the delete button being clicked
-    async function deleteAgendaItem(itemId) {
-        await axios.delete('/agenda/' + itemId)
-        updateReactiveAgenda(reactiveAgenda.filter(x => x.id != itemId))
+    function deleteAgendaItem(itemId) {
+        axios.delete('/agenda/' + itemId)
     }
 
     return (
