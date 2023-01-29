@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamps();
             $table->foreignId('user_id');
             $table->foreignId('meeting_id')->nullable();
-            $table->text('report')->nullable();
+            $table->text('written_report')->nullable();
             $table->string('attachment')->nullable();
         });
     }

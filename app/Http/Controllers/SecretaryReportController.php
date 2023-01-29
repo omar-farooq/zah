@@ -108,17 +108,32 @@ class SecretaryReportController extends Controller
         } else {
             if($request->file('attachment')) {
                 Storage::disk('public')->delete('documents/secretary_reports/' . $secretaryReport->attachment); 
-                $reportName = 'Secretary_Report_' . date('Ymd') . '.pdf';
+                $reportName = 'Secretary_Report_' . date('Ymd') . '_' . date('his') . '.pdf';
                 Storage::disk('public')->putFileAs('documents/secretary_reports', $request->file('attachment'), $reportName);
                 $secretaryReport['attachment'] = $reportName;
+                $secretaryReport['written_report'] = '';
                 $secretaryReport->save();
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Secretary\'s Report has been updated'
+                ],200);
+            } else if(isset($request->written_report)){
+                Storage::disk('public')->delete('documents/secretary_reports/' . $secretaryReport->attachment);
+                $secretaryReport['attachment'] = '';
+                $secretaryReport['written_report'] = $request->written_report;
+                $secretaryReport->save();
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Secretary\'s Report has been updated'
+                ],200);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'no report or upload found'
+                ],204);
             }
 
-//            $secretaryReport->update($request->all());
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Secretary\'s Report has been updated'
-            ],200);
+            $secretaryReport->save();
         }
     }
 

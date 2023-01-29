@@ -12,7 +12,7 @@ class SecretaryReport extends Model
     use BroadcastsEvents, HasFactory;
 
     protected $fillable = [
-        'report',
+        'written_report',
         'attachment',
         'user_id',
         'meeting_id'
