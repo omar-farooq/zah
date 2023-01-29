@@ -1,10 +1,8 @@
 import { Button } from '@mantine/core'
 import { useState, useEffect, Fragment } from 'react'
-import { Agenda, ComponentWrapper, SecretaryReport, Polls } from '@/Components/Meeting'
+import { Agenda, ComponentWrapper, Minutes, SecretaryReport, Polls, Tasks } from '@/Components/Meeting'
 import CreatableSelect from 'react-select/creatable'
-import Minutes from '@/Components/Minutes'
 import Select from 'react-select'
-import Tasks from '@/Components/Tasks'
 
 export default function NewMeeting({meeting, tenants, auth}) {
     

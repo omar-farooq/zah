@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { BarController, BarElement, CategoryScale, Chart, LinearScale } from 'chart.js'
 import { CheckIcon } from '@heroicons/react/24/solid'
 
-export default function DisplayPoll({auth, poll, getPolls}) {
+export default function DisplayPoll({auth, poll}) {
     Chart.register(
         BarController,
         BarElement,
@@ -63,7 +63,6 @@ export default function DisplayPoll({auth, poll, getPolls}) {
                 user_id: auth.user.id,
                 poll_option_id: selectedOptionId
             })
-        getPolls()
     }
 
     return (

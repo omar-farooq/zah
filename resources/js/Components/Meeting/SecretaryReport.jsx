@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useReducer } from 'react'
 import { Document, Page } from 'react-pdf/dist/esm/entry.vite'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
@@ -34,14 +34,31 @@ export default function SecretaryReport() {
     const { classes, theme } = useStyles()
     const openRef = useRef(null)
 
-    //States
-    const [secretaryReport, setSecretaryReport] = useState({
-        id: '',
-        report: '',
-        attachment: '',
-        uploaded: '',
-    })
-    const [composeType, setComposeType] = useState('write')
+	//Reducer
+	const initialReportState = {
+		id: '',
+		report: '',
+		uploaded: '',
+		composeType: 'write',
+		_method: 'patch'
+	}
+	
+	function reducer(report, action) {
+		switch (action.type) {
+			case 'initialFetch':
+				return {...report, id: action.id, report: action.report, uploaded: action.attachment}
+			case 'add':
+				return report
+			case 'edit':
+				return report
+            case 'write':
+                return {...report, report: action.report}
+			case 'setComposeType':
+				return {...report, composeType: action.composeType}
+		}
+	}
+
+	const [report, dispatch] = useReducer(reducer, initialReportState)
 
     //Used for PDF viewer
     const [numPages, setNumPages] = useState(null)
@@ -53,13 +70,28 @@ export default function SecretaryReport() {
 
     // Check if a report exists that's eligible to be edited
     // (i.e.) hasn't yet been saved to a meeting
-        const fetchReport = async () => {
-            let oldReport = await axios.get('/secretary-reports?not-saved-in-meeting=true')
-            setSecretaryReport({id: oldReport.data.id, report: oldReport.data.report, uploaded: oldReport.data.attachment, _method: 'patch'})
-       }
     useEffect(() => {
-       fetchReport()
-    }, []);
+        async function GetReport() { 
+            let oldReport = await axios.get('/secretary-reports?not-saved-in-meeting=true')
+            dispatch({type: 'initialFetch', fetched: oldReport.data})
+        }
+        GetReport()
+
+        //Join websocket channel and listen for updates. Update on event changes.
+        Echo.private(`meeting`)
+            .listen('.SecretaryReportCreated', (e) => {
+				console.log(e)
+//                dispatch({type: 'add', id: e.model.id, text: e.model.minute_text})
+            })
+            .listen('.SecretaryReportUpdated', (e) => {
+				console.log(e)
+//                dispatch({type: 'edit', itemId: e.model.id})
+            })
+        return function cleanup() {
+            Echo.leaveChannel('meeting')
+        }
+    }, [])
+ 
 
     async function handleSubmit(e) {
         e.preventDefault()
@@ -95,22 +127,22 @@ export default function SecretaryReport() {
                                 type="radio" 
                                 value="write" 
                                 id="write" 
-                                checked={composeType == 'write'}
-                                onChange={(e) => setComposeType('write')}
+                                checked={report.composeType == 'write'}
+                                onChange={(e) => dispatch({type: 'setComposeType', composeType: 'write'})}
                             />
                             <label htmlFor="upload">Upload Report</label>
                             <input 
                                 type="radio" 
                                 value="upload" 
                                 id="upload" 
-                                checked={composeType == 'upload'}
-                                onChange={(e) => setComposeType('upload')}
+                                checked={report.composeType == 'upload'}
+                                onChange={(e) => dispatch({type: 'setComposeType', composeType: 'upload'})}
                             />
                         </div>
 
                         {composeType == 'write' &&
                         <Textarea 
-                            value={secretaryReport.report? secretaryReport.report : ''} 
+                            value={report.report? report.report : ''} 
                             onChange={(e) => setSecretaryReport({...secretaryReport, report: e.target.value})} 
                             autosize
                             label="Write Report"

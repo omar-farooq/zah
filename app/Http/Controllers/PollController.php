@@ -21,6 +21,24 @@ class PollController extends Controller
                 'polls' => $poll->where('meeting_id', $request->meeting_id)->get()
             ]);
         }
+
+        $id = $request->get('id');
+        $attribute = $request->get('attribute');
+        $query = Poll::query();
+        if($id) {
+            if($attribute == 'poll_items') {
+                $results = PollOption::where('poll_id', $id)->get();
+            } else {
+                $results = $query->where('id', $id)->get();
+            }
+            return response()->json(
+                $results
+            );
+        } else {
+            return response()->json(
+                $poll->all()
+            );
+        }
     }
 
     /**

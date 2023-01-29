@@ -1,12 +1,31 @@
 import { ComponentTitle, Form } from '@/Components/Meeting'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useReducer } from 'react'
 import { useForm } from '@inertiajs/inertia-react'
 import { Button, Textarea } from '@mantine/core'
 
 export default function Minutes({meetingID}) {
 
-    //minutes listed
-    const [reactiveMinutes, updateReactiveMinutes] = useState([])
+    const initialState = []
+
+    function reducer(reactiveMinutes, action) {
+        switch (action.type) {
+            case 'initialFetch':
+                return action.fetched
+            case 'add':
+                //add a failsafe to prevent the possibility of duplicates.
+                if(!reactiveMinutes.find(x => x.id == action.id)) {
+                    return [...reactiveMinutes, {id: action.id, minute_text: action.text}]
+                } else {
+                    return reactiveMinutes
+                }
+            case 'delete':
+                return reactiveMinutes.filter(x => x.id != action.itemId)
+            default:
+                throw new Error();
+        }
+    }
+
+	const [reactiveMinutes, dispatch] = useReducer(reducer, initialState);
 
     //minutes text box
     const [inputValue, setInputValue] = useState('')
@@ -18,28 +37,38 @@ export default function Minutes({meetingID}) {
            return
         }
 
-        let response = await axios.post('/minutes', {minute_text: inputValue, meeting_id: meetingID});
+        axios.post('/minutes', {minute_text: inputValue, meeting_id: meetingID});
         setInputValue('')
-        updateReactiveMinutes([...reactiveMinutes, {id: response.data.id, minute_text: inputValue}])
     }
 
     const handleChange = () => {
         setInputValue(event.target.value)
     }
 
+
     //Receive the current minutes via an api call
     useEffect(() => {
         async function GetMinutes() { 
             let res = await axios.get('/minutes?meeting_id=' + meetingID)
-            updateReactiveMinutes(res.data.minutes)
+			dispatch({type: 'initialFetch', fetched: res.data.minutes})		
         }
         GetMinutes()
-    }, [])
 
+        //Join websocket channel and listen for updates. Update on event changes.
+        Echo.private(`meeting`)
+            .listen('.MinuteCreated', (e) => {
+                dispatch({type: 'add', id: e.model.id, text: e.model.minute_text})
+            })
+            .listen('.MinuteDeleted', (e) => {
+                dispatch({type: 'delete', itemId: e.model.id})
+            })
+        return function cleanup() {
+            Echo.leaveChannel('meeting')
+        }
+    }, [])
     //Handle the delete button being clicked
-    async function deleteMinute(itemId) {
-        await axios.delete('/minutes/' + itemId)
-        updateReactiveMinutes(reactiveMinutes.filter(x => x.id != itemId))
+    function deleteMinute(itemId) {
+        axios.delete('/minutes/' + itemId)
     }
 
     return (
