@@ -19,6 +19,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SecretaryReportController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenancyController;
+use App\Http\Controllers\TreasuryPlanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
 use App\Models\PurchaseRequest;
@@ -96,6 +97,7 @@ Route::resource('roles', RoleController::class);
 Route::resource('secretary-reports', SecretaryReportController::class);
 Route::resource('tasks', TaskController::class);
 Route::resource('tenants', TenancyController::class);
+Route::resource('treasury-plans', TreasuryPlanController::class);
 Route::resource('users', UserController::class);
 Route::resource('vote', VoteController::class);
 

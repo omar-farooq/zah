@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TreasuryReport;
+use App\Models\TreasuryPlan;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
-class TreasuryReportController extends Controller
+class TreasuryPlanController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,20 +15,12 @@ class TreasuryReportController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Treasury/Report', [
-            'title' => 'Treasury Report',
+        return Inertia::render('Treasury/Plan', [
+            'title' => 'Treasury Planning',
+            'fiveYearPlan' => TreasuryPlan::where('plan_length', '5y')->orderBy('priority')->get()
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -37,16 +30,16 @@ class TreasuryReportController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $plan = TreasuryPlan::Create($request->all());
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\TreasuryReport  $treasuryReport
+     * @param  \App\Models\TreasuryPlan  $treasuryPlan
      * @return \Illuminate\Http\Response
      */
-    public function show(TreasuryReport $treasuryReport)
+    public function show(TreasuryPlan $treasuryPlan)
     {
         //
     }
@@ -54,10 +47,10 @@ class TreasuryReportController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\TreasuryReport  $treasuryReport
+     * @param  \App\Models\TreasuryPlan  $treasuryPlan
      * @return \Illuminate\Http\Response
      */
-    public function edit(TreasuryReport $treasuryReport)
+    public function edit(TreasuryPlan $treasuryPlan)
     {
         //
     }
@@ -66,22 +59,22 @@ class TreasuryReportController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\TreasuryReport  $treasuryReport
+     * @param  \App\Models\TreasuryPlan  $treasuryPlan
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, TreasuryReport $treasuryReport)
+    public function update(Request $request, TreasuryPlan $treasuryPlan)
     {
-        //
+        $treasuryPlan->update($request->all());
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\TreasuryReport  $treasuryReport
+     * @param  \App\Models\TreasuryPlan  $treasuryPlan
      * @return \Illuminate\Http\Response
      */
-    public function destroy(TreasuryReport $treasuryReport)
+    public function destroy($id)
     {
-        //
+        TreasuryPlan::destroy($id);
     }
 }
