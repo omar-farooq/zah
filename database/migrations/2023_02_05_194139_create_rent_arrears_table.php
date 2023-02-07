@@ -13,13 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('treasury_reports', function (Blueprint $table) {
+        Schema::create('rent_arrears', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->text('comments')->nullable();
-            $table->decimal('remaining_budget', $precision = 10, $scale = 2);
+            $table->foreignId('user_id');
+            $table->decimal('amount', $precision = 8, $scale = 2);
         });
     }
 
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('treasury_reports');
+        Schema::dropIfExists('rent_arrears');
     }
 };

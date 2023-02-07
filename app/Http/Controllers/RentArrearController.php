@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Rent;
-use App\Models\TreasuryReport;
+use App\Models\RentArrear;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
-class TreasuryReportController extends Controller
+class RentArrearController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,9 +14,7 @@ class TreasuryReportController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Treasury/Reports/index', [
-            'title' => 'Treasury Report',
-        ]);
+        //
     }
 
     /**
@@ -28,10 +24,7 @@ class TreasuryReportController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Treasury/Reports/Create', [
-            'title' => 'Create Treasury Report',
-            'rents' => Rent::with('user')->get(),
-        ]);
+        //
     }
 
     /**
@@ -48,10 +41,10 @@ class TreasuryReportController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\TreasuryReport  $treasuryReport
+     * @param  \App\Models\RentArrear  $rentArrear
      * @return \Illuminate\Http\Response
      */
-    public function show(TreasuryReport $treasuryReport)
+    public function show(RentArrear $rentArrear)
     {
         //
     }
@@ -59,10 +52,10 @@ class TreasuryReportController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\TreasuryReport  $treasuryReport
+     * @param  \App\Models\RentArrear  $rentArrear
      * @return \Illuminate\Http\Response
      */
-    public function edit(TreasuryReport $treasuryReport)
+    public function edit(RentArrear $rentArrear)
     {
         //
     }
@@ -71,10 +64,10 @@ class TreasuryReportController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\TreasuryReport  $treasuryReport
+     * @param  \App\Models\RentArrear  $rentArrear
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, TreasuryReport $treasuryReport)
+    public function update(Request $request, RentArrear $rentArrear)
     {
         //
     }
@@ -82,10 +75,10 @@ class TreasuryReportController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\TreasuryReport  $treasuryReport
+     * @param  \App\Models\RentArrear  $rentArrear
      * @return \Illuminate\Http\Response
      */
-    public function destroy(TreasuryReport $treasuryReport)
+    public function destroy(RentArrear $rentArrear)
     {
         //
     }

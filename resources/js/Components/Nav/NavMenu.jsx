@@ -37,7 +37,7 @@ const NavMenu = [
 	{id: 4, label: 'Treasury', icon: CurrencyPoundIcon,
         links: [
             {id: 1, label: 'Summary', link: '#'}, 
-            {id: 2, label: 'Reports', link: '/treasury'},
+            {id: 2, label: 'Reports', link: '/treasury-reports'},
             {id: 3, label: 'Plans', link: '/treasury-plans'}
         ]
     },

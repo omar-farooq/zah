@@ -12,7 +12,8 @@ class TreasuryReport extends Model
     protected $fillable = [
         'start_date',
         'end_date',
-        'comments'
+        'comments',
+        'remaining_budget'
     ];
 
     protected $dates = [

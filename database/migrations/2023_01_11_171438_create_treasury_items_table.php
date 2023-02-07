@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamps();
             $table->morphs('treasurable');
             $table->decimal('amount', $prevision = 8, $scale = 2);
-            $table->boolean('incoming')->default(0);
+            $table->boolean('is_incoming')->default(0);
             $table->foreignId('treasury_report_id');
         });
     }

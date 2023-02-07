@@ -121,6 +121,14 @@ class User extends Authenticatable
         return $this->hasOne(DelegatedRole::class);
      }
 
+     /**
+      * Relationship with Rent Arrears
+      *
+      */
+     public function rentArrear() {
+        return $this->hasOne(RentArrear::class);
+     }
+
     /**
      * Relationship with Approvals
      *

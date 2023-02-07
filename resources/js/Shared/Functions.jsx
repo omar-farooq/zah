@@ -48,6 +48,21 @@ export function LongDateTimeFormat(date) {
     )
 }
 
+//Get first day of the month
+export function FirstDayOfTheMonth() {
+    let date = new Date();
+    date.setDate(1)
+    date.setHours(0)
+    date.setMinutes(0)
+    date.setSeconds(0)
+    return date
+}
+
+export function LastDayOfTheMonth() {
+    let today = new Date()
+    return new Date(today.getFullYear(), today.getMonth()+1, 0);
+}
+
 /***
  * Notifcations
  */

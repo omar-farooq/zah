@@ -14,7 +14,7 @@ class TreasuryItem extends Model
         'treasurable_type',
         'treasury_report_id',
         'amount',
-        'incoming'
+        'is_incoming'
     ];
 
     /*
