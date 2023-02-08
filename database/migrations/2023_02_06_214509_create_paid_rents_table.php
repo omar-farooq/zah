@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('paid_rents', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('user_id'),
-            $table->foreignId('treasury_report_id'),
+            $table->foreignId('user_id');
+            $table->foreignId('treasury_report_id');
             $table->decimal('amount_paid', $precision = 8, $scale = 2);
         });
     }

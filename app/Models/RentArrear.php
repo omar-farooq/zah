@@ -17,4 +17,10 @@ class RentArrear extends Model
     public function user() {
         return $this->belongsTo(User::class);
     }
+
+    public function currentTenant() {
+        return $this->whereHas('user', function($q){
+            $q->where('is_tenant', 1);
+        });
+    }
 }

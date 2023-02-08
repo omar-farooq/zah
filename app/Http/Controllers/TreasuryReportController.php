@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rent;
+use App\Models\RentArrear;
 use App\Models\TreasuryReport;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -28,9 +29,11 @@ class TreasuryReportController extends Controller
      */
     public function create()
     {
+        $arrears = new RentArrear;
         return Inertia::render('Treasury/Reports/Create', [
             'title' => 'Create Treasury Report',
             'rents' => Rent::with('user')->get(),
+            'arrears' => $arrears->currentTenant()->get(),
         ]);
     }
 
