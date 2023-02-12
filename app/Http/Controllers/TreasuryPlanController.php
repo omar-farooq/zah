@@ -31,6 +31,9 @@ class TreasuryPlanController extends Controller
     public function store(Request $request)
     {
         $plan = TreasuryPlan::Create($request->all());
+        return response()->json([
+            'id' => $plan->id
+        ]);
     }
 
     /**

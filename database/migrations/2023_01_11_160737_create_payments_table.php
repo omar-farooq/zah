@@ -20,6 +20,7 @@ return new class extends Migration
             $table->boolean('incoming')->default(0);
             $table->string('name');
             $table->tinyText('description')->nullable();
+            $table->date('payment_date');
         });
     }
 

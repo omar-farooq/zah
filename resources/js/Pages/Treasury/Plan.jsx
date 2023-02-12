@@ -62,8 +62,8 @@ export default function Plan({fiveYearPlan}) {
     const handleAppend = async (e) => {
         e.preventDefault()
         if(fiveYearPlanComponent.component && fiveYearPlanComponent.cost) {
-            await axios.post('/treasury-plans', fiveYearPlanComponent)
-            handlers.append(fiveYearPlanComponent)
+            let newComponent = await axios.post('/treasury-plans', fiveYearPlanComponent)
+            handlers.append({...fiveYearPlanComponent, id: newComponent.data.id})
             setFiveYearPlanComponent({component: '', cost: '', priority: fiveYearPlanComponent.priority + 1, plan_length: '5y'})
         }
     }

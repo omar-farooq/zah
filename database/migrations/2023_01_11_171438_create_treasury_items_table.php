@@ -19,7 +19,7 @@ return new class extends Migration
             $table->morphs('treasurable');
             $table->decimal('amount', $prevision = 8, $scale = 2);
             $table->boolean('is_incoming')->default(0);
-            $table->foreignId('treasury_report_id');
+            $table->foreignId('treasury_report_id')->nullable();
         });
     }
 

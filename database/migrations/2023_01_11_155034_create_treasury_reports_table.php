@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->text('comments')->nullable();
+            $table->decimal('calculated_remaining_budget', $precision = 10, $scale = 2);
             $table->decimal('remaining_budget', $precision = 10, $scale = 2);
         });
     }

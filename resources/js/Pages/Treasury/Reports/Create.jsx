@@ -1,10 +1,10 @@
 import { FirstDayOfTheMonth, LastDayOfTheMonth } from '@/Shared/Functions'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { RangeCalendar } from '@mantine/dates'
+import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
 export default function CreateReport({rents, arrears}) {
 
-    const [dates, setDates] = useState([FirstDayOfTheMonth(), LastDayOfTheMonth()])
 
     function calculatePayableRent(rentPerWeek) {
         if(dates[0] && dates[1]) {
@@ -17,11 +17,18 @@ export default function CreateReport({rents, arrears}) {
         }
     }
 
+    const [dates, setDates] = useState([FirstDayOfTheMonth(), LastDayOfTheMonth()])
     const [updatedArrears, setUpdatedArrears] = useState(arrears);
     const [paidRent, setPaidRent] = useState(rents.map(rent => ({
         user_id: rent.user.id,
         amount_paid: calculatePayableRent(rent.amount)
     })))
+
+    const [payables, setPayables] = useState([])
+
+    const [adjustedBalance, setAdjustedBalance] = useState('')
+    const [calculatedBalanceCheckbox, setCalculatedBalanceCheckbox] = useState(true)
+    const [manualBalance, setManualBalance] = useState('')
 
     const updatePaidRent = (userId, amount, payable) => {
         setPaidRent([...paidRent.filter(x => x.user_id !== userId), {...paidRent.find(x => x.user_id === userId), amount_paid: Number(amount)}])
@@ -31,6 +38,47 @@ export default function CreateReport({rents, arrears}) {
 
         :
             setUpdatedArrears([...updatedArrears, {user_id: userId, amount: calculatePayableRent(payable) - amount}])
+    }
+
+    const addInOut = (e) => {
+        e.preventDefault()
+        setPayables([
+            ...payables, 
+            {
+                key: payables.length > 0 ? payables[payables.length-1].key + 1 : 0, 
+                name: e.target.name.value, 
+                description: e.target.description.value, 
+                amount: e.target.amount.value, 
+                incoming: e.target.incoming.checked, 
+                payment_date: e.target.payment_date.value,
+                receipt: e.target.receipt.files[0]
+            }
+        ])
+        e.target.reset()
+    }
+
+    const removePayable = (id) => {
+        setPayables(payables.filter(x => x.key !== id))
+    }
+
+    function calculateBalance() {
+        const payableTotal = payables.reduce((a,b) => {
+            if (b.incoming) {
+                return a + Number(b.amount)
+            } else {
+                return a - Number(b.amount)
+            }
+        },[])
+
+        const rentTotal = paidRent.reduce((a,b) => {
+            return a + Number(b.amount_paid)
+        },[])
+
+        return Number(payableTotal) + Number(rentTotal)
+    }
+
+    const submitReport = async () => {
+        //Post rent, payables and treasurables without a meeting id to the backend
     }
 
     return (
@@ -69,6 +117,90 @@ export default function CreateReport({rents, arrears}) {
                 })}
             </thead>        
         </table>
+
+        <div className="text-xl mt-4">Additional incomings/outgoings</div>
+            <form className="grid grid-cols-2" onSubmit={(e) => addInOut(e)}>
+                <div className="flex flex-col w-11/12 place-self-center">
+                    <label htmlFor="name">Payable Item</label>
+                    <input type="text" id="name" required="required" />
+                </div>
+
+                <div className="flex flex-row mt-8 ml-6">
+                    <div className="flex flex-row mr-2">
+                        <input type="radio" id="outgoing" name="direction" value="outgoing" defaultChecked />
+                        <label htmlFor="outgoing">outgoing</label>
+                    </div>
+                
+                    <div className="flex flex-row">
+                        <input type="radio" id="incoming" name="direction" value="incoming" />
+                        <label htmlFor="incoming">incoming</label>                
+                    </div>
+                </div>
+
+                <div className="flex flex-col w-11/12 place-self-center">
+                    <label htmlFor="payment_date">Payment Date</label>
+                    <input type="date" id="payment_date" name="payment_date" />
+                </div>
+
+                <div className="flex flex-col w-11/12 place-self-center">
+                    <label htmlFor="amount">Amount</label>
+                    <input type="number" step="0.01" id="amount" required="required" />
+                </div>
+
+                <div className="flex flex-col col-start-1 col-end-3 w-11/12 ml-2">
+                    <label htmlFor="description">Description</label>
+                    <input type="text" id="description" />
+                </div>
+
+                <div className="flex flex-col col-start-1 col-end-3 w-11/12 place-self-center">
+                    <label htmlFor="receipt">Receipt (optional)</label>
+                    <input type="file" id="receipt" name="receipt" accept="image/*, .pdf" />
+                </div>
+
+                <button type="submit" className="bg-sky-600 hover:bg-sky-700 text-white col-start-1 col-end-3 mt-2 h-8 w-1/2 place-self-center">add</button>
+            </form>
+
+        <SmallTable>
+            <THead>
+                <FirstTH heading="Payable" />
+                <TH heading="Description" />
+                <TH heading="Amount" />
+                <TH heading="Incoming or Outgoing" />
+                <TH heading="Date" />
+                <LastTH />
+            </THead>
+            <TBody>
+                {payables.map(payable => (
+                    <Fragment key={payable.key}>
+                        <tr>
+                            <FirstTD data={payable.name} />
+                            <TD data={payable.description} />
+                            <TD data={payable.amount} />
+                            <TD data={payable.incoming ? 'incoming' : 'outgoing'} />
+                            <TD data={payable.payment_date} />
+                            <LastTD><button onClick={() => removePayable(payable.key)}>Delete</button></LastTD>
+                        </tr>
+                    </Fragment>
+                ))}
+            </TBody>
+        </SmallTable>
+
+        <div className="mt-10">
+            Calculated balance:£{calculateBalance()}
+
+            <div>
+                <input type="checkbox" checked={calculatedBalanceCheckbox} onChange={() => setCalculatedBalanceCheckbox(!calculatedBalanceCheckbox)} /> Use Calculated Balance
+            </div>
+
+            {!calculatedBalanceCheckbox && 
+                <>
+                    <div className="flex flex-col mt-2">
+                        <label htmlFor="set-balance">Set a new balance manually:</label>
+                        <input type="number" step="0.01" id="set-balance" onChange={setManualBalance(e.target.value)} />
+                    </div>
+                </>
+            }
+        </div>
         </>
     )
 }
