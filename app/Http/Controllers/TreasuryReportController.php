@@ -5,11 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Rent;
 use App\Models\RentArrear;
 use App\Models\TreasuryReport;
+use App\Services\TreasuryService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class TreasuryReportController extends Controller
 {
+    /**
+     * Instantiate Treasury Service
+     *
+     */
+    public function __construct() {
+        $this->treasuryService = new TreasuryService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -45,7 +54,7 @@ class TreasuryReportController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->treasuryService->createReport($request);
     }
 
     /**

@@ -28,7 +28,7 @@ export default function CreateReport({rents, arrears}) {
 
     const [adjustedBalance, setAdjustedBalance] = useState('')
     const [calculatedBalanceCheckbox, setCalculatedBalanceCheckbox] = useState(true)
-    const [manualBalance, setManualBalance] = useState('')
+    const [manualBalance, setManualBalance] = useState(null)
 
     const updatePaidRent = (userId, amount, payable) => {
         setPaidRent([...paidRent.filter(x => x.user_id !== userId), {...paidRent.find(x => x.user_id === userId), amount_paid: Number(amount)}])
@@ -77,8 +77,17 @@ export default function CreateReport({rents, arrears}) {
         return Number(payableTotal) + Number(rentTotal)
     }
 
-    const submitReport = async () => {
+    const submitReport = async (e) => {
         //Post rent, payables and treasurables without a meeting id to the backend
+        await axios.post('/treasury-reports', {
+            start_date: dates[0],
+            end_date: dates[1],
+            calculated_remaining_budget: calculateBalance(),
+            remaining_budget: manualBalance ?? calculateBalance(),
+            paid_rents: paidRent,
+            payables: payables
+            //add maintenance/purchase treasurables
+        })
     }
 
     return (
@@ -189,18 +198,31 @@ export default function CreateReport({rents, arrears}) {
             Calculated balance:£{calculateBalance()}
 
             <div>
-                <input type="checkbox" checked={calculatedBalanceCheckbox} onChange={() => setCalculatedBalanceCheckbox(!calculatedBalanceCheckbox)} /> Use Calculated Balance
+                <input 
+                    type="checkbox" 
+                    id="calculated-balance-checkbox"
+                    checked={calculatedBalanceCheckbox} 
+                    onChange={() => setCalculatedBalanceCheckbox(!calculatedBalanceCheckbox)} 
+                /> 
+                <label htmlFor="calculated-balance-checkbox" className="ml-1">Use Calculated Balance</label>
             </div>
 
             {!calculatedBalanceCheckbox && 
                 <>
                     <div className="flex flex-col mt-2">
                         <label htmlFor="set-balance">Set a new balance manually:</label>
-                        <input type="number" step="0.01" id="set-balance" onChange={setManualBalance(e.target.value)} />
+                        <input 
+                            type="number" 
+                            step="0.01" 
+                            id="set-balance" 
+                            onChange={(e) => setManualBalance(e.target.value)} 
+                        />
                     </div>
                 </>
             }
         </div>
+
+        <button onClick={(e) => submitReport(e)}>Submit Report</button>
         </>
     )
 }

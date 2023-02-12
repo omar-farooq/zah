@@ -13,7 +13,8 @@ class Payment extends Model
         'amount',
         'incoming',
         'name',
-        'description'
+        'description',
+        'payment_date'
     ];
 
     /*
