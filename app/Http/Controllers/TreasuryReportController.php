@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PaidRent;
 use App\Models\Rent;
 use App\Models\RentArrear;
+use App\Models\TreasuryItem;
 use App\Models\TreasuryReport;
 use App\Services\TreasuryService;
 use Illuminate\Http\Request;
@@ -28,6 +30,7 @@ class TreasuryReportController extends Controller
     {
         return Inertia::render('Treasury/Reports/index', [
             'title' => 'Treasury Report',
+            'reports' => TreasuryReport::all()
         ]);
     }
 
@@ -65,7 +68,27 @@ class TreasuryReportController extends Controller
      */
     public function show(TreasuryReport $treasuryReport)
     {
-        //
+
+        $treasuryItems = TreasuryItem::where('treasury_report_id', $treasuryReport->id);
+        $rents = PaidRent::where('treasury_report_id', $treasuryReport->id)
+                        ->with('user')
+                        ->get();
+        $outgoing_payments = TreasuryItem::where('treasury_report_id', $treasuryReport->id)
+                                            ->where('treasurable_type', 'App\Models\Payment')
+                                            ->where('is_incoming', '0')
+                                            ->get();
+        $incoming_payments = TreasuryItem::where('treasury_report_id', $treasuryReport->id)
+                                            ->where('treasurable_type', 'App\Models\Payment')
+                                            ->where('is_incoming', '1')
+                                            ->get();
+
+        return Inertia::render('Treasury/Reports/View', [
+            'title' => 'View Treasury Report',
+            'report' => $treasuryReport,
+            'rents' => $rents,
+            'incomingPayments' => $incoming_payments,
+            'outgoingPayments' => $outgoing_payments
+        ]);
     }
 
     /**
