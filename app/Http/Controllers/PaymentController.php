@@ -3,10 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Payment;
+use App\Services\TreasuryService;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
+
+    /**
+     * Instantiate Treasury Service
+     *
+     */
+    public function __construct() {
+        $this->treasuryService = new TreasuryService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -35,7 +45,11 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $new_payment = Payment::create($request->all());
+        if($request->file('receipt')) {
+            $this->treasuryService->addReceipt($request->file('receipt'), 'App\\Models\\Payment', $new_payment->id);
+        }
+        $this->treasuryService->createTreasurable($request->treasuryReportID, 'App\\Models\\Payment', $new_payment->id, $request->incoming, $request->amount);
     }
 
     /**

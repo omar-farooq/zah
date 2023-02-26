@@ -78,16 +78,26 @@ export default function CreateReport({rents, arrears}) {
     }
 
     const submitReport = async (e) => {
-        //Post rent, payables and treasurables without a meeting id to the backend
-        await axios.post('/treasury-reports', {
+        //Post rent, treasurables without a meeting id to the backend
+        let config = { headers: { 'content-type': 'multipart/form-data' }}
+        let reportID = await axios.post('/treasury-reports', {
             start_date: dates[0],
             end_date: dates[1],
             calculated_remaining_budget: calculateBalance(),
             remaining_budget: manualBalance ?? calculateBalance(),
             paid_rents: paidRent,
-            payables: payables
             //add maintenance/purchase treasurables
         })
+
+        //Create each Payment
+        payables.forEach(payable => (
+            axios.post('/payments', {
+                ...payable,
+                incoming: payable.incoming == false ? 0 : 1,
+                treasuryReportID: reportID.data
+            },
+            config
+        )))
     }
 
     return (

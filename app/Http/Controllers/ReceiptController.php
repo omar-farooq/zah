@@ -33,9 +33,15 @@ class ReceiptController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($receiptFile, $payable_type, $payable_id)
     {
-        //
+        $receipt = new Receipt;
+        $receiptName = $receiptFile . date('Ymdhis');
+        Storage::disk('public')->putFileAs('documents/receipts', $receiptFile, $receiptName);
+        $receipt['receipt'] = $receiptName;
+        $receipt['payable_type'] = $payable_type;
+        $receipt['payable_id'] = $payable_id;
+        $receipt->save();
     }
 
     /**

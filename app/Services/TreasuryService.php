@@ -4,8 +4,10 @@ namespace App\Services;
 
 use App\Models\PaidRent;
 use App\Models\Payment;
+use App\Models\Receipt;
 use App\Models\TreasuryItem;
 use App\Models\TreasuryReport;
+use Illuminate\Support\Facades\Storage;
 
 class TreasuryService {
     
@@ -21,10 +23,7 @@ class TreasuryService {
         $new_report_id = $new_report->id;
         $this->payRent($new_report_id, $request->paid_rents);
 
-        if(isset($request->payables)) {
-            $this->makePayments($new_report_id, $request->payables);
-        }
-        return true;
+        return $new_report->id;
     }
 
     /**
@@ -48,16 +47,21 @@ class TreasuryService {
     /**
      * Add Payments to the database
      *
-     * @param array $payments
+     * @param $file
+     * @param string $payable_type
+     * @param int $payable_id
      * @return void
      *
      */
-    protected function makePayments($report_id, $payments) 
+    public function addReceipt($file, $payable_type, $payable_id) 
     {
-        forEach($payments as $payment) {
-            $new_payment = Payment::create($payment);
-            $this->createTreasurable($report_id, 'App\\Models\\Payment', $new_payment->id, $payment['incoming'], $payment['amount']);
-        }
+        $receipt = new Receipt;
+        $receiptName = date('Ymdhis') . $file->getClientOriginalName();
+        Storage::disk('public')->putFileAs('documents/receipts', $file, $receiptName);
+        $receipt['receipt'] = $receiptName;
+        $receipt['payable_type'] = $payable_type;
+        $receipt['payable_id'] = $payable_id;
+        $receipt->save();
     }
 
     /**
@@ -72,7 +76,7 @@ class TreasuryService {
      * @param double $amount
      *
      */
-    protected function createTreasurable($treasury_report_id, $treasurable_type, $treasurable_id, $is_incoming, $amount)
+    public function createTreasurable($treasury_report_id, $treasurable_type, $treasurable_id, $is_incoming, $amount)
     {
         $treasurable = new TreasuryItem;
         $treasurable->treasury_report_id = $treasury_report_id;

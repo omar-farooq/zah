@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('receipts', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->string('receipt')->nullable();
             $table->morphs('payable');
         });
     }

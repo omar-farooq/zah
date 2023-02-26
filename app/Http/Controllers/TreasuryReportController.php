@@ -57,7 +57,7 @@ class TreasuryReportController extends Controller
      */
     public function store(Request $request)
     {
-        $this->treasuryService->createReport($request);
+        return response()->json($this->treasuryService->createReport($request));
     }
 
     /**
@@ -69,25 +69,16 @@ class TreasuryReportController extends Controller
     public function show(TreasuryReport $treasuryReport)
     {
 
-        $treasuryItems = TreasuryItem::where('treasury_report_id', $treasuryReport->id);
+        $treasuryItems = TreasuryItem::where('treasury_report_id', $treasuryReport->id)->get();
         $rents = PaidRent::where('treasury_report_id', $treasuryReport->id)
                         ->with('user')
                         ->get();
-        $outgoing_payments = TreasuryItem::where('treasury_report_id', $treasuryReport->id)
-                                            ->where('treasurable_type', 'App\Models\Payment')
-                                            ->where('is_incoming', '0')
-                                            ->get();
-        $incoming_payments = TreasuryItem::where('treasury_report_id', $treasuryReport->id)
-                                            ->where('treasurable_type', 'App\Models\Payment')
-                                            ->where('is_incoming', '1')
-                                            ->get();
 
         return Inertia::render('Treasury/Reports/View', [
             'title' => 'View Treasury Report',
             'report' => $treasuryReport,
             'rents' => $rents,
-            'incomingPayments' => $incoming_payments,
-            'outgoingPayments' => $outgoing_payments
+            'treasuryItems' => $treasuryItems
         ]);
     }
 
