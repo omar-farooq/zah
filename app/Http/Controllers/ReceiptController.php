@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Receipt;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ReceiptController extends Controller
 {
@@ -12,9 +13,15 @@ class ReceiptController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if(isset($request->model) && isset($request->id)) {
+            return response()->json(
+                Receipt::where('payable_type', $request->model)
+                        ->where('payable_id', $request->id)
+                        ->get()
+            );
+        }
     }
 
     /**
@@ -33,14 +40,14 @@ class ReceiptController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store($receiptFile, $payable_type, $payable_id)
+    public function store(Request $request)
     {
         $receipt = new Receipt;
-        $receiptName = $receiptFile . date('Ymdhis');
-        Storage::disk('public')->putFileAs('documents/receipts', $receiptFile, $receiptName);
+        $receiptName = date('Ymdhis') . $request->receiptFile->getClientOriginalName();
+        Storage::disk('public')->putFileAs('documents/receipts', $request->receiptFile, $receiptName);
         $receipt['receipt'] = $receiptName;
-        $receipt['payable_type'] = $payable_type;
-        $receipt['payable_id'] = $payable_id;
+        $receipt['payable_type'] = $request->payable_type;
+        $receipt['payable_id'] = $request->payable_id;
         $receipt->save();
     }
 
@@ -52,7 +59,12 @@ class ReceiptController extends Controller
      */
     public function show(Receipt $receipt)
     {
-        //
+        //S3 specific
+        //Storage::temporaryUrl($receipt->receipt, now()->addMinutes(2));
+
+        //Local driver
+        return Storage::disk('public')->download('documents/receipts/'.$receipt->receipt);
+
     }
 
     /**
@@ -86,6 +98,7 @@ class ReceiptController extends Controller
      */
     public function destroy(Receipt $receipt)
     {
-        //
+        Storage::disk('public')->delete('documents/receipts/'.$receipt->receipt);
+        Receipt::destroy($receipt->id);
     }
 }

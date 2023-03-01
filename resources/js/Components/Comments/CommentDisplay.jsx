@@ -1,4 +1,5 @@
 import { Fragment } from 'react'
+import { DateTimeToUKLocale } from '@/Shared/Functions'
 
 export default function CommentDisplay({comments}) {
 	return (
@@ -13,7 +14,7 @@ export default function CommentDisplay({comments}) {
                                     <p className="relative text-xl whitespace-nowrap truncate overflow-hidden">{comment.user['name']}</p>
                                     <a className="text-gray-500 text-xl" href="#"><i className="fa-solid fa-trash"></i></a>
                                 </div>
-                                <p className="text-gray-400 text-sm">20 April 2022, at 14:88 PM</p>
+                                <p className="text-gray-400 text-sm">{DateTimeToUKLocale(comment.created_at)}</p>
                             </div>
                         </div>
                         <p className="-mt-4 text-gray-500">{comment.body}</p>

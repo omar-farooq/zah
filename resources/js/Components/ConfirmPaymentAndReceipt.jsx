@@ -1,12 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Fragment } from 'react'
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline'
 import { Button, FileInput } from '@mantine/core'
 
 export default function ConfirmPaymentAndReceipt({id, payableHook, openHook, model}) {
 
     const [attached, setAttached] = useState([])
+    const [existingReceipts, setExistingReceipts] = useState([])
     const [opened, setOpened] = openHook
     const [payable, setPayable] = payableHook
+
+    useEffect(() => {
+        const getReceipts = async () => {
+            let modelQueryParam
+            model == 'purchases' ? modelQueryParam = 'App\\Models\\Purchase' : modelQueryParam = 'App\\Models\\Maintenance'
+            let receipts = await axios.get('/receipts?model='+modelQueryParam+'&id='+id)
+            setExistingReceipts(receipts.data)
+        }
+        getReceipts()
+    },[])
 
     const updatePayable = async () => {
         if(model == 'purchases') {
@@ -15,14 +26,31 @@ export default function ConfirmPaymentAndReceipt({id, payableHook, openHook, mod
                 purchased: payable.purchased,
                 received: payable.received
             })
+
         } else {
             await axios.patch('/maintenance/'+id, {
                 final_cost: payable.final_cost,
                 paid: payable.paid,
                 additional_details: payable.additional_details
             })
+
+        }
+        if(attached){
+            let config = { headers: { 'content-type': 'multipart/form-data' }}
+            attached.forEach(async attachment => (
+                await axios.post('/receipts', {
+                    receiptFile: attachment,
+                    payable_type: model == 'purchases' ? "App\\Models\\Purchase" : "App\Models\\Maintenance",
+                    payable_id: id
+                },config
+            )))
         }
         setOpened(false)
+    }
+
+    const deleteReceipt = (id) => {
+        axios.delete('/receipts/'+id)
+        setExistingReceipts(existingReceipts.filter(x => x.id !== id))
     }
 
     return (
@@ -66,7 +94,24 @@ export default function ConfirmPaymentAndReceipt({id, payableHook, openHook, mod
             }
 
             <div className="mt-4">
-                Attach Receipts:
+                {existingReceipts.length > 0 &&
+                    existingReceipts.map((receipt, i) => (
+                        <Fragment key={receipt.id}>
+                            <a href={`/receipts/${receipt.id}`}>Download Receipt {existingReceipts.length > 1 ? i+1 : ''}</a> 
+                            <button 
+                                onClick={(e) => deleteReceipt(receipt.id)}
+                                className="text-red-600 ml-2"
+                            >
+                                X
+                            </button>
+                            <br />
+                        </Fragment>
+                    ))
+                }
+            </div>
+
+            <div className="mt-4">
+                Attach new receipts:
                 <FileInput 
                     multiple 
                     value={attached} 

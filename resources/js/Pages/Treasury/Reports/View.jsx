@@ -1,6 +1,30 @@
+import { useEffect, useState } from 'react'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
 export default function ViewTreasuryReport({report, rents, treasuryItems}) {
+
+    const [receipts, setReceipts] = useState([])
+    useEffect(() => {
+        const getReceipts = async () => {
+            let res
+            treasuryItems.forEach(async item => (
+                res = await axios.get('/receipts?model=' + item.treasurable_type + '&id=' +item.treasurable_id),
+                res.data.length == 1 ? setReceipts([...receipts, res.data[0]]) : ''
+            ))
+        }
+        getReceipts()
+    },[])
+
+    const ReceiptDownloadLink = (id,type) => {
+        let rcpt = receipts.find(x => x.payable_id === id && x.payable_type === type)
+        if(rcpt) {
+            let url = "/receipts/" + rcpt.id
+            return <a href={url}>Download Receipt</a>
+        } else {
+            return ''
+        }
+    }
+
     return (
         <>
             <Table>
@@ -9,6 +33,7 @@ export default function ViewTreasuryReport({report, rents, treasuryItems}) {
                 <TH heading="Type" />
                 <TH heading="Source" />
                 <TH heading="incoming/outcoming" />
+                <TH heading="receipt" />
             </THead>
             <TBody>
                 {treasuryItems.map(item => (
@@ -22,6 +47,7 @@ export default function ViewTreasuryReport({report, rents, treasuryItems}) {
                             }
                         </TD>
                         <TD>{item.is_incoming ? 'incoming' : 'outgoing'}</TD>
+                        <TD>{ReceiptDownloadLink(item.treasurable_id, item.treasurable_type)}</TD>
                     </tr>
                 ))}
                 
