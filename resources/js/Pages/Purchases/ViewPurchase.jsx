@@ -40,7 +40,12 @@ export default function Purchase({auth,purchaseID}) {
                     </FlexAlignLeft>
 
                     <PreviewImageContainer>
-                        <img src={"/images/" + purchase.image} />
+                        {
+                            purchase.image ?
+                                <img src={"/images/" + purchase.image} />
+                            :
+                                <img src="/images/No_Image_Available.jpg" />
+                        }
                     </PreviewImageContainer>
 
                     <FlexAlignLeft>

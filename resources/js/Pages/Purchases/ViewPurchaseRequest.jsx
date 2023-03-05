@@ -50,7 +50,12 @@ export default function PurchaseRequest(props) {
                     </FlexAlignLeft>
 
                     <PreviewImageContainer>
-                        <img src={"/images/" + requestItem.image} />
+                        {
+                            requestItem.image ?
+                                <img src={"/images/" + requestItem.image} />
+                            :
+                                <img src="/images/No_Image_Available.jpg" />
+                        }
                     </PreviewImageContainer>
 
                     <FlexAlignLeft>

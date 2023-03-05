@@ -13,7 +13,7 @@ const NavMenu = [
 
 	{id: 1, label: 'Meetings', icon: ClipboardDocumentListIcon,
         links: [
-            {id: 1, label: 'Summary', link: '#'},
+            {id: 1, label: 'Summary', link: '/meetings/summary'},
             {id: 2, label: 'Join', link: '/meetings/create'},
             {id: 3, label: 'Previous Minutes', link: '/meetings'},
             {id: 4, label: 'Schedule', link: '/meetings/schedule'}
@@ -36,7 +36,7 @@ const NavMenu = [
     },
 	{id: 4, label: 'Treasury', icon: CurrencyPoundIcon,
         links: [
-            {id: 1, label: 'Summary', link: '#'}, 
+            {id: 1, label: 'Summary', link: '/treasury'}, 
             {id: 2, label: 'Reports', link: '/treasury-reports'},
             {id: 3, label: 'Plans', link: '/treasury-plans'}
         ]
@@ -44,8 +44,8 @@ const NavMenu = [
     {id: 5, label: 'Users', icon: UserGroupIcon,
         links: [
             {id: 1, label: 'Member Roles', link: '/roles'},
-            {id: 1, label: 'Manage', link: '/users'},
-            {id: 1, label: 'Discussion', link: '/forum'}
+            {id: 2, label: 'Manage', link: '/users'},
+            {id: 3, label: 'Rules', link: '/rules'}
         ]
     },
 ] 

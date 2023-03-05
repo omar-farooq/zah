@@ -7,11 +7,20 @@ export default function ProductCards({cards,model}) {
         cards.data.map((product) => (
             <div key={product.id} className="group relative">
                 <div className="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 lg:aspect-none lg:h-80">
-					<img
-					  src={"/images/" + product.image}
-					  alt={product.imageAlt}
-					  className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-					/>
+                    {
+                        product.image ?
+        					<img
+		        			  src={"/images/" + product.image}
+				        	  alt={product.imageAlt}
+        					  className="h-full w-full object-cover object-center lg:h-full lg:w-full"
+		        			/>
+                        :
+                            <img
+		        			  src={"/images/No_Image_Available.jpg"}
+				        	  alt="No image available"
+        					  className="h-full w-full object-cover object-center lg:h-full lg:w-full"
+		        			/>
+                    }
               	</div>
                 <div className="mt-4 flex justify-between">
                 	<div>

@@ -15,8 +15,8 @@ export default function Reports({reports}) {
             <TBody>
                 {reports.map(report => (
                     <tr key={report.id}>
-                        <TD data={report.start_date} />
-                        <TD data={report.end_date} />
+                        <TD data={report.start_date.split('T')[0]} />
+                        <TD data={report.end_date.split('T')[0]} />
                         <TD data={report.remaining_budget} />
                         <LastTD href={'treasury-reports'} itemID={report.id} />
                     </tr>

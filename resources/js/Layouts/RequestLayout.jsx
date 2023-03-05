@@ -81,7 +81,12 @@ export function ShowErrors({children}) {
 
 export function Source({link}) {
     return (
-        <a href={`${link}`} className="text-base font-semibold leading-none text-gray-600 dark:text-white">Source</a>
+            link && link.includes('http') ?
+                <a href={`${link}`} target="_blank" className="text-base font-semibold leading-none text-gray-600 dark:text-white">View Source</a>
+            : link ?
+                <a href={`//${link}`} target="_blank" className="text-base font-semibold leading-none text-gray-600 dark:text-white">View Source</a>
+            :
+                ''
     )
 }
 

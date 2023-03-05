@@ -80,6 +80,12 @@ Route::get('/maintenance-requests/{maintenanceRequest}/comments', function (Main
     return $maintenanceRequest->comments()->paginate(5);
 });
 
+//Stats pages
+Route::get('/treasury', function () {
+    return Inertia::render('Treasury/Summary', [
+        'title' => 'Treasury Summary'
+    ]);
+});
 
 //Update Model Approval
 Route::patch('/update-approval-status', [ApprovalController::class, 'updateModelApproval']);

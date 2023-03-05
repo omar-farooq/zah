@@ -93,7 +93,7 @@ class MaintenanceController extends Controller
     public function show(Maintenance $maintenance)
     {
         return Inertia::render('Maintenance/ViewMaintenance', [
-            'title' => 'Maintenance History',
+            'title' => 'Maintenance',
             'maintenance' => $maintenance
         ]);
     }

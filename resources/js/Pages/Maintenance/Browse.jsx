@@ -3,6 +3,7 @@ import { Input, Modal, Pagination } from '@mantine/core'
 import { MagnifyingGlassIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
 import ConfirmPaymentAndReceipt from '@/Components/ConfirmPaymentAndReceipt'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/Table'
+import ViewMaintenance from '@/Pages/Maintenance/ViewMaintenance'
 export default function Browse({auth}) {
 
     //Array of maintenance objects

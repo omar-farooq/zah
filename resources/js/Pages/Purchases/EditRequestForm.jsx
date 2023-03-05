@@ -4,9 +4,8 @@ import { HiddenCurrencyInput, ShowErrors, InputContainer, FormLabel, RequestLayo
 import RequestFormButton from '@/Components/RequestFormButton'
 import Input from '@/Components/RequestFormInput'
 
-export default function PurchaseRequestForm({purchaseRequest}) {
+export default function EditPurchaseRequestForm({purchaseRequest}) {
 
-    console.log(purchaseRequest)
     const [name, setName] = useState(purchaseRequest.name)
     const [price, setPrice] = useState(purchaseRequest.price)
     const [deliveryCost, setDeliveryCost] = useState(purchaseRequest.delivery_cost)
@@ -52,7 +51,14 @@ export default function PurchaseRequestForm({purchaseRequest}) {
                         </div>
                         <div className="flex flex-col justify-start items-start w-full space-y-4">
                             <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50 mx-auto">{description}</p>
-                            <a href={linkToItem} className="text-base font-semibold leading-none text-gray-600 dark:text-white">click here</a>
+                            {
+                                linkToItem && linkToItem.includes('http') ?
+                                    <a href={`${linkToItem}`} target="_blank" className="text-base font-semibold leading-none text-gray-600 dark:text-white">View Source</a>
+                                : linkToItem ?
+                                    <a href={`//${linkToItem}`} target="_blank" className="text-base font-semibold leading-none text-gray-600 dark:text-white">View Source</a>
+                                : ''
+                            }
+
                         </div>
                     </PreviewTile>
         

@@ -24,9 +24,11 @@ export default function ViewTreasuryReport({report, rents, treasuryItems}) {
             return ''
         }
     }
-
+console.log(report)
     return (
         <>
+            <div>Report Start: {report.start_date.split('T')[0]}</div>
+            <div>Report End: {report.end_date.split('T')[0]}</div>
             <Table>
             <THead>
                 <FirstTH heading="Amount" />
@@ -53,6 +55,9 @@ export default function ViewTreasuryReport({report, rents, treasuryItems}) {
                 
             </TBody>
             </Table>
+
+            <div className="mt-5">Calculated remaining budget: £{report.calculated_remaining_budget}</div>
+            {report.remaining_budget != report.calculated_remaining_budget && <div>Adjusted budget: £{report.remaining_budget}</div>}
         </>
     )
 }
