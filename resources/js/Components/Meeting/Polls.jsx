@@ -80,10 +80,12 @@ export default function Polls({auth}) {
             dispatch({type: 'add', model: e.model})
         })
         .listen('.VoteCreated', (e) => {
-            dispatch({type: 'vote', vote: e.model})
+            getPolls()
+ //           dispatch({type: 'vote', vote: e.model})
         })
         .listen('.VoteUpdated', (e) => {
-            dispatch({type: 'changeVote', vote: e.model})
+            getPolls()
+//            dispatch({type: 'changeVote', vote: e.model})
         })
     },[])
 

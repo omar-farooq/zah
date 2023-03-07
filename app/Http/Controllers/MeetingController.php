@@ -75,7 +75,7 @@ class MeetingController extends Controller
     {
         return Inertia::render('Meetings/Historical', [
             'title' => 'Historical Meeting',
-            'meeting' => $meeting->load(['meetingAgenda','minutes', 'attendees'])
+            'meeting' => $meeting->load(['meetingAgenda','minutes', 'attendees', 'secretaryReport', 'polls'])
         ]);
     }
 

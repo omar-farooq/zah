@@ -46,4 +46,8 @@ class Meeting extends Model
     public function polls() {
         return $this->hasMany(Poll::class);
     }
+
+    public function secretaryReport() {
+        return $this->hasOne(SecretaryReport::class);
+    }
 }

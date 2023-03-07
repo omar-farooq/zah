@@ -42,15 +42,15 @@ export default function SecretaryReport() {
 		uploaded: '',
         attachment_link: '',
 		composeType: 'write',
-		_method: 'patch'
+		_method: ''
 	}
 	
 	function reducer(report, action) {
 		switch (action.type) {
 			case 'initialFetch':
-				return {...report, id: action.fetched.id, written_report: action.fetched.written_report, uploaded: action.fetched.attachment, composeType: action.fetched.attachment ? 'upload' : 'write'}
+				return {...report, id: action.fetched.id, written_report: action.fetched.written_report, uploaded: action.fetched.attachment, composeType: action.fetched.attachment ? 'upload' : 'write', _method: action.fetched.id ? 'patch' : 'post'}
 			case 'add':
-				return {...report, id: action.id, written_report: action.report, uploaded: action.uploaded, attachment: ''}
+				return {...report, id: action.id, written_report: action.report, uploaded: action.uploaded, attachment: '', _method: 'patch'}
 			case 'edit':
 				return {...report, written_report: action.report, uploaded: action.uploaded, attachment: ''}
             case 'write':

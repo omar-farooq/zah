@@ -57,7 +57,6 @@ class SecretaryReportController extends Controller
 
         return response()->json([
             'id' => $newReport->id,
-            'uploaded_report' => $reportName,
             'status' => 'success',
             'message' => 'Report Created'
         ]);

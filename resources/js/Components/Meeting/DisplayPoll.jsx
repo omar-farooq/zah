@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { BarController, BarElement, CategoryScale, Chart, LinearScale } from 'chart.js'
+import { BarController, BarElement, CategoryScale, Chart, LinearScale, Title } from 'chart.js'
 import { CheckIcon } from '@heroicons/react/24/solid'
 
 export default function DisplayPoll({auth, poll}) {
@@ -7,7 +7,8 @@ export default function DisplayPoll({auth, poll}) {
         BarController,
         BarElement,
         CategoryScale,
-        LinearScale
+        LinearScale,
+        Title
     )
 
     const [userVote, setUserVote] = useState({
@@ -42,6 +43,26 @@ export default function DisplayPoll({auth, poll}) {
                             data: poll.poll_items.map(option => option.votes.length)
                         }
                     ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: poll.name
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Number of votes'
+                            },
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
                 }
             }
         )
@@ -67,22 +88,31 @@ export default function DisplayPoll({auth, poll}) {
 
     return (
         <>
-            <ul key={poll.id}>
-                {poll.name}
-                {poll.poll_items.map(option => (
-                    <li key={option.id}>
-                        <div className="flex flex-row mt-2">
-                            {option.option}
-                            <CheckIcon
-                                className="h-6 w-6 text-green-400 cursor-pointer hover:text-green-600 ml-2"
-                                onClick={() => vote(option.id)}
-                            />
-                        </div>
-                    </li>
-                ))}
-            </ul>
+            <div className="flex flex-row">
+                <div><canvas id={`poll-${poll.id}-results`} style={canvasStyle}></canvas></div>
+                {new Date(poll.poll_end) > new Date() ?
 
-            <div><canvas id={`poll-${poll.id}-results`} style={canvasStyle}></canvas></div>
+                <div className="flex flex-col justify-center ml-4">
+                    <ul key={poll.id}>
+                        {poll.poll_items.map(option => (
+                            <li key={option.id}>
+                                <div className="flex flex-row mt-2">
+                                    {option.option}
+                                    <CheckIcon
+                                        className="h-6 w-6 text-green-400 cursor-pointer hover:text-green-600 ml-2"
+                                        onClick={() => vote(option.id)}
+                                    />
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
+                    :
+                    ''
+                }
+
+            </div>
         </>
 	)
 }

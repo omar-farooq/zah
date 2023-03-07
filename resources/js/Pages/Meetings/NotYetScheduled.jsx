@@ -1,4 +1,4 @@
-import Agenda from '@/Components/Agenda'
+import Agenda from '@/Components/Meeting/Agenda'
 
 export default function NotYetScheduled() {
     return (
