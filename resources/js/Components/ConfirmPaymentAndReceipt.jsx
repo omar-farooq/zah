@@ -40,7 +40,7 @@ export default function ConfirmPaymentAndReceipt({id, payableHook, openHook, mod
             attached.forEach(async attachment => (
                 await axios.post('/receipts', {
                     receiptFile: attachment,
-                    payable_type: model == 'purchases' ? "App\\Models\\Purchase" : "App\Models\\Maintenance",
+                    payable_type: model == 'purchases' ? "App\\Models\\Purchase" : "App\\Models\\Maintenance",
                     payable_id: id
                 },config
             )))

@@ -1,23 +1,25 @@
 import { FirstDayOfTheMonth, LastDayOfTheMonth } from '@/Shared/Functions'
 import { Fragment, useState } from 'react'
 import { RangeCalendar } from '@mantine/dates'
+import { Button } from '@mantine/core'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
-export default function CreateReport({rents, arrears}) {
-
+export default function CreateReport({rents, arrears, previousReport}) {
 
     function calculatePayableRent(rentPerWeek) {
         if(dates[0] && dates[1]) {
             let diffinMs = new Date(dates[1]) - new Date(dates[0])
             let numberOfDays = Math.round(diffinMs / (1000 * 60 * 60 * 24)) + 1
             let payableRent = (rentPerWeek / 7) * numberOfDays
-            return payableRent
+            return payableRent.toFixed(2)
         } else {
             return "Select Dates"
         }
     }
 
-    const [dates, setDates] = useState([FirstDayOfTheMonth(), LastDayOfTheMonth()])
+    let previousReportEnd = new Date(previousReport.end_date)
+    let newReportDefaultStart = new Date(previousReportEnd.getFullYear(), previousReportEnd.getMonth(), previousReportEnd.getDate()+1)
+    const [dates, setDates] = useState([newReportDefaultStart, LastDayOfTheMonth()])
     const [updatedArrears, setUpdatedArrears] = useState(arrears);
     const [paidRent, setPaidRent] = useState(rents.map(rent => ({
         user_id: rent.user.id,
@@ -74,7 +76,7 @@ export default function CreateReport({rents, arrears}) {
             return a + Number(b.amount_paid)
         },[])
 
-        return Number(payableTotal) + Number(rentTotal)
+        return Number(payableTotal) + Number(rentTotal) + Number(previousReport.remaining_budget)
     }
 
     const submitReport = async (e) => {
@@ -102,7 +104,11 @@ export default function CreateReport({rents, arrears}) {
 
     return (
         <>
-        <RangeCalendar value={dates} onChange={setDates} />
+        <RangeCalendar 
+            value={dates} 
+            onChange={setDates} 
+            minDate={newReportDefaultStart}
+        />
 
         <table className="table-fixed bg-white border border-collapse border-slate-300">
             <thead>
@@ -124,7 +130,6 @@ export default function CreateReport({rents, arrears}) {
                             <td>
                                 <input 
                                     className="w-40"
-                                    defaultValue={calculatePayableRent(rent.amount)}
                                     onChange={(e) => updatePaidRent(rent.user.id, e.target.value, rent.amount)}
                                 />
                             </td>
@@ -205,7 +210,8 @@ export default function CreateReport({rents, arrears}) {
         </SmallTable>
 
         <div className="mt-10">
-            Calculated balance:£{calculateBalance()}
+            Starting balance: £{previousReport.remaining_budget}<br />
+            Calculated remaining balance: £{calculateBalance()}
 
             <div>
                 <input 
@@ -232,7 +238,12 @@ export default function CreateReport({rents, arrears}) {
             }
         </div>
 
-        <button onClick={(e) => submitReport(e)}>Submit Report</button>
+        <Button 
+            className="bg-white border-blue-400 text-blue-400 hover:text-white hover:bg-sky-600 mt-4"
+            onClick={(e) => submitReport(e)}
+        >
+            Submit Report
+        </Button>
         </>
     )
 }

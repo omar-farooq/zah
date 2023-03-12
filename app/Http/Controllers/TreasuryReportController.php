@@ -46,6 +46,7 @@ class TreasuryReportController extends Controller
             'title' => 'Create Treasury Report',
             'rents' => Rent::with('user')->get(),
             'arrears' => $arrears->currentTenant()->get(),
+            'previousReport' => TreasuryReport::latest()->first()
         ]);
     }
 
@@ -73,12 +74,18 @@ class TreasuryReportController extends Controller
         $rents = PaidRent::where('treasury_report_id', $treasuryReport->id)
                         ->with('user')
                         ->get();
+        if($treasuryReport->id > 1) {
+            $previousBudget = TreasuryReport::where('id', $treasuryReport->id - 1)->first()->remaining_budget;
+        } else {
+            $previousBudget = 0;
+        }
 
         return Inertia::render('Treasury/Reports/View', [
             'title' => 'View Treasury Report',
             'report' => $treasuryReport,
             'rents' => $rents,
-            'treasuryItems' => $treasuryItems
+            'treasuryItems' => $treasuryItems,
+            'previousBudget' => $previousBudget
         ]);
     }
 

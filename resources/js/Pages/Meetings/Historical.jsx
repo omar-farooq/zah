@@ -4,7 +4,7 @@ export default function Historical ({meeting, auth}) {
     //need to add treasurer's reports
     return (
         <div className="w-full">
-            <div className="text-xl mt-3 mb-3 text-center">Meeting Recap: {meeting.time_of_meeting}</div>
+            <div className="text-2xl mt-3 mb-5 text-center">Meeting Recap: {meeting.time_of_meeting}</div>
 
             <div className="grid grid-cols-4 w-full gap-2">
                 <div className="lg:col-start-2 lg:col-end-2 col-start-1 col-end-5">

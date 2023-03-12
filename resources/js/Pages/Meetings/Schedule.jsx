@@ -152,9 +152,7 @@ export default function Schedule(props) {
         }
 
         {/* Dropdown */}
-            <div>
-                Availability can be seen below:
-                <br />
+            <div className="mt-4">
                     <select
                         onChange={e => dispatch({type: 'selectWeekToDisplay', selectedWeek: e.currentTarget.value})}
                     >
@@ -222,126 +220,133 @@ export default function Schedule(props) {
 
             {/* Div for users updating their schedule*/ }
             {schedule.overwriteSelected.length != 0 || schedule.scheduledSelected.length !=0 
-                ? 
-                <div>
-                {
-                    schedule.scheduledSelected.length != 0
-                        ?
-                            <div>
-                                Adding availability to the following dates:
-                                <br />
-                                {schedule.scheduledSelected.sort((a,b) => new Date(a.replace(',','')) - new Date(b.replace(',',''))).join(', ')}
-                            </div>
-                        :
-                            null
-                }
-                {
-                    schedule.overwriteSelected.length != 0
-                        ?
-                            <div>
-                                Updating the following dates:
-                                <br />
-                                {schedule.overwriteSelected.sort((a,b) => new Date(a.replace(',','')) - new Date(b.replace(',',''))).join(', ')}
-                            </div>
-                        :
-                            null
-                }
+                ?
+                    <>
+                        {
+                            schedule.scheduledSelected.length != 0
+                                ?
+                                    <>
+                                        <div className="font-bold text-lg w-full text-center">Adding availability to the following dates</div>
+                                        <div>
+                                            {schedule.scheduledSelected.sort((a,b) => new Date(a.replace(',','')) - new Date(b.replace(',',''))).join(', ')}
+                                        </div>
+                                    </>
+                                :
+                                    null
+                        }
+                        {
+                            schedule.overwriteSelected.length != 0
+                                ?
+                                    <>
+                                        <div className="font-bold text-lg w-full text-center">Updating the following dates</div>
+                                        <div>
+                                            {schedule.overwriteSelected.sort((a,b) => new Date(a.replace(',','')) - new Date(b.replace(',',''))).join(', ')}
+                                        </div>
+                                    </>
+                                :
+                                    null
+                        }
+                    <div className="mb-6">
                 
-                {/*available on selected days*/}
-                <ButtonColoured 
-                    buttonText="Available" 
-                    bgcolour="bg-green-400"
-                    hovercolour="hover:bg-green-600"
-                    focuscolour="focus:bg-green-700"
-                    activecolour="focus:bg-green-800"
-                    onclick={ () => updateAvailability('yes')  }
-                />
+                        {/*available on selected days*/}
+                        <ButtonColoured 
+                            buttonText="Available" 
+                            bgcolour="bg-green-400"
+                            hovercolour="hover:bg-green-600"
+                            focuscolour="focus:bg-green-700"
+                            activecolour="focus:bg-green-800"
+                            onclick={ () => updateAvailability('yes')  }
+                        />
 
-                {/*tentaive on selected days*/}
-                <ButtonColoured 
-                    buttonText="Tentative" 
-                    bgcolour="bg-orange-400"
-                    hovercolour="hover:bg-orange-600"
-                    focuscolour="focus:bg-orange-700"
-                    activecolour="focus:bg-orange-800"
-                    onclick={ () => updateAvailability('maybe')  }
-                />
+                        {/*tentaive on selected days*/}
+                        <ButtonColoured 
+                            buttonText="Tentative" 
+                            bgcolour="bg-orange-400"
+                            hovercolour="hover:bg-orange-600"
+                            focuscolour="focus:bg-orange-700"
+                            activecolour="focus:bg-orange-800"
+                            onclick={ () => updateAvailability('maybe')  }
+                        />
 
-                {/*unavailable on selected days*/}
-                <ButtonColoured 
-                    buttonText="Unavailable" 
-                    bgcolour="bg-red-400"
-                    hovercolour="hover:bg-red-600"
-                    focuscolour="focus:bg-red-700"
-                    activecolour="focus:bg-red-800"
-                    onclick={ () => updateAvailability('no')  }
-                />
+                        {/*unavailable on selected days*/}
+                        <ButtonColoured 
+                            buttonText="Unavailable" 
+                            bgcolour="bg-red-400"
+                            hovercolour="hover:bg-red-600"
+                            focuscolour="focus:bg-red-700"
+                            activecolour="focus:bg-red-800"
+                            onclick={ () => updateAvailability('no')  }
+                        />
 
-                {/*Cancel changes*/}
-                <ButtonColoured 
-                    buttonText="Cancel" 
-                    bgcolour="bg-gray-400"
-                    hovercolour="hover:bg-gray-600"
-                    focuscolour="focus:bg-gray-700"
-                    activecolour="focus:bg-gray-800"
-                    onclick={ () => dispatch({type: 'cancelSelection'})  }
-                />
+                        {/*Cancel changes*/}
+                        <ButtonColoured 
+                            buttonText="Cancel" 
+                            bgcolour="bg-gray-400"
+                            hovercolour="hover:bg-gray-600"
+                            focuscolour="focus:bg-gray-700"
+                            activecolour="focus:bg-gray-800"
+                            onclick={ () => dispatch({type: 'cancelSelection'})  }
+                        />
 
-                </div> 
-                : null
+                    </div> 
+                    </>
+                : 
+                    null
             }
 
             {/* Suggestions */}
             <div>
-                Suggested dates
     
                 { suggesters.length > 0
-                ?
-                    <ul>
-                        {suggesters.map(suggester => {
-                            return(
-                                <li key={suggester.id}>
-                                    {suggester.name} has suggested:
-                                    <ul>
-                                        {suggester.schedule_suggestions.map(suggestedObj => {
-                                            return(
-                                                <li key={suggestedObj.id}>
-                                                    {LongDateTimeFormat(suggestedObj.suggested_date)}
-                                                </li>
-                                            )
-                                        })}
-                                    </ul>
-                                </li>
-                            )
-                        })}
-                    </ul>
-                :
-                    null
+                    ?
+                        <>
+                            <div className="font-bold text-lg">Suggested dates</div>
+                            <ul>
+                                {suggesters.map(suggester => {
+                                    return(
+                                        <li key={suggester.id}>
+                                            {suggester.name} has suggested:
+                                            <ul>
+                                                {suggester.schedule_suggestions.map(suggestedObj => {
+                                                    return(
+                                                        <li key={suggestedObj.id}>
+                                                            {LongDateTimeFormat(suggestedObj.suggested_date)}
+                                                        </li>
+                                                    )
+                                                })}
+                                            </ul>
+                                        </li>
+                                    )
+                                })}
+                            </ul>
+                        </>
+                    :
+                        null
                             
                 }       
 
                 { schedule.userSuggestions.length > 0 
-                ?
-                    <>
-                    <p>Your Suggestions</p>
-                        <ul>
-                            {schedule.userSuggestions.map(suggested => {
-                                return(
-                                    <li key={suggested.id}>
-                                        {LongDateTimeFormat(suggested.suggested_date)}
-                                        <button 
-                                            className="ml-2" 
-                                            onClick={() => deleteSuggestion(suggested.id)}
-                                        >
-                                            delete
-                                        </button>
-                                    </li>
-                                )
-                            })}
-                        </ul>
-                    </>
-                :
-                    null
+                    ?
+                        <>
+                            <div className="font-bold text-lg">Your Suggestions</div>
+                            <ul>
+                                {schedule.userSuggestions.map(suggested => {
+                                    return(
+                                        <li key={suggested.id}>
+                                            {LongDateTimeFormat(suggested.suggested_date)}
+                                            <button 
+                                                className="ml-2" 
+                                                onClick={() => deleteSuggestion(suggested.id)}
+                                            >
+                                                delete
+                                            </button>
+                                        </li>
+                                    )
+                                })}
+                            </ul>
+                        </>
+                    :
+                        null
                 }
             </div>
 
@@ -372,7 +377,7 @@ export default function Schedule(props) {
                     modalOpenState={modalOpenState}
                     setModalOpenState={setModalOpenState}
             >
-            {schedule.selectedDay} <input type="time" className="ml-3" defaultValue="18:30" id="suggest-or-schedule-time"></input> ?
+                {schedule.selectedDay} <input type="time" className="ml-3" defaultValue="18:30" id="suggest-or-schedule-time"></input> ?
             </Modal>
         </Fragment>
     )

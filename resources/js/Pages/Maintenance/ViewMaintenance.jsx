@@ -1,7 +1,7 @@
 export default function ViewMaintenance({maintenance}) {
 
     return (
-        <div class="grid grid-cols-2 gap-2 bg-white w-2/5">
+        <div className="grid grid-cols-2 gap-2 bg-white w-2/5 mt-10">
             <span>Maintenance:</span> <span>{maintenance.maintenance_request.required_maintenance}</span>
             <span>Type:</span> <span>{maintenance.maintenance_request.type}</span>
 

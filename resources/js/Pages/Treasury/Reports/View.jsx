@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
+import { ArrowLongRightIcon } from '@heroicons/react/24/solid'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
-export default function ViewTreasuryReport({report, rents, treasuryItems}) {
+export default function ViewTreasuryReport({report, rents, treasuryItems, previousBudget}) {
 
     const [receipts, setReceipts] = useState([])
     useEffect(() => {
@@ -24,11 +25,15 @@ export default function ViewTreasuryReport({report, rents, treasuryItems}) {
             return ''
         }
     }
-console.log(report)
+
     return (
         <>
-            <div>Report Start: {report.start_date.split('T')[0]}</div>
-            <div>Report End: {report.end_date.split('T')[0]}</div>
+            <div className="flex flex-row mt-4">
+                <div className="bg-white text-xl mr-4">Report Start: {report.start_date.split('T')[0]}</div>
+                <ArrowLongRightIcon className="h-6 w-6" />
+                <div className="bg-white text-xl ml-4">Report End: {report.end_date.split('T')[0]}</div>
+            </div>
+            <div>Starting Balance: £{previousBudget}</div>
             <Table>
             <THead>
                 <FirstTH heading="Amount" />
@@ -56,7 +61,7 @@ console.log(report)
             </TBody>
             </Table>
 
-            <div className="mt-5">Calculated remaining budget: £{report.calculated_remaining_budget}</div>
+            <div className="mt-5 text-2xl">Calculated remaining budget: £{report.calculated_remaining_budget}</div>
             {report.remaining_budget != report.calculated_remaining_budget && <div>Adjusted budget: £{report.remaining_budget}</div>}
         </>
     )

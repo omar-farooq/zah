@@ -1,5 +1,6 @@
 import { Button } from '@mantine/core'
 import { Fragment, useReducer } from 'react'
+import { XMarkIcon } from '@heroicons/react/24/solid'
 import Input from '@/Components/Input'
 
 export default function CreatePoll() {
@@ -64,22 +65,36 @@ export default function CreatePoll() {
                 name="poll name"
                 required={true}
                 handleChange={(e) => dispatch({type: 'updateTitle', title: e.target.value})}
+                className="mb-6"
             />
 
             {currentPoll.items.map((x,i) => 
                 <Fragment key={x.id}>
-                    <Input
-                        name="poll item"
-                        placeholder={`poll item ${i+1}`}
-                        value={x.value}
-                        handleChange={(e) => dispatch({type: 'updatePollItem', value: e.target.value, id: x.id})}
-                    />
-                    <button onClick={() => dispatch({type: 'deletePollItem', id: x.id})}>delete item</button>
+                    <div className="flex flex-row">
+                        <Input
+                            name="poll item"
+                            placeholder={`poll item ${i+1}`}
+                            value={x.value}
+                            handleChange={(e) => dispatch({type: 'updatePollItem', value: e.target.value, id: x.id})}
+                            className="mt-1"
+                        />
+                        <button 
+                            onClick={() => dispatch({type: 'deletePollItem', id: x.id})} 
+                            className="text-red-700"
+                        >
+                            <XMarkIcon className="h-6 w-6" />
+                        </button>
+                    </div>
                 </Fragment>
             )}
             <br />
-            <Button onClick={() => dispatch({type: 'addPollItem'})}>add item</Button>
-            <div>
+            <Button 
+                onClick={() => dispatch({type: 'addPollItem'})}
+                className="bg-emerald-700 hover:bg-emerald-700 h-8"
+            >
+                add item
+            </Button>
+            <div className="hidden">
                 End Poll in 
                 <input 
                     type="number"
@@ -103,7 +118,12 @@ export default function CreatePoll() {
                 minutes
             </div>
             <div>
-                <Button type="submit">Create Poll</Button>
+                <Button 
+                    type="submit"
+                    className="hover:bg-blue-500 bg-blue-500 mt-2"
+                >
+                    Create Poll
+                </Button>
             </div>
         </form>
     )

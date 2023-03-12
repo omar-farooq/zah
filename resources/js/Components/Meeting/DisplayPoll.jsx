@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { BarController, BarElement, CategoryScale, Chart, LinearScale, Title } from 'chart.js'
-import { CheckIcon } from '@heroicons/react/24/solid'
+import { CheckCircleIcon } from '@heroicons/react/24/solid'
+import { draw, generate } from 'patternomaly'
 
 export default function DisplayPoll({auth, poll}) {
     Chart.register(
@@ -40,7 +41,14 @@ export default function DisplayPoll({auth, poll}) {
                     datasets: [
                         {
                             label: 'number of votes',
-                            data: poll.poll_items.map(option => option.votes.length)
+                            data: poll.poll_items.map(option => option.votes.length),
+                            backgroundColor: [
+                                draw('square', '#FD8A8A'),
+                                draw('circle', '#A8D1D1'),
+                                draw('zigzag-horizontal', '#9EA1D4'),
+                                draw('diamond', '#F1F7B5'),
+                                draw('triangle', 'rgb(255, 99, 132, 0.4)'),
+                            ]
                         }
                     ]
                 },
@@ -48,6 +56,9 @@ export default function DisplayPoll({auth, poll}) {
                     responsive: true,
                     plugins: {
                         title: {
+                            font: {
+                                size: 20
+                            },
                             display: true,
                             text: poll.name
                         }
@@ -90,7 +101,7 @@ export default function DisplayPoll({auth, poll}) {
         <>
             <div className="flex flex-row">
                 <div><canvas id={`poll-${poll.id}-results`} style={canvasStyle}></canvas></div>
-                {new Date(poll.poll_end) > new Date() ?
+                {!poll.meeting_id ?
 
                 <div className="flex flex-col justify-center ml-4">
                     <ul key={poll.id}>
@@ -98,8 +109,8 @@ export default function DisplayPoll({auth, poll}) {
                             <li key={option.id}>
                                 <div className="flex flex-row mt-2">
                                     {option.option}
-                                    <CheckIcon
-                                        className="h-6 w-6 text-green-400 cursor-pointer hover:text-green-600 ml-2"
+                                    <CheckCircleIcon
+                                        className="h-6 w-6 text-black cursor-pointer hover:text-green-600 ml-2"
                                         onClick={() => vote(option.id)}
                                     />
                                 </div>
