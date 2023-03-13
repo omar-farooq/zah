@@ -1,11 +1,13 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { ArrowUpRightIcon, ArrowDownRightIcon } from '@heroicons/react/24/solid'
+import { ArrowRightIcon, ArrowUpRightIcon, ArrowDownRightIcon } from '@heroicons/react/24/solid'
+import { InertiaLink } from '@inertiajs/inertia-react'
+import { TrashIcon } from '@heroicons/react/24/outline'
 import { createStyles, Button, Group, Paper, SimpleGrid, Text , ThemeIcon } from '@mantine/core'
 import Select from 'react-select'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 import Input from '@/Components/Input'
 
-export default function TreasurySummary() {
+export default function TreasurySummary({currentYearPurchaseCount, previousYearPurchaseCount, currentBalance, previousYearBalance, currentSpending, previousYearSpending}) {
 
     const [newPayment, setNewPayment] = useState({
         recipient: '',
@@ -24,6 +26,8 @@ export default function TreasurySummary() {
 
     const annualDayRef = useRef(null)
     const frequencyRef = useRef(null)
+    const dayOfWeekRef = useRef(null)
+    const dayOfMonthRef = useRef(null)
 
     //Handle the Add Payment button being clicked
     const handleAddPayment = async (e) => {
@@ -62,6 +66,17 @@ export default function TreasurySummary() {
         }
     }
 
+    const handleFrequencyChange = (e) => {
+        setNewPayment({...newPayment, frequency: e.value, day_of_week_due: '', day_of_month_due: '', month_due: ''});
+        setFrequency(e.value)
+        dayOfWeekRef.current?.clearValue()
+        dayOfMonthRef.current?.clearValue()
+    }
+
+    const handlePaymentDelete = (paymentID) => {
+        setRecurringPayments(recurringPayments.filter(x => x.id != paymentID))
+    }
+
     const useStyles = createStyles((theme) => ({
           root: {
                   padding: `calc(${theme.spacing.xl} * 1.5)`,
@@ -73,15 +88,36 @@ export default function TreasurySummary() {
                 },
     }));
 
+    function calculateSpendingDiff(prev, curr) {
+        return (((curr - prev) * 100) / prev).toFixed(2)
+    }
+
+    function calculateBalanceDiff(prev, curr) {
+        let diff
+        if(prev < 0 && curr < 0) {
+            diff = curr - prev
+            return -(diff * 100 / prev).toFixed(2)
+        } else if(prev > 0 && curr < 0) {
+            diff = curr - prev
+            return (diff * 100 / prev).toFixed(2)
+        } else if(prev < 0 && curr > 0) {
+            diff = curr - prev
+            return -(diff * 100 / prev).toFixed(2)
+        } else {
+            diff = curr - prev
+            return (diff * 100 / prev).toFixed(2)
+        }
+    }
+
     const data = [
-        {title: 'Average Spending', value: '£12 per month', diff:-13},
-        {title: 'Balance', value: '£12', diff: 13},
-        {title: 'Number of Purchases', value: '12', diff: 200}
+        {title: 'Average Spending', value: '£' + (currentSpending / 12).toFixed(2) + 'per month', diff: calculateSpendingDiff(previousYearSpending, currentSpending)},
+        {title: 'Balance', value: "£" + currentBalance, diff: calculateBalanceDiff(previousYearBalance, currentBalance)},
+        {title: 'Number of Purchases this year', value: currentYearPurchaseCount, diff: (currentYearPurchaseCount - previousYearPurchaseCount * 100 / previousYearPurchaseCount).toFixed(2)}
     ]
 
       const { classes } = useStyles();
       const stats = data.map((stat) => {
-          const DiffIcon = stat.diff > 0 ? ArrowUpRightIcon : ArrowDownRightIcon
+          const DiffIcon = stat.diff > 0 ? ArrowUpRightIcon : stat.diff < 0 ? ArrowDownRightIcon : stat.diff == 'NaN' ? ArrowUpRightIcon : ArrowRightIcon
 
               return (
                         <Paper withBorder p="md" radius="md" key={stat.title}>
@@ -97,7 +133,7 @@ export default function TreasurySummary() {
                             <ThemeIcon
                               color="gray"
                               variant="light"
-                              sx={(theme) => ({ color: stat.diff > 0 ? theme.colors.teal[6] : theme.colors.red[6] })}
+                              sx={(theme) => ({ color: stat.diff > 0 || stat.diff == 'NaN' ? theme.colors.teal[6] : stat.diff < 0 ? theme.colors.red[6] : theme.colors.gray[6] })}
                               size={38}
                               radius="md"
                             >
@@ -106,9 +142,10 @@ export default function TreasurySummary() {
                           </Group>
                           <Text c="dimmed" fz="sm" mt="md">
                             <Text component="span" c={stat.diff > 0 ? 'teal' : 'red'} fw={700}>
-                              {stat.diff}%
+                              {stat.diff != 'NaN' &&
+                              stat.diff + '%'}
                             </Text>{' '}
-                            {stat.diff > 0 ? 'increase' : 'decrease'} compared to last year
+                            {stat.diff > 0 ? 'increase' : stat.diff < 0 ? 'decrease' : stat.diff == 'NaN' ? 'no history' : 'no change'} from last year
                           </Text>
                         </Paper>
                       );
@@ -131,6 +168,7 @@ export default function TreasurySummary() {
                         <TH heading="Frequency" />
                         <TH heading="Amount" />
                         <TH heading="Next Due" />
+                        <LastTH />
                         
                     </THead>
                     <TBody>
@@ -152,6 +190,11 @@ export default function TreasurySummary() {
                                                 monthAsString(payment.month_due) + " " + payment.day_of_month_due
                                         }
                                     </TD>
+                                    <LastTD> 
+                                        <InertiaLink href={route('recurring-payments.destroy', payment.id)} method="delete" as="button" onClick={(e) => handlePaymentDelete(payment.id)}>
+                                            <TrashIcon className="w-5 h-5" />
+                                        </InertiaLink>
+                                    </LastTD>
                                 </tr>
                             </Fragment>
                         ))}
@@ -168,6 +211,7 @@ export default function TreasurySummary() {
                     placeholder={"Recipient"}
                     className="h-10"
                     value={newPayment.recipient}
+                    required={true}
                     handleChange={(e) => setNewPayment({...newPayment, recipient: e.target.value})}
                 />
 
@@ -181,6 +225,7 @@ export default function TreasurySummary() {
                 <Input
                     type={"number"}
                     placeholder={"Amount"}
+                    required={true}
                     className="h-10"
                     value={newPayment.amount}
                     handleChange={(e) => setNewPayment({...newPayment, amount: e.target.value})}
@@ -194,9 +239,9 @@ export default function TreasurySummary() {
                     ]}
                     placeholder="Frequency"
                     ref={frequencyRef}
+                    required={true}
                     onChange={(e) => {
-                        e ? setNewPayment({...newPayment, frequency: e.value, day_of_week_due: '', day_of_month_due: '', month_due: ''}) : '';
-                        e ? setFrequency(e.value) : ''
+                        e ? handleFrequencyChange(e) : ''
                     }}
                 />
 
@@ -214,7 +259,9 @@ export default function TreasurySummary() {
                                 {value: '0', label: 'Sunday'},
                             ]}
                             placeholder="Payment Day"
-                            onChange={(e) => setNewPayment({...newPayment, day_of_week_due: e.value})}
+                            required={true}
+                            ref={dayOfWeekRef}
+                            onChange={(e) => e ? setNewPayment({...newPayment, day_of_week_due: e.value}) : ''}
                         />
 
                     : frequency == 'monthly' ?
@@ -226,7 +273,9 @@ export default function TreasurySummary() {
                                 }))
                             }
                             placeholder="Payment Day"
-                            onChange={(e) => setNewPayment({...newPayment, day_of_month_due: e.value})}
+                            required={true}
+                            ref={dayOfMonthRef}
+                            onChange={(e) => e ? setNewPayment({...newPayment, day_of_month_due: e.value}) : ''}
                         />
 
                     : frequency == 'annually' ?
@@ -248,6 +297,7 @@ export default function TreasurySummary() {
                                 {value: '11', label: 'December'}
                             ]}
                             placeholder="Payment Month"
+                            required={true}
                             onChange={(e) => {
                                 setNewPayment({...newPayment, month_due: e.value, day_of_month_due: ''});
                                 annualDayRef.current?.clearValue()
@@ -264,6 +314,7 @@ export default function TreasurySummary() {
                                 }
                                 placeholder="Day of Month"
                                 ref={annualDayRef}
+                                required={true}
                                 onChange={(e) => e ? setNewPayment({...newPayment, day_of_month_due: e.value}) : ''}
                             />}
                         </>

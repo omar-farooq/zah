@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { createStyles, Table, ScrollArea } from '@mantine/core'
+import { createStyles, Button, Table, ScrollArea } from '@mantine/core'
 import { useListState } from '@mantine/hooks';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
@@ -20,12 +20,16 @@ const useStyles = createStyles((theme) => ({
             },
 }));
 
-export default function Plan({fiveYearPlan}) {
+export default function Plan({fiveYearPlan, balance, rent, weeklyRecurringPayments, monthlyRecurringPayments, annualRecurringPayments}) {
     const { classes } = useStyles()
     const [state, handlers] = useListState(fiveYearPlan);
 
     const [fiveYearPlanComponent, setFiveYearPlanComponent] = useState({priority: state.length + 1, component: '', cost: '', plan_length: '5y'})
     const [tenYearPlanComponent, setTenYearPlanComponent] = useState({component: '', cost: ''})
+
+    const [fiveYearPlanCost, setFiveYearPlanCost] = useState(fiveYearPlan.reduce((a,b) => {
+               return Number(b.cost) + Number(a)
+          },[]))
 
     useEffect(() => {
         const updatePlan = async () => {
@@ -41,23 +45,29 @@ export default function Plan({fiveYearPlan}) {
         }
     },[state])
 
-      const items = state.map((item, index) => (
-              <Draggable key={item.component} index={index} draggableId={item.component}>
-                {(provided) => (
-                            <tr className={classes.item} ref={provided.innerRef} {...provided.draggableProps}>
-                              <td>
-                                <div className={classes.dragHandle} {...provided.dragHandleProps}>
-                                  <EllipsisVerticalIcon className="h-6 w-6"/>
-                                </div>
-                              </td>
-                              <td style={{ width: 80 }}>{item.priority}</td>
-                              <td style={{ width: 120 }}>{item.component}</td>
-                              <td style={{ width: 80 }}>{item.cost}</td>
-                              <td><button onClick={() => handleDelete(item.id)}>del</button></td>
-                            </tr>
-                          )}
-              </Draggable>
-            ));
+    useEffect(() => {
+        setFiveYearPlanCost(state.reduce((a,b) => {
+            return Number(b.cost) + Number(a)
+        },[]))
+    },[state])
+
+    const items = state.map((item, index) => (
+        <Draggable key={item.component} index={index} draggableId={item.component}>
+          {(provided) => (
+                      <tr className={classes.item} ref={provided.innerRef} {...provided.draggableProps}>
+                        <td>
+                          <div className={classes.dragHandle} {...provided.dragHandleProps}>
+                            <EllipsisVerticalIcon className="h-6 w-6"/>
+                          </div>
+                        </td>
+                        <td style={{ width: 80 }}>{item.priority}</td>
+                        <td style={{ width: 120 }}>{item.component}</td>
+                        <td style={{ width: 80 }}>{item.cost}</td>
+                        <td><button onClick={() => handleDelete(item.id)}>del</button></td>
+                      </tr>
+                    )}
+        </Draggable>
+    ));
 
     const handleAppend = async (e) => {
         e.preventDefault()
@@ -73,12 +83,28 @@ export default function Plan({fiveYearPlan}) {
         handlers.filter((component) => component.id !== id)
     }
 
+    const calculateExpectedOutgoings = () => {
+        let weeklyPaymentsAfterFiveYears = weeklyRecurringPayments * 52 * 5
+        let monthlyPaymentsAfterFiveYears = monthlyRecurringPayments * 12 * 5
+        let annualPaymentsAfterFiveYears = annualRecurringPayments * 5
+        return weeklyPaymentsAfterFiveYears + monthlyPaymentsAfterFiveYears + annualPaymentsAfterFiveYears
+    }
+
+    const calculateExpectedIncomings = () => {
+        return rent * 52 * 5
+    }
+
+    const calculateRemainingBalance = () => Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings()) - fiveYearPlan.reduce((a,b) => {
+       return Number(b.cost) + Number(a) 
+    },[]) 
+
     return (
         <>
-            <div>
-                Available budget: £50000
-                Expected outgoing (5 years): £10000
-                Expected incoming: (5 years): £80000
+            <div className="grid grid-cols-6 bg-white m-4 shadow-md text-md">
+                <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2">£{calculateExpectedIncomings()}</span>
+                <span className="m-2 font-bold col-span-2">Expected outgoing (5 years):</span> <span className="mt-2">£{calculateExpectedOutgoings()}</span>
+                <span className="m-2 font-bold col-span-2">Available balance:</span> <span className="mt-2">£{balance}</span>
+                <span className="m-2 font-bold col-span-2">Expected 5 year balance:</span><span className="mt-2"> £{Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings())}</span>
             </div>
             <ScrollArea>
               <DragDropContext
@@ -127,8 +153,18 @@ export default function Plan({fiveYearPlan}) {
                     onChange={(e) => setFiveYearPlanComponent({...fiveYearPlanComponent, cost: e.target.value})}
                     className="h-9 mb-2 rounded-xl" 
                 />
-                <button onClick={handleAppend}>add</button>
+                <Button
+                    radius="xl"
+                    className="bg-sky-600 hover:bg-sky-700" 
+                    onClick={handleAppend}
+                >
+                    add
+                </Button>
             </form>
+
+            <div className="m-4 text-xl">
+                Estimated Remaining Balance: £{Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings()) - fiveYearPlanCost}
+            </div>
         </>
     )
 }

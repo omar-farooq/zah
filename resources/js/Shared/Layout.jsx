@@ -10,8 +10,8 @@ const Layout = ({ children, auth, title }) => {
                     <NavbarNested />
                 </div>
                 <div className="w-full">
-                    <Topbar auth={auth} title={title} />
                     <main className="min-h-screen bg-gray-100 flex flex-col items-center">
+                        <Topbar auth={auth} title={title} />
                         {children}
                     </main>
                 </div>

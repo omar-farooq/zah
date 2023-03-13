@@ -82,11 +82,7 @@ Route::get('/maintenance-requests/{maintenanceRequest}/comments', function (Main
 });
 
 //Stats pages
-Route::get('/treasury', function () {
-    return Inertia::render('Treasury/Summary', [
-        'title' => 'Treasury Summary'
-    ]);
-});
+Route::get('/treasury', [TreasuryReportController::class, 'summary']);
 
 //Update Model Approval
 Route::patch('/update-approval-status', [ApprovalController::class, 'updateModelApproval']);

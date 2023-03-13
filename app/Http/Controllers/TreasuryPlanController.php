@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RecurringPayment;
+use App\Models\Rent;
 use App\Models\TreasuryPlan;
+use App\Models\TreasuryReport;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -17,7 +20,12 @@ class TreasuryPlanController extends Controller
     {
         return Inertia::render('Treasury/Plan', [
             'title' => 'Treasury Planning',
-            'fiveYearPlan' => TreasuryPlan::where('plan_length', '5y')->orderBy('priority')->get()
+            'fiveYearPlan' => TreasuryPlan::where('plan_length', '5y')->orderBy('priority')->get(),
+            'balance' => TreasuryReport::latest()->first()->remaining_budget,
+            'rent' => Rent::pluck('amount')->sum(),
+            'weeklyRecurringPayments' => RecurringPayment::where('frequency', 'weekly')->pluck('amount')->sum(),
+            'monthlyRecurringPayments' => RecurringPayment::where('frequency', 'monthly')->pluck('amount')->sum(),
+            'annualRecurringPayments' => RecurringPayment::where('frequency', 'annually')->pluck('amount')->sum(),
         ]);
     }
 

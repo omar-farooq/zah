@@ -82,6 +82,6 @@ class RecurringPaymentController extends Controller
      */
     public function destroy(RecurringPayment $recurringPayment)
     {
-        //
+        $recurringPayment->delete();
     }
 }

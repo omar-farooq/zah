@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\PaidRent;
+use App\Models\Purchase;
 use App\Models\Rent;
 use App\Models\RentArrear;
 use App\Models\TreasuryItem;
 use App\Models\TreasuryReport;
 use App\Services\TreasuryService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -112,14 +114,39 @@ class TreasuryReportController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
+    /*
+     * Display the summary page for the treasury
      *
-     * @param  \App\Models\TreasuryReport  $treasuryReport
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(TreasuryReport $treasuryReport)
+    public function summary()
     {
-        //
+        $currentYearPurchaseCount = Purchase::where('purchased', 1)
+                                        ->where('created_at', '>', Carbon::now()->subYear())
+                                        ->count();
+
+        $previousYearPurchaseCount = Purchase::where('purchased', 1)
+                                         ->whereBetween('created_at', [Carbon::now()->subYears(2), Carbon::now()->subYear()])
+                                         ->count();
+
+        $currentSpending = TreasuryItem::where('is_incoming', 0)
+                                        ->where('created_at', '>', Carbon::now()->subYear())
+                                        ->pluck('amount')
+                                        ->sum();
+
+        $previousYearSpending = TreasuryItem::where('is_incoming', 0)
+                                            ->whereBetween('created_at', [Carbon::now()->subYears(2), Carbon::now()->subYear()])
+                                            ->pluck('amount')
+                                            ->sum();
+
+        return Inertia::render('Treasury/Summary', [
+            'title' => 'Treasury Summary',
+            'currentYearPurchaseCount' => $currentYearPurchaseCount,
+            'previousYearPurchaseCount' => $previousYearPurchaseCount,
+            'currentBalance' => TreasuryReport::latest()->first()->remaining_budget,
+            'previousYearBalance' => TreasuryReport::where('start_date', '<', Carbon::now()->subYear())->first()->remaining_budget,
+            'currentSpending' => $currentSpending,
+            'previousYearSpending' => $previousYearSpending
+        ]);
     }
+
 }

@@ -1,10 +1,33 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useReducer, useState } from 'react'
 import { ArrowLongRightIcon } from '@heroicons/react/24/solid'
+import Select from 'react-select'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
 export default function ViewTreasuryReport({report, rents, treasuryItems, previousBudget}) {
 
+    function init(treasuryItems) {
+        return treasuryItems
+    }
+    
+    function reducer(filteredTreasuryItems, filter) {
+        switch (filter.type) {
+            case 'incoming':
+                return treasuryItems.filter(x => x.is_incoming == 1) 
+            case 'outgoing':
+                return treasuryItems.filter(x => x.is_incoming == 0) 
+            case 'rent':
+                return treasuryItems.filter(x => x.treasurable_type == "App\\Models\\PaidRent")
+            case 'reset':
+                return init(filter.payload)
+            default:
+                throw new Error()
+        }
+    }
+
+    const [filteredTreasuryItems, dispatch] = useReducer(reducer, treasuryItems, init)
+
     const [receipts, setReceipts] = useState([])
+
     useEffect(() => {
         const getReceipts = async () => {
             let res
@@ -34,32 +57,47 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
                 <div className="bg-white text-xl ml-4">Report End: {report.end_date.split('T')[0]}</div>
             </div>
             <div>Starting Balance: £{previousBudget}</div>
-            <Table>
-            <THead>
-                <FirstTH heading="Amount" />
-                <TH heading="Type" />
-                <TH heading="Source" />
-                <TH heading="incoming/outcoming" />
-                <TH heading="receipt" />
-            </THead>
-            <TBody>
-                {treasuryItems.map(item => (
-                    <tr key={item.id} className={`${item.is_incoming ? 'bg-green-100' : 'bg-red-100'}`}>
-                        <TD>{item.amount}</TD>
-                        <TD>{item.treasurable_type == 'App\\Models\\PaidRent' ? 'Rent' : item.treasurable_type == 'App\\Models\\Payment' ? 'Payment' : 'other'}</TD>
-                        <TD>
-                            {
-                                item.treasurable_type === 'App\\Models\\PaidRent' ? rents.find(rent => rent.id === item.treasurable_id).user.name
-                                : ''
-                            }
-                        </TD>
-                        <TD>{item.is_incoming ? 'incoming' : 'outgoing'}</TD>
-                        <TD>{ReceiptDownloadLink(item.treasurable_id, item.treasurable_type)}</TD>
-                    </tr>
-                ))}
-                
-            </TBody>
-            </Table>
+            <div className="w-full flex flex-col items-center">
+                <div className="w-4/6">
+                    <Select
+                        className="w-1/4"
+                        placeholder="Filter"
+                        isClearable
+                        options={[
+                            {value: 'incoming', label: 'Incoming'},
+                            {value: 'outgoing', label: 'Outgoing'},
+                            {value: 'rent', label: 'Type: Rent'},
+                        ]}
+                        onChange={(e) => e ? dispatch({type: e.value}) : dispatch({type: 'reset', payload: treasuryItems})}
+                    />
+                </div>
+                <Table>
+                <THead>
+                    <FirstTH heading="Amount" />
+                    <TH heading="Type" />
+                    <TH heading="Source" />
+                    <TH heading="incoming/outcoming" />
+                    <TH heading="receipt" />
+                </THead>
+                <TBody>
+                    {filteredTreasuryItems.map(item => (
+                        <tr key={item.id} className={`${item.is_incoming ? 'bg-white' : 'bg-white'}`}>
+                            <TD>{item.amount}</TD>
+                            <TD>{item.treasurable_type == 'App\\Models\\PaidRent' ? 'Rent' : item.treasurable_type == 'App\\Models\\Payment' ? 'Payment' : 'other'}</TD>
+                            <TD>
+                                {
+                                    item.treasurable_type === 'App\\Models\\PaidRent' ? rents.find(rent => rent.id === item.treasurable_id).user.name
+                                    : ''
+                                }
+                            </TD>
+                            <TD>{item.is_incoming ? 'incoming' : 'outgoing'}</TD>
+                            <TD>{ReceiptDownloadLink(item.treasurable_id, item.treasurable_type)}</TD>
+                        </tr>
+                    ))}
+                    
+                </TBody>
+                </Table>
+            </div>
 
             <div className="mt-5 text-2xl">Calculated remaining budget: £{report.calculated_remaining_budget}</div>
             {report.remaining_budget != report.calculated_remaining_budget && <div>Adjusted budget: £{report.remaining_budget}</div>}

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('day_of_month_due')->nullable();
             $table->integer('month_due')->nullable();
             $table->decimal('amount', $precision = 8, $scale = 2);
+            $table->softDeletes($column = 'deleted_at', $precision = 0);
         });
     }
 
