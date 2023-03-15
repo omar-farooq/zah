@@ -1,10 +1,19 @@
+import { useEffect, useState } from 'react'
 import { Link } from '@inertiajs/inertia-react'
+import { Pagination } from '@mantine/core'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/Table'
 
-export default function Reports({reports}) {
+export default function Reports({reportPage1}) {
+
+    const [reports, setReports] = useState(reportPage1)
+
+    const getReports = async (page) => {
+        let res = await axios.get('/treasury-reports/?getReports=true&page='+page)
+        setReports(res.data)
+    }
+
     return (
         <>
-            <Link href={'/treasury-reports/create'}>Create Report</Link>
             <Table>
             <THead>
                 <FirstTH heading='Report Start' />
@@ -13,7 +22,7 @@ export default function Reports({reports}) {
                 <LastTH />
             </THead>
             <TBody>
-                {reports.map(report => (
+                {reports.data.map(report => (
                     <tr key={report.id}>
                         <TD data={report.start_date.split('T')[0]} />
                         <TD data={report.end_date.split('T')[0]} />
@@ -23,6 +32,20 @@ export default function Reports({reports}) {
                 ))}
             </TBody>
             </Table>
+            <Pagination
+                className="mt-5 mb-10"
+                total={reports.last_page}
+                page={reports.current_page}
+                onChange={(e) => getReports(e)}
+                withEdges
+            />
+
+            <Link 
+                href={'/treasury-reports/create'}
+                className="bg-sky-600 text-white text-lg p-2 border rounded-xl hover:bg-sky-700"
+            >
+                Create new report
+            </Link>
         </>
     )
 }

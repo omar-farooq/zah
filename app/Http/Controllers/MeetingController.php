@@ -18,12 +18,23 @@ class MeetingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Meeting $meeting)
+    public function index(Meeting $meeting, Request $request)
     {
-        return Inertia::render('Meetings/ListMinutes', [
-            'title' => 'Previous Minutes',
-            'meetings' => $meeting->where('cancelled',1)->orWhere('completed',1)->get()
-        ]);
+        if(isset($request->getMeetings) && $request->getMeetings === 'true') {
+            return response()->json(
+                $meeting->where('cancelled',1)->orWhere('completed',1)->paginate(10)
+            );
+        } else if (isset($request->search)) {
+            $result = Meeting::with('minutes', 'polls')->whereRelation('minutes', 'minute_text', 'like', '%'.$request->search.'%')
+                            ->orWhereRelation('polls', 'name', 'like', '%'.$request->search.'%')
+                            ->get();
+            return response()->json($result);
+        } else {
+            return Inertia::render('Meetings/ListMinutes', [
+                'title' => 'Previous Minutes',
+                'meetingsPageOne' => $meeting->where('cancelled',1)->orWhere('completed',1)->paginate(10)
+            ]);
+        }
     }
 
     /**

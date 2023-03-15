@@ -19,7 +19,7 @@ class MaintenanceRequestController extends Controller
     public function index(MaintenanceRequest $maintenanceRequest)
     {
         return Inertia::render('MaintenanceRequests/Browse', [
-            'title' => 'Maintenance Requests - Pending Approval',
+            'title' => 'Maintenance Requests - Need Approval',
             'maintenanceRequests' => $maintenanceRequest->orderBy('created_at', 'desc')->paginate(10),
             'unapprovedRequests' => $maintenanceRequest->notYetApproved()
         ]);

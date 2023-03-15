@@ -9,17 +9,17 @@ export default function Topbar({ auth, header, title }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
-            <nav className="bg-white border-b border-gray-100 shadow w-full">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <nav className="bg-white border-b border-gray-100 shadow w-full bg-[url('/images/floral.webp')]">
+                <div className="w-5/6 mx-auto">
                     <div className="flex justify-between h-16">
                         <div className="flex">
-                            <div className="shrink-0 flex items-center">
+                            <div className="shrink-0 flex items-center hidden">
                                 <Link href="/">
                                     <ApplicationLogo className="block h-9 w-auto text-gray-500" />
                                 </Link>
                             </div>
 
-                            <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                            <div className="hidden space-x-8 sm:-my-px sm:flex">
                                 <NavLink active="true">
                                     {title}
                                 </NavLink>

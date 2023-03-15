@@ -28,11 +28,17 @@ class TreasuryReportController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(TreasuryReport $treasuryReport, Request $request)
     {
+        if(isset($request->getReports) && $request->getReports === 'true') {
+            return response()->json(
+                $treasuryReport->orderBy('created_at', 'desc')->paginate(10)
+            );
+        }
+
         return Inertia::render('Treasury/Reports/index', [
             'title' => 'Treasury Report',
-            'reports' => TreasuryReport::all()
+            'reportPage1' => TreasuryReport::orderBy('created_at', 'desc')->paginate(10)
         ]);
     }
 
