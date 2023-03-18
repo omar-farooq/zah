@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Fragment } from 'react'
+import { InertiaLink } from '@inertiajs/inertia-react'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { Pagination } from '@mantine/core'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/Table'
@@ -27,11 +28,39 @@ export default function ListMinutes ({meetingsPageOne}) {
         }
     }
 
-    searchResults?.forEach(x =>  
-        x.polls.forEach(poll => 
-            console.log(poll.name)
-        )
-    )
+
+    const FindResultComponent = () => {
+        return (
+        searchResults.map((result, i) => {
+            let pollResults = result.polls.find(x => x.name.includes(searchTerm))
+            let minuteResults = result.minutes.find(x => x.minute_text.includes(searchTerm))
+
+            if(pollResults) {
+                return (
+                    <div key={i} className="bg-white w-1/3 border mt-4">
+                        <div className="text-xl">Poll <br />{pollResults.name}</div>
+                        <div>from {result.time_of_meeting}</div>
+                        <InertiaLink href={route('meetings.show', result.id)}>
+                            <div className="text-cyan-600">Click here to view the original meeting</div>
+                        </InertiaLink>
+                    </div>
+                )
+            }
+            if(minuteResults) {
+                return (
+                    <div key={i} className="bg-white w-1/3 border mt-4">
+                        <div className="text-xl">Minute </div>
+                        <div>{minuteResults.minute_text}</div>
+                        <div>from {result.time_of_meeting}</div>
+                        <InertiaLink href={route('meetings.show', result.id)}>
+                            <div className="text-cyan-600">Click here to view the original meeting</div>
+                        </InertiaLink>
+                    </div>
+                )
+            }
+        }))
+    }
+
     return (
         <>
             <div className="w-full flex flex-col items-center">
@@ -45,8 +74,14 @@ export default function ListMinutes ({meetingsPageOne}) {
                 </div>
             {
                 searchTerm.length > 0 ?
-                    <div>
-                        Search Results:
+                    <div className="w-full text-center flex flex-col items-center">
+                        Found {searchResults.length} Results:
+                        {
+                            searchResults.length > 0 ?
+                                <FindResultComponent />
+                            :
+                                <div>Please refine your search</div>
+                        }
                     </div>
                 :
                     <>

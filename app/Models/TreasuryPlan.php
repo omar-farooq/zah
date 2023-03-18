@@ -10,9 +10,15 @@ class TreasuryPlan extends Model
     use HasFactory;
 
     protected $fillable = [
-        'component',
-        'cost',
-        'priority',
+        'expected_incoming',
+        'expected_outgoing',
+        'available_balance',
+        'expected_balance',
+        'estimated_remaining_balance',
         'plan_length'
     ];
+
+    public function planComponents() {
+        return $this->belongsToMany(PlanComponent::class)->withPivot('priority');
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PlanComponent;
 use App\Models\RecurringPayment;
 use App\Models\Rent;
 use App\Models\TreasuryPlan;
@@ -16,11 +17,30 @@ class TreasuryPlanController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Inertia::render('Treasury/Plan', [
+
+        if(isset($request->getPage) && $request->getPage == true) {
+            return response()->json(
+                TreasuryPlan::paginate(10)
+            );
+        } else {
+            return Inertia::render('Treasury/Plans/Index', [
+                'title' => 'Treasury Plans',
+                'treasuryPlansPageOne' => TreasuryPlan::paginate(10)
+            ]);
+        }
+    }
+
+    /**
+     *
+     *
+     */
+    public function create()
+    {        
+        return Inertia::render('Treasury/Plans/Create', [
             'title' => 'Treasury Planning',
-            'fiveYearPlan' => TreasuryPlan::where('plan_length', '5y')->orderBy('priority')->get(),
+            'lastPlan' => TreasuryPlan::latest()->first(),
             'balance' => TreasuryReport::latest()->first()->remaining_budget,
             'rent' => Rent::pluck('amount')->sum(),
             'weeklyRecurringPayments' => RecurringPayment::where('frequency', 'weekly')->pluck('amount')->sum(),
@@ -28,7 +48,6 @@ class TreasuryPlanController extends Controller
             'annualRecurringPayments' => RecurringPayment::where('frequency', 'annually')->pluck('amount')->sum(),
         ]);
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -38,10 +57,12 @@ class TreasuryPlanController extends Controller
      */
     public function store(Request $request)
     {
-        $plan = TreasuryPlan::Create($request->all());
-        return response()->json([
-            'id' => $plan->id
-        ]);
+        $plan = TreasuryPlan::Create($request->except('components'));
+        foreach($request->input('components') as $component) {
+            $newComponent = PlanComponent::create($component);
+            $plan->planComponents()->attach([$newComponent->id => ['priority' => $component['priority']]]);
+        }
+
     }
 
     /**
@@ -52,7 +73,24 @@ class TreasuryPlanController extends Controller
      */
     public function show(TreasuryPlan $treasuryPlan)
     {
-        //
+        return Inertia::render('Treasury/Plans/View', [
+            'title' => 'View treasury plan',
+            'treasuryPlan' => TreasuryPlan::with('planComponents')->where('id', $treasuryPlan->id)->first()
+        ]);
+    }
+
+    /**
+     * Show the latest
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function latest()
+    {        
+        if(TreasuryPlan::count() == 0) {
+            return $this->create();
+        } else {
+            return $this->show(TreasuryPlan::with('planComponents')->latest()->first());
+        }
     }
 
     /**

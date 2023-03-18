@@ -44,6 +44,7 @@ export default function MaintenanceRequest(props) {
                                         model={model} 
                                         verified={verified}
                                         isChair={props.auth.user.role.name == 'Chair'}
+                                        isEmergency={props.maintenanceRequest.emergency == 1 ? true : false}
                                     />
                                 </div>
                         </div>

@@ -20,28 +20,19 @@ const useStyles = createStyles((theme) => ({
             },
 }));
 
-export default function Plan({fiveYearPlan, balance, rent, weeklyRecurringPayments, monthlyRecurringPayments, annualRecurringPayments}) {
+export default function CreatePlan({lastPlan, balance, rent, weeklyRecurringPayments, monthlyRecurringPayments, annualRecurringPayments}) {
     const { classes } = useStyles()
-    const [state, handlers] = useListState(fiveYearPlan);
+    const [state, handlers] = useListState([]);
 
     const [fiveYearPlanComponent, setFiveYearPlanComponent] = useState({priority: state.length + 1, component: '', cost: '', plan_length: '5y'})
     const [tenYearPlanComponent, setTenYearPlanComponent] = useState({component: '', cost: ''})
 
-    const [fiveYearPlanCost, setFiveYearPlanCost] = useState(fiveYearPlan.reduce((a,b) => {
-               return Number(b.cost) + Number(a)
-          },[]))
+    const [fiveYearPlanCost, setFiveYearPlanCost] = useState('')
+    const [key, setKey] = useState(1)
 
     useEffect(() => {
-        const updatePlan = async () => {
-            state.forEach((c,i) => {
-                if(c.priority != i + 1) {
-                    axios.patch('/treasury-plans/'+c.id, {priority: i+1})
-                }
-            })
-            handlers.apply((item, index) => ({...item, priority: index + 1}))
-        }
         if(state.find((x,i) => x.priority != i + 1)) {
-            updatePlan()
+            handlers.apply((item, index) => ({...item, priority: index + 1}))
         }
     },[state])
 
@@ -63,7 +54,7 @@ export default function Plan({fiveYearPlan, balance, rent, weeklyRecurringPaymen
                         <td style={{ width: 80 }}>{item.priority}</td>
                         <td style={{ width: 120 }}>{item.component}</td>
                         <td style={{ width: 80 }}>{item.cost}</td>
-                        <td><button onClick={() => handleDelete(item.id)}>del</button></td>
+                        <td><button onClick={() => handleDelete(item.key)}>del</button></td>
                       </tr>
                     )}
         </Draggable>
@@ -72,15 +63,14 @@ export default function Plan({fiveYearPlan, balance, rent, weeklyRecurringPaymen
     const handleAppend = async (e) => {
         e.preventDefault()
         if(fiveYearPlanComponent.component && fiveYearPlanComponent.cost) {
-            let newComponent = await axios.post('/treasury-plans', fiveYearPlanComponent)
-            handlers.append({...fiveYearPlanComponent, id: newComponent.data.id})
+            handlers.append({...fiveYearPlanComponent, key: key})
+            setKey(key+1)
             setFiveYearPlanComponent({component: '', cost: '', priority: fiveYearPlanComponent.priority + 1, plan_length: '5y'})
         }
     }
 
-    const handleDelete = async(id) => {
-        await axios.delete('/treasury-plans/'+id)
-        handlers.filter((component) => component.id !== id)
+    const handleDelete = (key) => {
+        handlers.filter((component) => component.key !== key)
     }
 
     const calculateExpectedOutgoings = () => {
@@ -96,7 +86,19 @@ export default function Plan({fiveYearPlan, balance, rent, weeklyRecurringPaymen
 
     const calculateRemainingBalance = () => Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings()) - fiveYearPlan.reduce((a,b) => {
        return Number(b.cost) + Number(a) 
-    },[]) 
+    },[])
+
+    const savePlan = () => {
+        axios.post('/treasury-plans', {
+            expected_incoming: calculateExpectedIncomings(),
+            expected_outgoing: calculateExpectedOutgoings(),
+            available_balance: balance,
+            expected_balance: Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings()),
+            estimated_remaining_balance: Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings()) - fiveYearPlanCost,
+            plan_length: '5y',
+            components: state
+        })
+    }
 
     return (
         <>
@@ -165,6 +167,13 @@ export default function Plan({fiveYearPlan, balance, rent, weeklyRecurringPaymen
             <div className="m-4 text-xl">
                 Estimated Remaining Balance: £{Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings()) - fiveYearPlanCost}
             </div>
+
+            <Button
+                className="bg-white text-sky-500 border border-sky-500 w-48 hover:text-sky-600 hover:bg-slate-100"
+                onClick={savePlan}
+            >
+                Save
+            </Button>
         </>
     )
 }
