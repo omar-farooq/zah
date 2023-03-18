@@ -30,7 +30,7 @@ class MeetingController extends Controller
                             ->get();
             return response()->json($result);
         } else {
-            return Inertia::render('Meetings/ListMinutes', [
+            return Inertia::render('Meetings/Index', [
                 'title' => 'Previous Minutes',
                 'meetingsPageOne' => $meeting->where('cancelled',1)->orWhere('completed',1)->paginate(10)
             ]);
@@ -84,7 +84,7 @@ class MeetingController extends Controller
      */
     public function show(Meeting $meeting)
     {
-        return Inertia::render('Meetings/Historical', [
+        return Inertia::render('Meetings/View', [
             'title' => 'Historical Meeting',
             'meeting' => $meeting->load(['meetingAgenda','minutes', 'attendees', 'secretaryReport', 'polls'])
         ]);

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import ApprovalButtons from './ApprovalButtons'
 import ChairApproval from './ChairApproval'
 
-export default function Approval({model, authUserApprovalHook, approvalStatusHook, verified, isChair}) {
+export default function Approval({model, authUserApprovalHook, approvalStatusHook, verified, isChair, isEmergency=false}) {
     const [memberApprovalCount, setMemberApprovalCount] = useState('')
     const [authUserApproval, setAuthUserApproval] = authUserApprovalHook
     const [approvalStatus, setApprovalStatus] = approvalStatusHook
@@ -35,16 +35,16 @@ export default function Approval({model, authUserApprovalHook, approvalStatusHoo
     },[authUserApproval])
 
     useEffect(() => {
-        if(memberCount && approvalStatus == 'in voting' && memberApprovalCount.approved > (memberCount / 2)) {
+        if(isEmergency && approvalStatus == 'in voting' && memberApprovalCount.approved > 0) {
             updateModelApprovalStatus('approved')
-        }
-
-        if(memberCount && approvalStatus == 'in voting' && memberApprovalCount.rejected > (memberCount / 2)) {
+        } else if(memberCount && approvalStatus == 'in voting' && memberApprovalCount.approved > (memberCount / 2)) {
+            updateModelApprovalStatus('approved')
+        } else if(memberCount && approvalStatus == 'in voting' && memberApprovalCount.rejected > (memberCount / 2)) {
             updateModelApprovalStatus('rejected')
-        }
-
-        if(memberCount && approvalStatus == 'in voting' && memberApprovalCount.approved == (memberCount / 2) && memberApprovalCount.rejected == (memberCount / 2)) {
+        } else if(memberCount && approvalStatus == 'in voting' && memberApprovalCount.approved == (memberCount / 2) && memberApprovalCount.rejected == (memberCount / 2)) {
             updateModelApprovalStatus('Chair to decide')
+        } else {
+
         }
     },[memberApprovalCount])
 

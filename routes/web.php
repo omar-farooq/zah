@@ -84,6 +84,9 @@ Route::get('/maintenance-requests/{maintenanceRequest}/comments', function (Main
 //Stats pages
 Route::get('/treasury', [TreasuryReportController::class, 'summary']);
 
+//Latest Treasury Plan
+Route::get('/treasury-plans/latest', [TreasuryPlanController::class, 'latest']);
+
 //Update Model Approval
 Route::patch('/update-approval-status', [ApprovalController::class, 'updateModelApproval']);
 
