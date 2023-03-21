@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PaidRent;
 use App\Models\Purchase;
+use App\Models\RecurringPayment;
 use App\Models\Rent;
 use App\Models\RentArrear;
 use App\Models\TreasuryItem;
@@ -54,7 +55,8 @@ class TreasuryReportController extends Controller
             'title' => 'Create Treasury Report',
             'rents' => Rent::with('user')->get(),
             'arrears' => $arrears->currentTenant()->get(),
-            'previousReport' => TreasuryReport::latest()->first()
+            'previousReport' => TreasuryReport::latest()->first(),
+            'recurringPayments' => RecurringPayment::all()
         ]);
     }
 
