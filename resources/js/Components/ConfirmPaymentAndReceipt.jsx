@@ -2,12 +2,13 @@ import { useEffect, useState, Fragment } from 'react'
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline'
 import { Button, FileInput } from '@mantine/core'
 
-export default function ConfirmPaymentAndReceipt({id, payableHook, openHook, model}) {
+export default function ConfirmPaymentAndReceipt({id, payableHook, openHook, model, paymentStatusHook}) {
 
     const [attached, setAttached] = useState([])
     const [existingReceipts, setExistingReceipts] = useState([])
     const [opened, setOpened] = openHook
     const [payable, setPayable] = payableHook
+    const [paymentStatus, setPaymentStatus] = paymentStatusHook ?? ''
 
     useEffect(() => {
         const getReceipts = async () => {
@@ -26,6 +27,9 @@ export default function ConfirmPaymentAndReceipt({id, payableHook, openHook, mod
                 purchased: payable.purchased,
                 received: payable.received
             })
+            if(payable.purchased == true) {
+                setPaymentStatus(0)
+            }
 
         } else {
             await axios.patch('/maintenance/'+id, {
@@ -55,23 +59,25 @@ export default function ConfirmPaymentAndReceipt({id, payableHook, openHook, mod
 
     return (
         <div>
-            {model == 'purchases' &&
-                <>
-                    <span>Confirm Payment amount:</span>
-                    <div className="flex flex-row">
-                        <span className="text-xl mt-2 mr-2">£</span>
-                        <input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            placeholder="Price"
-                            defaultValue={payable.price}
-                            onChange={(e) => {
-                                e.target.value == '' ? setPayable({...payable, price: ''}) : setPayable({...payable, price: parseFloat(e.target.value).toFixed(2)});
-                            }}
-                        />
-                    </div>
-                </>
+            {
+                model == 'purchases' && paymentStatus == '0' ?
+                    <>
+                        <span>Confirm Payment amount:</span>
+                        <div className="flex flex-row">
+                            <span className="text-xl mt-2 mr-2">£</span>
+                            <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                placeholder="Price"
+                                defaultValue={payable.price}
+                                onChange={(e) => {
+                                    e.target.value == '' ? setPayable({...payable, price: ''}) : setPayable({...payable, price: parseFloat(e.target.value).toFixed(2)});
+                                }}
+                            />
+                        </div>
+                    </>
+                : ''
             }
 
             {model == 'maintenance' &&
@@ -139,6 +145,8 @@ export default function ConfirmPaymentAndReceipt({id, payableHook, openHook, mod
             <div className="mt-4">
                 <div className="flex flex-row">
                     Payment has been made
+
+                    {model == 'purchases' && paymentStatus == '1' ? '' :
                     <input 
                         type="checkbox"
                         className="ml-2"
@@ -149,7 +157,7 @@ export default function ConfirmPaymentAndReceipt({id, payableHook, openHook, mod
                                 setPayable({...payable, paid: e.target.checked}) 
                         }}
                         checked={payable.purchased == '1' || payable.paid == '1' ? true : false}
-                    />
+                    />}
                 </div>
 
                 {model == 'purchases' &&

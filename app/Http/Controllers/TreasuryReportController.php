@@ -56,7 +56,8 @@ class TreasuryReportController extends Controller
             'rents' => Rent::with('user')->get(),
             'arrears' => $arrears->currentTenant()->get(),
             'previousReport' => TreasuryReport::latest()->first(),
-            'recurringPayments' => RecurringPayment::all()
+            'recurringPayments' => RecurringPayment::all(),
+            'unreported' => TreasuryItem::where('treasury_report_id', NULL)->get(),
         ]);
     }
 

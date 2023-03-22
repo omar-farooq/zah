@@ -4,12 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Maintenance;
 use App\Models\MaintenanceRequest;
+use App\Services\TreasuryService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class MaintenanceController extends Controller
 {
+
+    /**
+     * Instantiate Treasury Service
+     *
+     */
+    public function __construct() {
+        $this->treasuryService = new TreasuryService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -118,7 +128,12 @@ class MaintenanceController extends Controller
      */
     public function update(Request $request, Maintenance $maintenance)
     {
-        $maintenance->update($request->all());
+        if(isset($request->paid) && $request->paid == true && $maintenance->paid == 0) {
+            $this->treasuryService->createTreasurable(NULL, 'App\\Models\\Maintenance', $maintenance->id, 0, $maintenance->final_cost);
+            $maintenance->update($request->all());
+        } else {
+            $maintenance->update($request->all());
+        }
     }
 
     /**

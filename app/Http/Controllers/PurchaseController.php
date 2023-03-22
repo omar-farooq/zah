@@ -6,11 +6,21 @@ use App\Http\Requests\StorePurchaseRequest;
 use App\Http\Requests\UpdatePurchaseRequest;
 use App\Models\Purchase;
 use App\Models\PurchaseRequest;
+use App\Services\TreasuryService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PurchaseController extends Controller
 {
+
+    /**
+     * Instantiate the Treasury Service
+     *
+     */
+    public function __construct() {
+        $this->treasuryService = new TreasuryService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -111,7 +121,12 @@ class PurchaseController extends Controller
      */
     public function update(Request $request, Purchase $purchase)
     {
-        $purchase->update($request->all());
+        if(isset($request->purchased) && $request->purchased && $purchase->purchased == 0) {
+            $this->treasuryService->createTreasurable(NULL, 'App\\Models\\Purchase', $purchase->id, 0, $purchase->price);
+            $purchase->update($request->all());
+        } else {
+            $purchase->update($request->all());
+        }
     }
 
     /**
