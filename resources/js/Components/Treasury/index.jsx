@@ -1,3 +1,4 @@
 import CalculateRecurringPayments from './CalculateRecurringPayments'
+import PurchasesAndServices from './PurchasesAndServices'
 
-export { CalculateRecurringPayments }
+export { CalculateRecurringPayments, PurchasesAndServices }

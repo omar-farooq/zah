@@ -84,6 +84,9 @@ Route::get('/maintenance-requests/{maintenanceRequest}/comments', function (Main
 //Stats pages
 Route::get('/treasury', [TreasuryReportController::class, 'summary']);
 
+//Treasurable model
+Route::get('/treasurable/{id}', [TreasuryReportController::class, 'treasurableModel']);
+
 //Latest Treasury Plan
 Route::get('/treasury-plans/latest', [TreasuryPlanController::class, 'latest']);
 

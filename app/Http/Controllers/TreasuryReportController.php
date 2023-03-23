@@ -158,4 +158,11 @@ class TreasuryReportController extends Controller
         ]);
     }
 
+    /*
+     * Get Original Model from Treasury Item
+     *
+     */
+    public function treasurableModel($id) {        
+        return response()->json(TreasuryItem::find($id)->treasurable);
+    }
 }

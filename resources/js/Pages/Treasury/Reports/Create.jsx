@@ -1,7 +1,7 @@
 import { Button } from '@mantine/core'
-import { CalculateRecurringPayments } from '@/Components/Treasury'
+import { CalculateRecurringPayments, PurchasesAndServices } from '@/Components/Treasury'
 import { FirstDayOfTheMonth, LastDayOfTheMonth } from '@/Shared/Functions'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useReducer, useState } from 'react'
 import { RangeCalendar } from '@mantine/dates'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
@@ -34,6 +34,17 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
     const [adjustedBalance, setAdjustedBalance] = useState('')
     const [calculatedBalanceCheckbox, setCalculatedBalanceCheckbox] = useState(true)
     const [manualBalance, setManualBalance] = useState(null)
+
+    function unreportedReducer(unreportedItems, action) {
+        switch (action.type) {
+			case 'map':
+				return [...unreportedItems, {id: action.id, name: action.name, price: action.price, modelId: action.modelId}]
+            default:
+                throw new Error()
+        }
+    }
+
+    const [unreportedItems, dispatch] = useReducer(unreportedReducer, [])
 
     const updatePaidRent = (userId, amount, payable) => {
         setPaidRent([...paidRent.filter(x => x.user_id !== userId), {...paidRent.find(x => x.user_id === userId), amount_paid: Number(amount)}])
@@ -105,8 +116,6 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
         )))
     }
 
-
-    console.log(unreported)
     return (
         <>
         <RangeCalendar 
@@ -156,25 +165,11 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
         />
 
         
-        <div className="text-xl mt-12 font-bold">Purchases and Services</div>
-        <SmallTable>
-            <THead>
-                <FirstTH heading="Type" />
-                <TH heading="Amount" />
-                <LastTH />
-            </THead>
-            <TBody>
-                {unreported.map(x => (
-                    <Fragment key={x.id}>
-                        <tr>
-                            <FirstTD data={x.treasurable_type} />
-                            <TD data={x.amount} />
-                            <LastTD>view link goes here</LastTD>
-                        </tr>
-                    </Fragment>
-                ))}
-            </TBody>
-        </SmallTable>
+            <PurchasesAndServices
+                unreported={unreported}
+                itemReducer={[unreportedItems, dispatch]}
+				reducerFunction={unreportedReducer}
+            />
 
             <div className="text-xl mt-12 font-bold">Additional incomings/outgoings</div>
                 <form className="grid grid-cols-2" onSubmit={(e) => addInOut(e)}>
