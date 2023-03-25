@@ -38,7 +38,15 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
     function unreportedReducer(unreportedItems, action) {
         switch (action.type) {
 			case 'map':
-				return [...unreportedItems, {id: action.id, name: action.name, price: action.price, modelId: action.modelId}]
+				return [...unreportedItems, {id: action.id, name: action.name, price: action.price, modelId: action.modelId, receipt: action.receipt}]
+            case 'addReceipt':
+                return unreportedItems.map(x => {
+                    if(x.id == action.id) {
+                        return {...x, receipt: action.file}
+                    } else {
+                        return x
+                    }
+                })
             default:
                 throw new Error()
         }
@@ -90,7 +98,11 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
             return a + Number(b.amount_paid)
         },[])
 
-        return Number(payableTotal) + Number(rentTotal) + Number(previousReport.remaining_budget) - Number(calculatedRecurring)
+        const purchasesAndServicesTotal = unreported.reduce((a,b) => {
+            return Number(a) + Number(b.amount)
+        },[])
+
+        return Number(payableTotal) + Number(rentTotal) + Number(previousReport.remaining_budget) - Number(calculatedRecurring) - Number(purchasesAndServicesTotal)
     }
 
     const submitReport = async (e) => {
