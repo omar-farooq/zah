@@ -10,8 +10,8 @@ class Schedule extends Meeting
 {
     use HasFactory;
 	protected $table = 'schedule';
-	protected $fillable = array('date', 'user_id', 'availability');
-	protected $dates = ['date'];
+	protected $fillable = ['user_id', 'availability'];
+	protected $casts = ['date' => 'datetime'];
 	
 	public $timestamps = false;
 

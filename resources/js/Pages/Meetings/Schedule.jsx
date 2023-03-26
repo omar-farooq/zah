@@ -107,7 +107,7 @@ export default function Schedule(props) {
     //function to create a meeting
     const createMeeting = async () => {
         let time = document.getElementById('suggest-or-schedule-time').value
-        await axios.post('/meetings', {time: schedule.selectedDay + " " + time})
+        await axios.post('/meetings', {time: new Date(schedule.selectedDay + " " + time)})
         if (new Date(schedule.selectedDay + " " + time) < new Date(schedule.upcomingMeeting) || schedule.upcomingMeeting == 'null'){
             dispatch({type: 'setNewUpcomingMeeting', datetime: schedule.selectedDay + " " + time})
         }
@@ -128,7 +128,7 @@ export default function Schedule(props) {
     const makeSuggestion = async () => {
         let time = document.getElementById('suggest-or-schedule-time').value
         let res = await axios.post('/meetings/schedule/suggestions/add', 
-            {suggested_date: schedule.selectedDay + " " + time, user_id: props.currentUser.id}
+            {suggested_date: new Date(schedule.selectedDay + " " + time), user_id: props.currentUser.id}
         )
         dispatch({type: 'addSuggestion', newSuggestion: {id: res.data.id, suggested_date: LongDateTimeFormat(schedule.selectedDay + " " + time), user_id:props.currentUser.id}})
         setModalOpenState('false')

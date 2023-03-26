@@ -36,7 +36,7 @@ export default function Reports({reportPage1}) {
             <Pagination
                 className="mt-5 mb-10"
                 total={reports.last_page}
-                page={reports.current_page}
+                value={reports.current_page}
                 onChange={(e) => getReports(e)}
                 withEdges
             />

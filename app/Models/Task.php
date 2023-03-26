@@ -17,10 +17,8 @@ class Task extends Model
         'completed',
     ];
 
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'due_by',
+    protected $casts = [
+        'due_by' => 'datetime',
     ];
 
     /**

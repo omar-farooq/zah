@@ -1,4 +1,4 @@
-import { Navbar, Group, Code, ScrollArea, createStyles } from '@mantine/core'
+import { Navbar, Group, Code, ScrollArea, createStyles, rem } from '@mantine/core'
 import { LinksGroup } from './NavbarLinksGroup'
 import NavMenu from './NavMenu'
 
@@ -11,12 +11,12 @@ const useStyles = createStyles((theme) => ({
 
   header: {
 //    padding: theme.spacing.md,
-	padding: '47px',
+	padding: rem(47),
     paddingTop: 0,
     marginLeft: -theme.spacing.md,
     marginRight: -theme.spacing.md,
     color: theme.colorScheme === 'dark' ? theme.white : theme.black,
-    borderBottom: `1px solid ${
+    borderBottom: `${rem(1)} solid ${
       theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
     }`,
   },
@@ -34,7 +34,7 @@ const useStyles = createStyles((theme) => ({
   footer: {
     marginLeft: -theme.spacing.md,
     marginRight: -theme.spacing.md,
-    borderTop: `1px solid ${
+    borderTop: `${rem(1)} solid ${
       theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
     }`,
   },
@@ -45,7 +45,7 @@ export function NavbarNested() {
   const links = NavMenu.map((item) => <LinksGroup {...item} key={item.label} />);
 
   return (
-    <Navbar width={{ sm: 240 }} p="md" className={`${classes.navbar} h-auto`}>
+    <Navbar width={{ sm: rem(240) }} p="md" className={`${classes.navbar} h-auto`}>
       <Navbar.Section className={classes.header}>
       </Navbar.Section>
 

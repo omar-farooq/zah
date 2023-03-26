@@ -23,8 +23,8 @@ export default function Upcoming({maintenance}) {
                             <FirstTD data={x.maintenance_request.required_maintenance} />
                             <TD data={x.maintenance_request.type} />
                             <TD data={DateToUKLocale(x.maintenance_request.start_date)} />
-                            <TD data={TimeToUKLocale(x.maintenance_request.start_time)} />
-                            <TD data={TimeToUKLocale(x.maintenance_request.finish_time)} />
+                            <TD data={x.maintenance_request.start_time.split(':')[0]+':'+x.maintenance_request.start_time.split(':')[1]} />
+                            <TD data={x.maintenance_request.finish_time.split(':')[0]+':'+x.maintenance_request.finish_time.split(':')[1]} />
                             <TD data={DateToUKLocale(x.maintenance_request.end_date)} />
                             <LastTD 
                                 href={"maintenance"} 

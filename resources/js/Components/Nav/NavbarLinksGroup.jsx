@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Group, Box, Collapse, ThemeIcon, UnstyledButton, createStyles } from '@mantine/core';
+import { Group, Box, Collapse, ThemeIcon, UnstyledButton, createStyles, rem } from '@mantine/core';
 import { ChevronRightIcon, ChevronLeftIcon, CalendarDaysIcon } from '@heroicons/react/24/outline'
 import NavLink from '@/Components/Nav/NavLink' 
 import { Link } from '@inertiajs/inertia-react'
@@ -9,7 +9,7 @@ const useStyles = createStyles((theme) => ({
     fontWeight: 500,
     display: 'block',
     width: '100%',
-    padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
+    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
 //    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
     fontSize: theme.fontSizes.sm,
 
@@ -23,12 +23,12 @@ const useStyles = createStyles((theme) => ({
     fontWeight: 500,
     display: 'block',
     textDecoration: 'none',
-    padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
-    paddingLeft: 31,
-    marginLeft: 30,
+    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
+    paddingLeft: rem(31),
+    marginLeft: rem(30),
     fontSize: theme.fontSizes.sm,
 //    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
-    borderLeft: `1px solid ${
+    borderLeft: `${rem(1)} solid ${
       theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
     }`,
 

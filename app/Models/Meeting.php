@@ -14,9 +14,10 @@ class Meeting extends Model
         'cancelled',
         'completed',
         'notes',
-        'time_of_meeting'
     ];
-	protected $dates = ['time_of_meeting', 'created_at', 'updated_at'];
+    protected $casts = [
+        'time_of_meeting' => 'datetime'
+    ];
 
 	public function getTimeOfMeetingAttribute($date) {
 		//Get the date in the format Day of Week Month DD 

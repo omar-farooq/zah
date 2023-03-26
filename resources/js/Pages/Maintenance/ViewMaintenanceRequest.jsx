@@ -61,8 +61,8 @@ export default function MaintenanceRequest(props) {
                             : ''
                         }
                         </p>
-                        <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50"><b>Maintenance Start</b>: {DateTimeToUKLocale(requestService.start_time).split(',').splice(1)}</p>
-                        <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50"><b>Maintenance Finish</b>: {requestService.finish_time ? DateTimeToUKLocale(requestService.finish_time).split(',').splice(1) : 'Finish time not specified'}</p>
+                        <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50"><b>Maintenance Start</b>: {requestService.start_time.split(':')[0]}:{requestService.start_time.split(':')[1]}</p>
+                        <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50"><b>Maintenance Finish</b>: {requestService.finish_time ? requestService.finish_time.split(':')[0]+':'+requestService.finish_time.split(':')[1] : 'Finish time not specified'}</p>
                         <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50"><b>Contractor:</b> {requestService.contractor}</p>
                         <p className="text-l md:text-xl leading-normal text-gray-800 dark:text-gray-50">Email: {requestService.contractor_email} Phone: {requestService.contractor_phone}</p>
                         {requesterIsViewing ? "You" : requestService.user.name} requested this {requestService.reason}

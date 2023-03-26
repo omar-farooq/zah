@@ -165,7 +165,7 @@ export default function CreatePlan({lastPlan, balance, rent, weeklyRecurringPaym
             </form>
 
             <div className="m-4 text-xl">
-                Estimated Remaining Balance: £{Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings()) - fiveYearPlanCost}
+                Estimated Remaining Balance: £{(Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings()) - fiveYearPlanCost).toFixed(2)}
             </div>
 
             <Button

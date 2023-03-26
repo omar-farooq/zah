@@ -1,5 +1,5 @@
 import { ClockIcon } from '@heroicons/react/24/outline'
-import { DatePicker, DateRangePicker, TimeRangeInput } from '@mantine/dates'
+import { DateInput, DatePickerInput, TimeInput } from '@mantine/dates'
 import { HiddenCurrencyInput, ShowErrors, InputContainer, FormLabel, RequestLayout, Title, TileContainer, PreviewTile, FormTile } from '@/Layouts/RequestLayout'
 import { useForm } from '@inertiajs/inertia-react'
 import { useState, useEffect } from 'react'
@@ -27,15 +27,6 @@ export default function MaintenanceRequestForm() {
         finish_time: '',
         emergency: '0'
     })
-
-    /* Fix the TimeInput as it's broken out of the box */
-    useEffect(() => {
-        document.querySelectorAll('.mantine-TimeInput-timeInput').forEach(input => {
-            input.style.width="50px",
-            input.style.height="30px",
-            input.style.border="0px"
-        })
-    },[])
 
     function submit(e) {
         e.preventDefault()
@@ -116,7 +107,7 @@ export default function MaintenanceRequestForm() {
                             <div className="m-auto">
                             {
                                 dateRange == 'single' ?
-                                    <DatePicker 
+                                    <DateInput
                                         placeholder="Date of Maintenance" 
                                         label="Maintenance Date" 
                                         withAsterisk
@@ -125,7 +116,8 @@ export default function MaintenanceRequestForm() {
                                     />
 
                                 : dateRange == 'multiple' ?
-                                    <DateRangePicker 
+                                    <DatePickerInput
+                                        type="range"
                                         placeholder="Dates of Maintenance" 
                                         label="Maintenance Dates" 
                                         withAsterisk 
@@ -135,10 +127,16 @@ export default function MaintenanceRequestForm() {
 
                                 : ''
                             }
-                                <TimeRangeInput 
-                                    label="Maintenance Time" 
-                                    onChange={(e) => setData({...data, start_time: e[0], finish_time: e[1]})} 
-                                    clearable 
+                                <TimeInput 
+                                    label="Maintenance Start Time" 
+                                    onChange={(e) => setData({...data, start_time: e.target.value})} 
+                                    withAsterisk
+                                    icon={<ClockIcon className="h-5 w-5" />}
+                                />
+
+                                <TimeInput 
+                                    label="Maintenance Finish Time" 
+                                    onChange={(e) => setData({...data, finish_time: e.target.value})} 
                                     withAsterisk
                                     icon={<ClockIcon className="h-5 w-5" />}
                                 />
