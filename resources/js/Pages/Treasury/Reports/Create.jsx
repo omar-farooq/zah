@@ -38,7 +38,7 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
     function unreportedReducer(unreportedItems, action) {
         switch (action.type) {
 			case 'map':
-				return [...unreportedItems, {id: action.id, name: action.name, price: action.price, modelId: action.modelId, receipt: action.receipt}]
+				return [...unreportedItems, {id: action.id, name: action.name, price: action.price, model: action.model, modelId: action.modelId, receipt: action.receipt}]
             case 'addReceipt':
                 return unreportedItems.map(x => {
                     if(x.id == action.id) {
@@ -102,11 +102,10 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
             return Number(a) + Number(b.amount)
         },[])
 
-        return Number(payableTotal) + Number(rentTotal) + Number(previousReport.remaining_budget) - Number(calculatedRecurring) - Number(purchasesAndServicesTotal)
+        return (Number(payableTotal) + Number(rentTotal) + Number(previousReport.remaining_budget) - Number(calculatedRecurring) - Number(purchasesAndServicesTotal)).toFixed(2)
     }
 
     const submitReport = async (e) => {
-        //Post rent, treasurables without a meeting id to the backend
         let config = { headers: { 'content-type': 'multipart/form-data' }}
         let reportID = await axios.post('/treasury-reports', {
             start_date: dates[0],
@@ -114,8 +113,23 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
             calculated_remaining_budget: calculateBalance(),
             remaining_budget: manualBalance ?? calculateBalance(),
             paid_rents: paidRent,
-            //add maintenance/purchase treasurables
+            recurring: recurringPaymentsToBeMade,
+            unreported: unreportedItems
         })
+
+        //Add receipts for Purchases and Services
+        unreportedItems.forEach(item => (
+            item.receipt instanceof File ?
+                axios.post('/treasury-reports?treasurable=unreported', item, config)
+            : ''
+        ))
+
+        //Create each recurring payment as a treasurable
+        recurringPaymentsToBeMade.forEach(recurring => (
+            axios.post('/treasury-reports?treasurable=recurring', {
+                ...recurring,
+                treasuryReportID: reportID.data
+        },config)))
 
         //Create each Payment
         payables.forEach(payable => (

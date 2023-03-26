@@ -1,5 +1,6 @@
 import { useEffect, useReducer, useState } from 'react'
 import { ArrowLongRightIcon } from '@heroicons/react/24/solid'
+import { Loader } from '@mantine/core';
 import Select from 'react-select'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
@@ -27,16 +28,42 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
     const [filteredTreasuryItems, dispatch] = useReducer(reducer, treasuryItems, init)
 
     const [receipts, setReceipts] = useState([])
+    const [mappedTreasuryItems, setMappedTreasuryItems] = useState([])
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const getReceipts = async () => {
-            let res
-            treasuryItems.forEach(async item => (
-                res = await axios.get('/receipts?model=' + item.treasurable_type + '&id=' +item.treasurable_id),
-                res.data.length == 1 ? setReceipts([...receipts, res.data[0]]) : ''
-            ))
+            let arr = []
+            for (let item of treasuryItems) {
+                let res = await axios.get('/receipts?model=' + item.treasurable_type + '&id=' +item.treasurable_id)
+                res.data.length == 1 ? arr.push(res.data[0]) : ''
+            }
+            setReceipts(arr)
         }
         getReceipts()
+    },[])
+
+    useEffect(() => {
+        const mapTreasuryItems = async () => {
+            let arr = []
+            for (let item of treasuryItems) {
+                let sourceOrRecipient = await axios.get('/treasury-reports?find=sourceOrRecipient&type='+item.treasurable_type+'&id='+item.treasurable_id)
+                arr.push({
+                id: item.id,
+                type: item.treasurable_type,
+                sourceOrRecipient: sourceOrRecipient.data,
+                friendly_type: item.treasurable_type == 'App\\Models\\PaidRent' ? 'Rent'
+                : item.treasurable_type == 'App\\Models\\Payment' ? 'Payment'
+                : item.treasurable_type == 'App\\Models\\PaidRecurringPayment' ? 'Recurring Payment'
+                : item.treasurable_type == 'App\\Models\\Purchase' ? 'Purchase'
+                : item.treasurable_type == 'App\\Models\\Maintenance' ? 'Maintenance'
+                : ''
+                })
+            }
+                setMappedTreasuryItems(arr)
+                setLoading(!loading)
+        }                    
+        mapTreasuryItems()
     },[])
 
     const ReceiptDownloadLink = (id,type) => {
@@ -49,7 +76,16 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
         }
     }
 
+    const getFriendlyName = (type) => {
+        return mappedTreasuryItems.map(x => x.type == type ? 
+            x.friendly_type
+         : '')
+    }
+
     return (
+        loading ?
+            <Loader color="cyan" size="xl" className="mt-40" />
+            :
         <>
             <div className="flex flex-row mt-4">
                 <div className="bg-white text-xl mr-4">Report Start: {report.start_date.split('T')[0]}</div>
@@ -75,22 +111,26 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
                 <THead>
                     <FirstTH heading="Amount" />
                     <TH heading="Type" />
-                    <TH heading="Source" />
-                    <TH heading="incoming/outcoming" />
-                    <TH heading="receipt" />
+                    <TH heading="Direction" />
+                    <TH heading="Source/Recipient" />
+                    <TH heading="Receipt" />
                 </THead>
                 <TBody>
                     {filteredTreasuryItems.map(item => (
                         <tr key={item.id} className={`${item.is_incoming ? 'bg-white' : 'bg-white'}`}>
-                            <TD>{item.amount}</TD>
-                            <TD>{item.treasurable_type == 'App\\Models\\PaidRent' ? 'Rent' : item.treasurable_type == 'App\\Models\\Payment' ? 'Payment' : 'other'}</TD>
+                            <FirstTD>£{item.amount}</FirstTD>
+                            <TD>
+                                    {
+                                        getFriendlyName(item.treasurable_type)
+                                    }
+                            </TD>
+                            <TD>{item.is_incoming ? 'incoming' : 'outgoing'}</TD>
                             <TD>
                                 {
                                     item.treasurable_type === 'App\\Models\\PaidRent' ? rents.find(rent => rent.id === item.treasurable_id).user.name
-                                    : ''
+                                    : mappedTreasuryItems.map(x => x.id == item.id ? x.sourceOrRecipient : '')
                                 }
                             </TD>
-                            <TD>{item.is_incoming ? 'incoming' : 'outgoing'}</TD>
                             <TD>{ReceiptDownloadLink(item.treasurable_id, item.treasurable_type)}</TD>
                         </tr>
                     ))}

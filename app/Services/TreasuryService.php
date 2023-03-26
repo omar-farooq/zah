@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Models\PaidRent;
+use App\Models\PaidRecurringPayment;
 use App\Models\Payment;
 use App\Models\Receipt;
+use App\Models\RecurringPayment;
 use App\Models\TreasuryItem;
 use App\Models\TreasuryReport;
 use Illuminate\Support\Facades\Storage;
@@ -13,6 +15,8 @@ class TreasuryService {
     
     /**
      * Create a new report from the request
+     * Add rent as a treasurable via the payRent function
+     * Add the report ID to items that don't have it as they are now reported
      * 
      * @param array $request
      * @return void
@@ -22,6 +26,7 @@ class TreasuryService {
         $new_report = TreasuryReport::create($request->all());
         $new_report_id = $new_report->id;
         $this->payRent($new_report_id, $request->paid_rents);
+        $this->addReportIDToUnreported($new_report_id);
 
         return $new_report->id;
     }
@@ -42,6 +47,29 @@ class TreasuryService {
             
             $this->createTreasurable($report_id, "App\\Models\\PaidRent", $paid_rent->id, true, $paid_rent->amount_paid);
         }
+    }
+
+    /**
+     * Add recurring payments to Treasury Items
+     *
+     * @param int $report_id
+     * @param array $recurring
+     * @return void
+     *
+     */
+    public function payRecurring($recurring)
+    {
+            $paid_recurring = new PaidRecurringPayment;
+            $paid_recurring->treasury_report_id = $recurring->treasuryReportID;
+            $paid_recurring->recurring_payment_id = $recurring->id;
+            $paid_recurring->amount_paid = $recurring->amount;
+            $paid_recurring->save();
+
+            //Upload receipt
+            $this->addReceipt($recurring->receipt, "App\\Models\\PaidRecurringPayment", $paid_recurring->id);
+        
+            //Create treasurable
+            $this->createTreasurable($recurring->treasuryReportID, "App\\Models\\PaidRecurringPayment", $paid_recurring->id, false, $recurring->amount);
     }
 
     /**
@@ -85,5 +113,44 @@ class TreasuryService {
         $treasurable->treasurable_id = $treasurable_id;
         $treasurable->amount = $amount;
         $treasurable->save();
+    }
+
+    /*
+     * Add the report ID to any treasury Item without the id as they are now accounted for
+     *
+     */
+    protected function addReportIDToUnreported($treasury_report_id)
+    {
+        TreasuryItem::where('treasury_report_id', NULL)
+                    ->update(['treasury_report_id' => $treasury_report_id]);
+    }
+
+    /*
+     * Get the source/recipient of a payment
+     * @param arr 
+     * @return string JSON
+     *
+     */
+    public function getSourceOrRecipient($request) {
+            $model = app($request->type);
+
+            switch($request->type) {
+                case 'App\Models\PaidRecurringPayment':
+                    $recurringId = $model->where('id', $request->id)->first()->recurring_payment_id;
+                    $recipient = RecurringPayment::where('id', $recurringId)->first()->recipient;
+                    return response()->json($recipient);
+                    break;
+                case 'App\Models\PaidRent':
+                    return response()->json('test');
+				case 'App\Models\Payment':
+					return response()->json($model->where('id', $request->id)->first()->name);
+				case 'App\Models\Purchase':
+					return response()->json('');
+				case 'App\Models\Maintenance':
+					return response()->json($model->where('id', $request->id)->first()->maintenanceRequest->contractor);
+                default:
+                    return response()->json('');
+            }
+
     }
 }

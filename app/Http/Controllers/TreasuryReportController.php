@@ -37,6 +37,10 @@ class TreasuryReportController extends Controller
             );
         }
 
+        if(isset($request->find) && $request->find == 'sourceOrRecipient') {
+            return $this->treasuryService->getSourceOrRecipient($request);
+        }
+
         return Inertia::render('Treasury/Reports/index', [
             'title' => 'Treasury Report',
             'reportPage1' => TreasuryReport::orderBy('created_at', 'desc')->paginate(10)
@@ -69,7 +73,14 @@ class TreasuryReportController extends Controller
      */
     public function store(Request $request)
     {
-        return response()->json($this->treasuryService->createReport($request));
+        if(isset($request->treasurable) && $request->treasurable == 'recurring') {
+            $this->treasuryService->payRecurring($request);
+        }
+        else if(isset($request->treasurable) && $request->treasurable == 'unreported') {
+            $this->treasuryService->addReceipt($request->receipt, $request->model, $request->modelId);
+        } else {
+            return response()->json($this->treasuryService->createReport($request));
+        }
     }
 
     /**

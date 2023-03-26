@@ -15,6 +15,7 @@ export default function PurchasesAndServices({unreported, itemReducer, reducerFu
                     id: x.id,
                     name: res.data.maintenance_request?.required_maintenance ?? res.data.name,
                     price: res.data.final_cost ?? res.data.price,
+                    model: x.treasurable_type,
                     modelId: res.data.id,
                     receipt: receipt.data
                 })
