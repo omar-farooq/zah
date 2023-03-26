@@ -12,10 +12,12 @@ export default function Purchase({auth,purchaseID}) {
     //hooks
     const [opened, setOpened] = useState(false)
     const [purchase, setPurchase] = useState({})
+    const [paymentStatus, setPaymentStatus] = useState('')
 
     const getPurchase = async () => {
         let res = await axios.get('/purchases/'+purchaseID+'?getPurchase=true')
         setPurchase(res.data)
+        setPaymentStatus(res.data.purchased)
     }
 
     useEffect(() => {
@@ -68,6 +70,7 @@ export default function Purchase({auth,purchaseID}) {
                 openHook={[opened, setOpened]}
                 payableHook={[purchase, setPurchase]}
                 model={"purchases"}
+                paymentStatusHook={[paymentStatus, setPaymentStatus]}
             />
         </Modal>
         </>

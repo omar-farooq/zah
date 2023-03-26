@@ -1,10 +1,11 @@
-import { FirstDayOfTheMonth, LastDayOfTheMonth } from '@/Shared/Functions'
-import { Fragment, useState } from 'react'
-import { RangeCalendar } from '@mantine/dates'
 import { Button } from '@mantine/core'
+import { CalculateRecurringPayments, PurchasesAndServices } from '@/Components/Treasury'
+import { FirstDayOfTheMonth, LastDayOfTheMonth } from '@/Shared/Functions'
+import { Fragment, useEffect, useReducer, useState } from 'react'
+import { RangeCalendar } from '@mantine/dates'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
-export default function CreateReport({rents, arrears, previousReport}) {
+export default function CreateReport({rents, arrears, previousReport, recurringPayments, unreported}) {
 
     function calculatePayableRent(rentPerWeek) {
         if(dates[0] && dates[1]) {
@@ -23,23 +24,44 @@ export default function CreateReport({rents, arrears, previousReport}) {
     const [updatedArrears, setUpdatedArrears] = useState(arrears);
     const [paidRent, setPaidRent] = useState(rents.map(rent => ({
         user_id: rent.user.id,
-        amount_paid: calculatePayableRent(rent.amount)
+        amount_paid: ''
     })))
 
     const [payables, setPayables] = useState([])
+    const [recurringPaymentsToBeMade, setRecurringPaymentsToBeMade] = useState([])
+    const [calculatedRecurring, setCalculatedRecurring] = useState('')
 
     const [adjustedBalance, setAdjustedBalance] = useState('')
     const [calculatedBalanceCheckbox, setCalculatedBalanceCheckbox] = useState(true)
     const [manualBalance, setManualBalance] = useState(null)
 
+    function unreportedReducer(unreportedItems, action) {
+        switch (action.type) {
+			case 'map':
+				return [...unreportedItems, {id: action.id, name: action.name, price: action.price, model: action.model, modelId: action.modelId, receipt: action.receipt}]
+            case 'addReceipt':
+                return unreportedItems.map(x => {
+                    if(x.id == action.id) {
+                        return {...x, receipt: action.file}
+                    } else {
+                        return x
+                    }
+                })
+            default:
+                throw new Error()
+        }
+    }
+
+    const [unreportedItems, dispatch] = useReducer(unreportedReducer, [])
+
     const updatePaidRent = (userId, amount, payable) => {
         setPaidRent([...paidRent.filter(x => x.user_id !== userId), {...paidRent.find(x => x.user_id === userId), amount_paid: Number(amount)}])
 
         updatedArrears.find(x => x.user_id === userId) ?
-            setUpdatedArrears([...updatedArrears.filter(x => x.user_id !== userId), {...updatedArrears.find(x => x.user_id === userId), amount: Number(calculatePayableRent(payable) - amount) + Number(arrears.find(x => x.user_id === userId).amount)}])
+            setUpdatedArrears([...updatedArrears.filter(x => x.user_id !== userId), {...updatedArrears.find(x => x.user_id === userId), amount: (Number(calculatePayableRent(payable) - amount) + Number(arrears.find(x => x.user_id === userId).amount)).toFixed(2)}])
 
         :
-            setUpdatedArrears([...updatedArrears, {user_id: userId, amount: calculatePayableRent(payable) - amount}])
+            setUpdatedArrears([...updatedArrears, {user_id: userId, amount: (calculatePayableRent(payable) - amount).toFixed(2)}])
     }
 
     const addInOut = (e) => {
@@ -76,11 +98,14 @@ export default function CreateReport({rents, arrears, previousReport}) {
             return a + Number(b.amount_paid)
         },[])
 
-        return Number(payableTotal) + Number(rentTotal) + Number(previousReport.remaining_budget)
+        const purchasesAndServicesTotal = unreported.reduce((a,b) => {
+            return Number(a) + Number(b.amount)
+        },[])
+
+        return (Number(payableTotal) + Number(rentTotal) + Number(previousReport.remaining_budget) - Number(calculatedRecurring) - Number(purchasesAndServicesTotal)).toFixed(2)
     }
 
     const submitReport = async (e) => {
-        //Post rent, treasurables without a meeting id to the backend
         let config = { headers: { 'content-type': 'multipart/form-data' }}
         let reportID = await axios.post('/treasury-reports', {
             start_date: dates[0],
@@ -88,8 +113,23 @@ export default function CreateReport({rents, arrears, previousReport}) {
             calculated_remaining_budget: calculateBalance(),
             remaining_budget: manualBalance ?? calculateBalance(),
             paid_rents: paidRent,
-            //add maintenance/purchase treasurables
+            recurring: recurringPaymentsToBeMade,
+            unreported: unreportedItems
         })
+
+        //Add receipts for Purchases and Services
+        unreportedItems.forEach(item => (
+            item.receipt instanceof File ?
+                axios.post('/treasury-reports?treasurable=unreported', item, config)
+            : ''
+        ))
+
+        //Create each recurring payment as a treasurable
+        recurringPaymentsToBeMade.forEach(recurring => (
+            axios.post('/treasury-reports?treasurable=recurring', {
+                ...recurring,
+                treasuryReportID: reportID.data
+        },config)))
 
         //Create each Payment
         payables.forEach(payable => (
@@ -110,6 +150,7 @@ export default function CreateReport({rents, arrears, previousReport}) {
             minDate={newReportDefaultStart}
         />
 
+        <div className="text-xl mt-4 mb-4 font-bold">Rents Paid</div>
         <table className="table-fixed bg-white border border-collapse border-slate-300">
             <thead>
                 <tr className="border border-slate-300 bg-slate-100">
@@ -142,8 +183,22 @@ export default function CreateReport({rents, arrears, previousReport}) {
             </thead>        
         </table>
 
-        <div className="text-xl mt-4">Additional incomings/outgoings</div>
-            <form className="grid grid-cols-2" onSubmit={(e) => addInOut(e)}>
+        <CalculateRecurringPayments 
+            recurringPayments={recurringPayments}
+            dates={dates}
+            recurringPaymentsToBeMadeHook={[recurringPaymentsToBeMade, setRecurringPaymentsToBeMade]}
+            calculatedRecurringHook={[calculatedRecurring, setCalculatedRecurring]}
+        />
+
+        
+            <PurchasesAndServices
+                unreported={unreported}
+                itemReducer={[unreportedItems, dispatch]}
+				reducerFunction={unreportedReducer}
+            />
+
+            <div className="text-xl mt-12 font-bold">Additional incomings/outgoings</div>
+                <form className="grid grid-cols-2" onSubmit={(e) => addInOut(e)}>
                 <div className="flex flex-col w-11/12 place-self-center">
                     <label htmlFor="name">Payable Item</label>
                     <input type="text" id="name" required="required" />

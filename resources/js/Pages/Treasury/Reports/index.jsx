@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from '@inertiajs/inertia-react'
 import { Pagination } from '@mantine/core'
+import { DateTimeToUKDate } from '@/Shared/Functions'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/Table'
 
 export default function Reports({reportPage1}) {
@@ -24,8 +25,8 @@ export default function Reports({reportPage1}) {
             <TBody>
                 {reports.data.map(report => (
                     <tr key={report.id}>
-                        <TD data={report.start_date.split('T')[0]} />
-                        <TD data={report.end_date.split('T')[0]} />
+                        <TD data={DateTimeToUKDate(report.start_date)} />
+                        <TD data={DateTimeToUKDate(report.end_date)} />
                         <TD data={report.remaining_budget} />
                         <LastTD href={'treasury-reports'} itemID={report.id} />
                     </tr>

@@ -18,6 +18,14 @@ export function DateToUKLocale(date) {
     )
 }
 
+//DateTime to UK Date
+export function DateTimeToUKDate(date) {
+    let localDate = new Date(date).toLocaleDateString('en-GB', {timeZone: "Europe/London"})
+    return (
+        localDate
+    )
+}
+
 //Time only into UK local
 export function TimeToUKLocale(date) {
     let timeOptions = { hour: '2-digit', minute: '2-digit' }

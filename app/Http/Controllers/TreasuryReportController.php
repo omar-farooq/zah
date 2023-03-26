@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PaidRent;
 use App\Models\Purchase;
+use App\Models\RecurringPayment;
 use App\Models\Rent;
 use App\Models\RentArrear;
 use App\Models\TreasuryItem;
@@ -36,6 +37,10 @@ class TreasuryReportController extends Controller
             );
         }
 
+        if(isset($request->find) && $request->find == 'sourceOrRecipient') {
+            return $this->treasuryService->getSourceOrRecipient($request);
+        }
+
         return Inertia::render('Treasury/Reports/index', [
             'title' => 'Treasury Report',
             'reportPage1' => TreasuryReport::orderBy('created_at', 'desc')->paginate(10)
@@ -54,7 +59,9 @@ class TreasuryReportController extends Controller
             'title' => 'Create Treasury Report',
             'rents' => Rent::with('user')->get(),
             'arrears' => $arrears->currentTenant()->get(),
-            'previousReport' => TreasuryReport::latest()->first()
+            'previousReport' => TreasuryReport::latest()->first(),
+            'recurringPayments' => RecurringPayment::all(),
+            'unreported' => TreasuryItem::where('treasury_report_id', NULL)->get(),
         ]);
     }
 
@@ -66,7 +73,14 @@ class TreasuryReportController extends Controller
      */
     public function store(Request $request)
     {
-        return response()->json($this->treasuryService->createReport($request));
+        if(isset($request->treasurable) && $request->treasurable == 'recurring') {
+            $this->treasuryService->payRecurring($request);
+        }
+        else if(isset($request->treasurable) && $request->treasurable == 'unreported') {
+            $this->treasuryService->addReceipt($request->receipt, $request->model, $request->modelId);
+        } else {
+            return response()->json($this->treasuryService->createReport($request));
+        }
     }
 
     /**
@@ -155,4 +169,11 @@ class TreasuryReportController extends Controller
         ]);
     }
 
+    /*
+     * Get Original Model from Treasury Item
+     *
+     */
+    public function treasurableModel($id) {        
+        return response()->json(TreasuryItem::find($id)->treasurable);
+    }
 }
