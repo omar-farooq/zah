@@ -66,7 +66,9 @@ class TreasuryService {
             $paid_recurring->save();
 
             //Upload receipt
-            $this->addReceipt($recurring->receipt, "App\\Models\\PaidRecurringPayment", $paid_recurring->id);
+            if(isset($recurring->receipt)) {
+                $this->addReceipt($recurring->receipt, "App\\Models\\PaidRecurringPayment", $paid_recurring->id);
+            }
         
             //Create treasurable
             $this->createTreasurable($recurring->treasuryReportID, "App\\Models\\PaidRecurringPayment", $paid_recurring->id, false, $recurring->amount);
