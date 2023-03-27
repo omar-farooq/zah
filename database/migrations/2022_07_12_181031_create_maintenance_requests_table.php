@@ -18,8 +18,8 @@ return new class extends Migration
             $table->timestamps();
             $table->time('start_time');
             $table->time('finish_time');
-            $table->date('start_date');
-            $table->date('end_date');
+            $table->datetime('start_date');
+            $table->datetime('end_date');
             $table->decimal('cost', $precision = 8, $scale = 2);
             $table->text('required_maintenance');
             $table->text('reason');

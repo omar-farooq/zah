@@ -5,6 +5,7 @@ import {
   Avatar,
   Text,
   createStyles,
+  rem
 } from '@mantine/core';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 

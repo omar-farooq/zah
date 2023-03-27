@@ -1,7 +1,7 @@
 import { Button } from '@mantine/core'
 import { CheckIcon } from '@heroicons/react/24/solid';
 import { ComponentTitle } from '@/Components/Meeting'
-import { DatePicker } from '@mantine/dates';
+import { DatePickerInput } from '@mantine/dates';
 import { DateTimeToUKLocale } from '@/Shared/Functions'
 import { MultiSelect } from '@mantine/core'
 import { useState, useEffect, useReducer } from 'react'
@@ -181,11 +181,12 @@ export default function Tasks() {
                     />
                 </div>
                 <div className="field col-12 md:col-4 col-start-3 col-end-5">
-                    <DatePicker 
+                    <label>Due by</label>
+                    <DatePickerInput
                         value={tasks.date}
                         onChange={(e) => dispatch({type: 'setDate', value: e})}
                         placeholder="Due by (optional)"
-                        label="Due By"
+                        className="bg-white"
                         minDate={new Date}
                     />
                 </div>

@@ -2,7 +2,7 @@ import { Button } from '@mantine/core'
 import { CalculateRecurringPayments, PurchasesAndServices } from '@/Components/Treasury'
 import { FirstDayOfTheMonth, LastDayOfTheMonth } from '@/Shared/Functions'
 import { Fragment, useEffect, useReducer, useState } from 'react'
-import { RangeCalendar } from '@mantine/dates'
+import { DatePicker } from '@mantine/dates'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
 export default function CreateReport({rents, arrears, previousReport, recurringPayments, unreported}) {
@@ -144,7 +144,8 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
 
     return (
         <>
-        <RangeCalendar 
+        <DatePicker
+            type="range"
             value={dates} 
             onChange={setDates} 
             minDate={newReportDefaultStart}

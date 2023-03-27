@@ -4,7 +4,7 @@
 
 //Date/Time into UK locale.
 export function DateTimeToUKLocale(date) {
-    let localDate = new Date(date).toLocaleString('en-GB')
+    let localDate = new Date(date).toLocaleString('en-GB', {timeZone: "Europe/London"})
     return (
         localDate
     )
@@ -12,7 +12,7 @@ export function DateTimeToUKLocale(date) {
 
 //Date only into UK locale.
 export function DateToUKLocale(date) {
-    let localDate = new Date(date).toLocaleDateString('en-GB')
+    let localDate = new Date(date).toLocaleDateString('en-GB', {timeZone: "Europe/London"})
     return (
         localDate
     )

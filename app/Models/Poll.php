@@ -13,10 +13,9 @@ class Poll extends Model
     protected $fillable = [
         'name',
         'meeting_id',
-        'poll_end'
     ];
 
-    protected $dates = ['poll_end', 'created_at', 'updated_at'];
+    protected $casts = ['poll_end' => 'datetime'];
 
     protected $with = ['pollItems'];
 

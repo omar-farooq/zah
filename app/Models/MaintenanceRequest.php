@@ -22,16 +22,14 @@ class MaintenanceRequest extends Model
         'type',
         'user_id',
         'approval_status',
-        'emergency'
-    ];
-
-    protected $dates = [
-        'created_at',
-        'updated_at',
+        'emergency',
         'start_time',
         'finish_time',
-        'start_date',
-        'end_date'
+    ];
+
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime'
     ];
 
     protected $with = ['user', 'approvals'];

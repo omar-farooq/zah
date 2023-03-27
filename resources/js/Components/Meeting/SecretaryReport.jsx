@@ -2,9 +2,9 @@ import { useRef, useState, useEffect, useReducer } from 'react'
 import { Document, Page } from 'react-pdf/dist/esm/entry.vite'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-import { Alert, MantineProvider, Text, Group, Button, createStyles, Textarea } from '@mantine/core'
+import { Alert, MantineProvider, Text, Group, Button, createStyles, Textarea, rem } from '@mantine/core'
 import { Dropzone, MIME_TYPES } from '@mantine/dropzone'
-import { NotificationsProvider, showNotification } from '@mantine/notifications'
+import { Notifications, showNotification } from '@mantine/notifications'
 import { SuccessNotificationSettings } from '@/Shared/Functions'
 import { DocumentArrowDownIcon, XMarkIcon, ArrowDownIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline'
 import Input from '@/Components/Input'
@@ -12,20 +12,20 @@ import Input from '@/Components/Input'
 const useStyles = createStyles((theme) => ({
       wrapper: {
               position: 'relative',
-              marginBottom: 30,
+              marginBottom: rem(30),
             },
 
       dropzone: {
-              borderWidth: 1,
-              paddingBottom: 50,
+              borderWidth: rem(1),
+              paddingBottom: rem(50),
             },
 
       control: {
               backgroundColor: '#228be6 !important',
               position: 'absolute',
-              width: 250,
-              left: 'calc(50% - 125px)',
-              bottom: -20,
+              width: rem(250),
+              left: `calc(50% - ${rem(125)})`,
+              bottom: rem(-20),
             },
 }));
 
@@ -125,7 +125,7 @@ export default function SecretaryReport() {
     return (
         <>
             <MantineProvider withNormalizeCSS withGlobalStyles>
-                <NotificationsProvider>
+                <Notifications />
                     <form onSubmit={handleSubmit} className="grid grid-cols-8 gap-4">
                         <div className="text-xl col-start-1 lg:col-start-3 col-end-5 bg-sky-700 text-white flex justify-center">Secretary's Report</div>
                         <div className="col-start-1 lg:col-start-3 col-end-6">
@@ -164,7 +164,7 @@ export default function SecretaryReport() {
                         }
                         
                         {report.composeType == 'upload' &&
-                            <>
+                        <>
                             {report.written_report ? <Alert title="Warning" color="red" className="col-start-3 col-end-7"> uploading a report will delete your written report</Alert> : ''}
                             <div className="col-start-1 col-end-9">
                                 <div className={classes.wrapper}>
@@ -215,11 +215,10 @@ export default function SecretaryReport() {
                                     </Button>
                                 </div>
                             </div>
-                            </>
-                        }
+                        </>
+                    }
                         <Button type="submit" color="dark" className="col-start-2 lg:col-start-4 col-end-8 lg:col-end-6 bg-black w-1/2 place-self-center mb-10">{report.composeType == 'write' ? 'Save' : 'Upload'}</Button>
                     </form>
-                </NotificationsProvider>
             </MantineProvider>
             <div className="flex flex-col items-center">
                 {report.uploaded &&
