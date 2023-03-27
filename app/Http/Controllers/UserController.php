@@ -91,22 +91,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        if($request->attribute == 'rent') {
-            $user->rent->update($request->all());
-        }
-
-        if($request->attribute == 'is_tenant') {
-            if($request->is_tenant == 0) {
-                $user->rent->delete();
-            } else { 
-                $rent = new Rent;
-                $rent->user_id = $user->id;
-                $rent->amount = $request->amount;
-                $rent->save();
-            }
-
-            $user->update($request->all());
-        }
+        $user->update($request->all());
     }
 
     /**

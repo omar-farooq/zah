@@ -44,15 +44,15 @@ export default function ViewPlan({treasuryPlan}) {
 
             <Link 
                 href={route('treasury-plans.create')}
-                className="bg-sky-600 hover:bg-sky-700 text-white text-lg border rounded-lg w-52 h-10 text-center py-1"
+                className="bg-pink-700 hover:bg-pink-800 text-white text-md border rounded-md w-52 h-9 text-center p-2 flex"
             >
-                Create Treasury Plan
+                <span className="w-full self-center justify-center">Create Treasury Plan</span>
             </Link>
             <Link 
                 href={route('treasury-plans.index')}
-                className="bg-sky-600 hover:bg-sky-700 text-white text-lg border rounded-lg w-52 h-10 text-center mt-4 py-1"
+                className="bg-sky-600 hover:bg-sky-700 text-white text-md border rounded-md w-52 h-9 text-center mt-2 p-2 flex"
             >
-                View all plans
+                <span className="w-full self-center">View all plans</span>
             </Link>
         </>
     )

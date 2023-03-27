@@ -22,7 +22,8 @@ const NavMenu = [
         links: [
             {id: 1, label: 'Summary', link: '/treasury'}, 
             {id: 2, label: 'Reports', link: '/treasury-reports'},
-            {id: 3, label: 'Plans', link: '/treasury-plans/latest'}
+            {id: 3, label: 'Plans', link: '/treasury-plans/latest'},
+            {id: 3, label: 'Rents', link: '/rents'}
         ]
     },
 	{id: 3, label: 'Purchases', icon: ShoppingBagIcon,
