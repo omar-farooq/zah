@@ -2,7 +2,7 @@ import { DateTimeToUKDate } from '@/Shared/Functions'
 export default function ViewMaintenance({maintenance}) {
 
     return (
-        <div className="grid grid-cols-2 gap-2 bg-white w-2/5 mt-10 shadow p-5 text-lg">
+        <div className="grid grid-cols-2 gap-2 bg-white w-full sm:w-4/5 lg:w-2/5 mt-10 shadow p-5 text-sm md:text-base lg:text-lg">
             <span className="font-bold">Maintenance:</span> <span>{maintenance.maintenance_request.required_maintenance}</span>
             <span className="font-bold">Type:</span> <span>{maintenance.maintenance_request.type}</span>
 

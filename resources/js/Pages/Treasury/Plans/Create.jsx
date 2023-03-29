@@ -102,7 +102,7 @@ export default function CreatePlan({lastPlan, balance, rent, weeklyRecurringPaym
 
     return (
         <>
-            <div className="grid grid-cols-6 bg-white m-4 shadow-md text-md">
+            <div className="grid grid-cols-6 bg-white m-4 shadow-md text-sm md:text-base">
                 <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2">£{calculateExpectedIncomings()}</span>
                 <span className="m-2 font-bold col-span-2">Expected outgoing (5 years):</span> <span className="mt-2">£{calculateExpectedOutgoings()}</span>
                 <span className="m-2 font-bold col-span-2">Available balance:</span> <span className="mt-2">£{balance}</span>
@@ -157,7 +157,7 @@ export default function CreatePlan({lastPlan, balance, rent, weeklyRecurringPaym
                 />
                 <Button
                     radius="xl"
-                    className="bg-sky-600 hover:bg-sky-700" 
+                    className="bg-sky-600 hover:!bg-sky-700" 
                     onClick={handleAppend}
                 >
                     add
@@ -169,7 +169,7 @@ export default function CreatePlan({lastPlan, balance, rent, weeklyRecurringPaym
             </div>
 
             <Button
-                className="bg-white text-sky-500 border border-sky-500 w-48 hover:text-sky-600 hover:bg-slate-100"
+                className="bg-white text-sky-500 border border-sky-500 w-48 hover:text-sky-600 hover:!bg-slate-100"
                 onClick={savePlan}
             >
                 Save

@@ -95,7 +95,7 @@ export default function Polls({auth}) {
                 Polls
             </ComponentTitle>
 
-            <div className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-5">
+            <div className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7">
                 {polls.map(poll => ( 
                     <DisplayPoll auth={auth} poll={poll} key={poll.id} dispatch={dispatch} />
                 ))}

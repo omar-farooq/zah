@@ -15,7 +15,7 @@ export default function CommentPaginator({commentHook}) {
         comments.data.length == 0  ? <div>No comments yet. Be the first to comment</div> : 
         <Pagination 
             total={comments.last_page} 
-            color="lime" 
+            color="default" 
             size="lg" 
             radius="xs" 
             onChange={(e) => pageChange(e)} 

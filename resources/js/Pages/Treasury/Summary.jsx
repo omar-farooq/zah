@@ -203,7 +203,7 @@ export default function TreasurySummary({currentYearPurchaseCount, previousYearP
             </div>
 
             <form 
-                className="grid grid-cols-2 gap-2 mt-8"
+                className="grid grid-cols-2 gap-2 mt-8 mb-8"
                 onSubmit={(e) => handleAddPayment(e)}
             >
                 <div className="col-start-1 col-end-3 text-center mb-2">Add a new payment</div>

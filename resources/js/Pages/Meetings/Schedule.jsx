@@ -1,5 +1,7 @@
 import { useState, Fragment, useReducer } from 'react'
+import { Alert } from '@mantine/core'
 import { DateTimeToUKLocale, LongDateFormat, LongDateTimeFormat } from '@/Shared/Functions'
+import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import Modal from '@/Components/Modal'
 import ButtonColoured from '@/Components/ButtonColoured'
 
@@ -146,15 +148,30 @@ export default function Schedule(props) {
         {
         schedule.upcomingMeeting == 'null' 
         ?
-            <div>no upcoming meeting scheduled</div>
+            <Alert 
+                color="green" 
+                title="no upcoming meeting scheduled" 
+                className="mt-4"
+                variant="outline"
+            >
+                Arrange a meeting by clicking on one of the dates on the schedule
+            </Alert>
         :
-            <div>Next meeting {schedule.upcomingMeeting}</div>
+            <Alert 
+                color="orange" 
+                icon={<ExclamationCircleIcon className="h-6 w-6" />}
+                title="Meeting scheduled" 
+                className="mt-4" 
+            >
+                Upcoming meeting scheduled for {schedule.upcomingMeeting}
+            </Alert>
         }
 
         {/* Dropdown */}
             <div className="mt-4">
                     <select
                         onChange={e => dispatch({type: 'selectWeekToDisplay', selectedWeek: e.currentTarget.value})}
+                        className="lg:text-base"
                     >
                         <option value="0">This week</option>
                         <option value="7">Next week</option>
@@ -165,13 +182,13 @@ export default function Schedule(props) {
 
                 {/* Schedule */}
 
-                <table className="table-fixed bg-white">
+                <table className="table-fixed bg-white max-w-sm md:max-w-fit">
                     <thead>
-                        <tr>
-                            <th className="px-8"></th>
+                        <tr className="md:text-base text-sm">
+                            <th className="lg:w-48"></th>
                             {props.members.map(member => {
                                 return (
-                                    <th key={member.id}>
+                                    <th key={member.id} className="w-32">
                                         {member.name}
                                     </th>
                                 )
@@ -183,7 +200,7 @@ export default function Schedule(props) {
                     {sevenDays().map((day, index) => {
                         return (
                             <tr key={index}>
-                                <th>
+                                <th className="md:text-base text-sm lg:h-8">
                                     <button onClick={() => { 
                                         dispatch({type: 'selectDayForMeeting', selectedDay: day}); 
                                         setModalOpenState(!modalOpenState) 

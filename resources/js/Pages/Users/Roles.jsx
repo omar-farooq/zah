@@ -78,7 +78,7 @@ export default function Roles({members, nominations, auth}) {
                 </TBody>
             </Table>
 
-            <div className="w-3/6 mt-10 bg-white">
+            <div className="w-full md:w-4/6 lg:w-3/6 mt-10 bg-white">
                 <Accordion>
                     <Accordion.Item value="Reassign Roles">
                         <Accordion.Control>Reassign Roles</Accordion.Control>

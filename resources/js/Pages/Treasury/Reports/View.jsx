@@ -89,15 +89,15 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
             :
         <>
             <div className="flex flex-row mt-4">
-                <div className="bg-white text-xl mr-4">Report Start: {DateTimeToUKDate(report.start_date)}</div>
+                <div className="bg-white text-sm md:text-xl mr-4">Report Start: {DateTimeToUKDate(report.start_date)}</div>
                 <ArrowLongRightIcon className="h-6 w-6" />
-                <div className="bg-white text-xl ml-4">Report End: {DateTimeToUKDate(report.end_date)}</div>
+                <div className="bg-white text-sm md:text-xl ml-4">Report End: {DateTimeToUKDate(report.end_date)}</div>
             </div>
             <div>Starting Balance: £{previousBudget}</div>
             <div className="w-full flex flex-col items-center">
                 <div className="w-4/6">
                     <Select
-                        className="w-1/4"
+                        className="w-full md:w-1/2 lg:w-1/4"
                         placeholder="Filter"
                         isClearable
                         options={[

@@ -95,7 +95,7 @@ export default function Rents({auth}) {
                 </tbody>
             </table>
 
-            <div className="mt-6 w-1/3">
+            <div className="mt-6 w-full md:w-1/3">
                 <span>Add Tenant</span>
                 <Select 
                     options={
@@ -125,7 +125,7 @@ export default function Rents({auth}) {
                         />
                         <Button 
                             onClick={() => addTenancy(newTenant.id, newTenant.rent)}
-                            className="bg-blue-500"
+                            className="bg-blue-500 my-3 w-full md:w-1/2 self-center"
                         >
                             Add Tenant
                         </Button>

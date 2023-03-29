@@ -100,7 +100,7 @@ export default function DisplayPoll({auth, poll}) {
     return (
         <>
             <div className="flex flex-row">
-                <div><canvas id={`poll-${poll.id}-results`} style={canvasStyle}></canvas></div>
+                <div className="w-full"><canvas id={`poll-${poll.id}-results`} className="w-full"></canvas></div>
                 {!poll.meeting_id ?
 
                 <div className="flex flex-col justify-center ml-4">

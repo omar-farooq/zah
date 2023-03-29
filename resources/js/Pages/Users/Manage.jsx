@@ -76,7 +76,7 @@ export default function Manage({auth}) {
                 </tbody>
             </table>
 
-            <div className="mt-6 w-1/3">
+            <div className="mt-6 w-5/6 md:w-1/2 lg:w-1/3">
                 {membershipApproval.add?.length > 0 && users.length > 0 ?
                         <>
                             <div>voted to make {users.find(x => x.id == membershipApproval.add[0].approvable_id).name} a member</div>

@@ -6,7 +6,7 @@ export default function ViewPlan({treasuryPlan}) {
 
     return (
         <>
-            <div className="grid grid-cols-6 bg-white m-4 shadow-md text-md">
+            <div className="grid grid-cols-6 bg-white m-4 shadow-md md:text-base text-sm">
                 <span className="m-2 font-bold col-span-2">Plan Created:</span><span className="mt-2">{DateToUKLocale(treasuryPlan.created_at)}</span>
                 <span className="m-2 font-bold col-span-2"></span><span className="mt-2"></span>
                 <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2">£{treasuryPlan.expected_incoming}</span>
