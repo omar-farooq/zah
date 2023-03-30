@@ -87,7 +87,8 @@ class MaintenanceRequestController extends Controller
      */
     public function update(UpdateMaintenanceRequestRequest $request, MaintenanceRequest $maintenanceRequest)
     {
-        //
+        $maintenanceRequest->update($request->all());
+        return to_route('maintenance-requests.index');
     }
 
     /**

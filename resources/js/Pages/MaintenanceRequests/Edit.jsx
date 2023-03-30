@@ -1,7 +1,7 @@
 import { ClockIcon } from '@heroicons/react/24/outline'
 import { useState, useEffect } from 'react'
 import { useForm } from '@inertiajs/inertia-react'
-import { DatePicker, DateRangePicker, TimeRangeInput } from '@mantine/dates'
+import { DateInput, DatePickerInput, TimeInput } from '@mantine/dates'
 import { HiddenCurrencyInput, ShowErrors, InputContainer, FormLabel, RequestLayout, Title, TileContainer, PreviewTile, FormTile } from '@/Layouts/RequestLayout'
 import RequestFormButton from '@/Components/RequestFormButton'
 import Input from '@/Components/RequestFormInput'
@@ -11,9 +11,9 @@ export default function EditMaintenanceRequest({maintenanceRequest}) {
 
     const [price, setPrice] = useState(maintenanceRequest.cost)
     const [maintenance, setMaintenance] = useState(maintenanceRequest.type)
-	const [dateRange, setDateRange] = useState(maintenance.start_date == maintenance.end_date ? 'single' : 'multiple')
+	const [dateRange, setDateRange] = useState(maintenanceRequest.start_date == maintenanceRequest.end_date ? 'single' : 'multiple')
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, patch, processing, errors } = useForm({
         required_maintenance: maintenanceRequest.required_maintenance,
         reason: maintenanceRequest.reason,
         cost: maintenanceRequest.cost,
@@ -21,8 +21,8 @@ export default function EditMaintenanceRequest({maintenanceRequest}) {
         contractor_phone: maintenanceRequest.contractor_phone,
         contractor_email: maintenanceRequest.conractor_email,
         type: maintenanceRequest.type,
-        start_time: maintenanceRequest.start_time,
-        finish_time: maintenanceRequest.finish_time,
+        start_time: maintenanceRequest.start_time.substr(0,maintenanceRequest.start_time.lastIndexOf(':')),
+        finish_time: maintenanceRequest.finish_time.substr(0,maintenanceRequest.finish_time.lastIndexOf(':')),
         start_date: maintenanceRequest.start_date,
         end_date: maintenanceRequest.end_date,
         emergency: maintenanceRequest.emergency
@@ -39,7 +39,7 @@ export default function EditMaintenanceRequest({maintenanceRequest}) {
 
     function submit(e) {
         e.preventDefault()
-        post('/maintenance-requests')
+        patch('/maintenance-requests/'+maintenanceRequest.id)
     }
 
     return (
@@ -119,26 +119,27 @@ export default function EditMaintenanceRequest({maintenanceRequest}) {
                             <div className="m-auto">
                             {
                                 dateRange == 'single' ?
-                                    <DatePicker 
+                                    <DateInput 
                                         placeholder="Date of Maintenance" 
                                         label="Maintenance Date" 
                                         withAsterisk
-										value={maintenanceRequest.start_date == maintenanceRequest.end_date && data.start_date ? new Date(data.start_date) : ''}
+										value={data.start_date == data.end_date && data.start_date ? new Date(data.start_date) : ''}
 										defaultValue={new Date(maintenanceRequest.start_date)}
                                         onChange={(e) => setData({...data, start_date: e, end_date: e})}
                                         minDate={new Date}
                                     />
 
                                 : dateRange == 'multiple' ?
-                                    <DateRangePicker 
+                                    <DatePickerInput
+                                        type="range"
                                         placeholder="Dates of Maintenance" 
                                         label="Maintenance Dates" 
                                         withAsterisk 
-										value={maintenanceRequest.start_date != maintenanceRequest.end_date && data.start_date && data.end_date ? [new Date(data.start_date), new Date(data.end_date)] : ''}
+                                        value={data.end_date && data.start_date != data.end_date ? [new Date(data.start_date), new Date(data.end_date)] : []}
 										defaultValue={
 											maintenanceRequest.start_date != maintenanceRequest.end_date
 											? [new Date(maintenanceRequest.start_date), new Date(maintenanceRequest.end_date)]
-											: ''
+											: []
 										}
                                         onChange={(e) => setData({...data, start_date: e[0], end_date: e[1]})}
                                         minDate={new Date}
@@ -146,15 +147,21 @@ export default function EditMaintenanceRequest({maintenanceRequest}) {
 
                                 : ''
                             }
-                                <TimeRangeInput 
-                                    label="Maintenance Time" 
-                                    onChange={(e) => setData({...data, start_time: e[0], finish_time: e[1]})} 
-                                    clearable 
-									defaultValue={[new Date(maintenanceRequest.start_time), new Date(maintenanceRequest.finish_time)]}
+                                <TimeInput 
+                                    label="Maintenance Start Time" 
+                                    onChange={(e) => setData({...data, start_time: e.target.value})}
+									defaultValue={maintenanceRequest.start_time.substr(0,maintenanceRequest.start_time.lastIndexOf(':'))}
                                     withAsterisk
                                     icon={<ClockIcon className="h-5 w-5" />}
                                 />
                                 <ShowErrors>{errors.start_time}</ShowErrors>
+                                <TimeInput 
+                                    label="Maintenance Finish Time" 
+                                    onChange={(e) => setData({...data, finish_time: e.target.value})} 
+									defaultValue={maintenanceRequest.finish_time.substr(0,maintenanceRequest.finish_time.lastIndexOf(':'))}
+                                    withAsterisk
+                                    icon={<ClockIcon className="h-5 w-5" />}
+                                />
                                 <ShowErrors>{errors.finish_time}</ShowErrors>
                             </div>
                         </InputContainer>
@@ -198,6 +205,7 @@ export default function EditMaintenanceRequest({maintenanceRequest}) {
                         <InputContainer>
                             <div>
                                 <select 
+                                    defaultValue={maintenanceRequest.type}
                                     onChange={(e) => {
                                         setData('type', e.target.value);
                                         setMaintenance(e.target.value)}
