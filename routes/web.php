@@ -43,16 +43,6 @@ use Inertia\Inertia;
 |
 */
 
-/*Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
- */
-
 Route::get('/', function() {
     return redirect('/login');
 });
@@ -82,41 +72,45 @@ Route::get('/maintenance-requests/{maintenanceRequest}/comments', function (Main
     return $maintenanceRequest->comments()->paginate(5);
 });
 
-//Stats pages
-Route::get('/treasury', [TreasuryReportController::class, 'summary']);
+//Members Only
+Route::middleware(['member'])->group(function() {
+    //Stats pages
+    Route::get('/treasury', [TreasuryReportController::class, 'summary']);
 
-//Treasurable model
-Route::get('/treasurable/{id}', [TreasuryReportController::class, 'treasurableModel']);
+    //Treasurable model
+    Route::get('/treasurable/{id}', [TreasuryReportController::class, 'treasurableModel']);
 
-//Latest Treasury Plan
-Route::get('/treasury-plans/latest', [TreasuryPlanController::class, 'latest']);
+    //Latest Treasury Plan
+    Route::get('/treasury-plans/latest', [TreasuryPlanController::class, 'latest']);
 
-//Update Model Approval
-Route::patch('/update-approval-status', [ApprovalController::class, 'updateModelApproval']);
+    //Update Model Approval
+    Route::patch('/update-approval-status', [ApprovalController::class, 'updateModelApproval']);
 
-Route::resource('approval', ApprovalController::class);
+    Route::resource('approval', ApprovalController::class);
+    Route::resource('memberships', MembershipController::class);
+    Route::resource('receipts', ReceiptController::class);
+    Route::resource('recurring-payments', RecurringPaymentController::class);
+    Route::resource('rents', RentController::class);
+    Route::resource('role-assignment', RoleAssignmentController::class);
+    Route::resource('treasury-plans', TreasuryPlanController::class);
+    Route::resource('treasury-reports', TreasuryReportController::class);
+    Route::resource('users', UserController::class);
+});
+
 Route::resource('agenda', MeetingAgendaController::class);
 Route::resource('comments', CommentController::class);
 Route::resource('maintenance', MaintenanceController::class);
 Route::resource('maintenance-requests', MaintenanceRequestController::class);
 Route::resource('meetings', MeetingController::class);
-Route::resource('memberships', MembershipController::class);
 Route::resource('minutes', MinuteController::class);
 Route::resource('payments', PaymentController::class);
 Route::resource('poll', PollController::class);
 Route::resource('purchases', PurchaseController::class);
 Route::resource('purchase-requests', PurchaseRequestController::class);
-Route::resource('receipts', ReceiptController::class);
-Route::resource('recurring-payments', RecurringPaymentController::class);
-Route::resource('rents', RentController::class);
-Route::resource('role-assignment', RoleAssignmentController::class);
 Route::resource('roles', RoleController::class);
 Route::resource('secretary-reports', SecretaryReportController::class);
 Route::resource('tasks', TaskController::class);
 Route::resource('tenants', TenancyController::class);
-Route::resource('treasury-plans', TreasuryPlanController::class);
-Route::resource('treasury-reports', TreasuryReportController::class);
-Route::resource('users', UserController::class);
 Route::resource('vote', VoteController::class);
 
 require __DIR__.'/auth.php';

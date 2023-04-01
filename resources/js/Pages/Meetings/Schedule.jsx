@@ -1,6 +1,8 @@
 import { useState, Fragment, useReducer } from 'react'
 import { Alert } from '@mantine/core'
+import { notifications } from '@mantine/notifications';
 import { DateTimeToUKLocale, LongDateFormat, LongDateTimeFormat } from '@/Shared/Functions'
+import { ErrorNotification } from '@/Components/Notifications'
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import Modal from '@/Components/Modal'
 import ButtonColoured from '@/Components/ButtonColoured'
@@ -129,10 +131,15 @@ export default function Schedule(props) {
     //Function for axios suggestions
     const makeSuggestion = async () => {
         let time = document.getElementById('suggest-or-schedule-time').value
-        let res = await axios.post('/meetings/schedule/suggestions/add', 
-            {suggested_date: new Date(schedule.selectedDay + " " + time), user_id: props.currentUser.id}
-        )
-        dispatch({type: 'addSuggestion', newSuggestion: {id: res.data.id, suggested_date: LongDateTimeFormat(schedule.selectedDay + " " + time), user_id:props.currentUser.id}})
+        try {
+            let res = await axios.post('/meetings/schedule/suggestions/add', 
+                {suggested_date: new Date(schedule.selectedDay + " " + time), user_id: props.currentUser.id}
+            )
+            dispatch({type: 'addSuggestion', newSuggestion: {id: res.data.id, suggested_date: LongDateTimeFormat(schedule.selectedDay + " " + time), user_id:props.currentUser.id}})
+        } catch (error) {
+            setModalOpenState('false')
+            return ErrorNotification('Can\'t make suggestion', error)
+        }
         setModalOpenState('false')
     }
 

@@ -47,6 +47,10 @@ class ScheduleController extends Controller
 
     public function updateAvailability(Request $request) {
 
+        $request->validate([
+            'availability' => 'string|required'
+        ]);
+
         if(isset($request->updateDates)) {
             foreach($request->updateDates as $date) {
                 Schedule::where('date', Carbon::parse($date)->format('Y-m-d H:i:s'))
@@ -80,10 +84,18 @@ class ScheduleController extends Controller
 	* @return \Illuminatee\Http\Response
 	*/
 
-	public function addSuggestion(Request $request) {
+    public function addSuggestion(Request $request) {
+
+        if(ScheduleSuggestion::where('suggested_date', $request->suggested_date)->get()->count() > 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'A suggestion already exists for this date'
+            ], 400);
+        }
+
 		$scheduleSuggestion = new ScheduleSuggestion;
 		$scheduleSuggestion->suggested_date = $request->suggested_date;
-		$scheduleSuggestion->user_id = $request->user_id;
+		$scheduleSuggestion->user_id = Auth::id();
 		$scheduleSuggestion->save();
 		return response()->json([
 			'id' => $scheduleSuggestion->id
