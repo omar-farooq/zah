@@ -29,6 +29,7 @@ class PurchaseController extends Controller
     public function index(Purchase $purchase, Request $request)
     {
         if(isset($request->cards)) {
+            $term = $request->search;
 
             if($request->cards == 'needAction') {
                 return response()->json(
@@ -38,7 +39,14 @@ class PurchaseController extends Controller
 
             if($request->cards == 'received') {
                 return response()->json(
-                    $purchase->where('received', '1')->orderBy('created_at', 'desc')->paginate(4),
+                    $purchase->where('received', '1')
+                             ->when($term, function($q) use ($term) {
+                                 return $q->where('name', 'like', '%'.$term.'%')
+                                          ->orWhere('description', 'like', '%'.$term.'%')
+                                          ->where('received', '1');
+                             })
+                             ->orderBy('created_at', 'desc')
+                             ->paginate(4),
                 );
             }
 

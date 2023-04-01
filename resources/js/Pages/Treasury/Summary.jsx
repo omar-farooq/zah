@@ -2,7 +2,8 @@ import { Fragment, useEffect, useRef, useState } from 'react'
 import { ArrowRightIcon, ArrowUpRightIcon, ArrowDownRightIcon } from '@heroicons/react/24/solid'
 import { InertiaLink } from '@inertiajs/inertia-react'
 import { TrashIcon } from '@heroicons/react/24/outline'
-import { createStyles, Button, Group, Paper, SimpleGrid, Text , ThemeIcon } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
+import { createStyles, Button, Group, Modal, Paper, SimpleGrid, Text, ThemeIcon } from '@mantine/core'
 import Select from 'react-select'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 import Input from '@/Components/Input'
@@ -20,6 +21,8 @@ export default function TreasurySummary({currentYearPurchaseCount, previousYearP
     })
 
     const [recurringPayments, setRecurringPayments] = useState([])
+    const [modalOpened, modalHandlers] = useDisclosure(false)
+    const [selectedPaymentToDestroy, setSelectedPaymentToDestroy] = useState({id: '', name: '' })
 
     //Used for the recurring payments frequency dropdown
     const [frequency, setFrequency] = useState('')
@@ -191,9 +194,10 @@ export default function TreasurySummary({currentYearPurchaseCount, previousYearP
                                         }
                                     </TD>
                                     <LastTD> 
-                                        <InertiaLink href={route('recurring-payments.destroy', payment.id)} method="delete" as="button" onClick={(e) => handlePaymentDelete(payment.id)}>
-                                            <TrashIcon className="w-5 h-5" />
-                                        </InertiaLink>
+                                            <TrashIcon 
+                                                className="w-5 h-5 cursor-pointer" 
+                                                onClick={() => {modalHandlers.open(); setSelectedPaymentToDestroy({...selectedPaymentToDestroy, id: payment.id, name: payment.recipient}) }} 
+                                            />
                                     </LastTD>
                                 </tr>
                             </Fragment>
@@ -330,6 +334,18 @@ export default function TreasurySummary({currentYearPurchaseCount, previousYearP
                     Add Payment
                 </Button>
             </form>
+            <Modal opened={modalOpened} onClose={modalHandlers.close} title="Confirm Delete" centered>
+                <div className="mb-4">Are you sure you want to delete the recurring payments to {selectedPaymentToDestroy.name}?</div>
+                <InertiaLink 
+                    href={route('recurring-payments.destroy', selectedPaymentToDestroy.id)} 
+                    method="delete" as="button" 
+                    onClick={(e) => {handlePaymentDelete(selectedPaymentToDestroy.id); modalHandlers.close()}}
+                    className="bg-red-600 hover:bg-red-700 text-white h-9 w-20 border rounded-md mr-0.5"
+                >
+                    Confirm
+                </InertiaLink>
+                <button className="bg-zinc-800 text-white h-9 w-20 border rounded-md" onClick={modalHandlers.close}>Cancel</button>
+            </Modal>
         </>
     );
 }

@@ -1,4 +1,5 @@
-import { Button, Loader } from '@mantine/core'
+import { Button, Loader, Modal } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 import { useEffect, useRef, useState } from 'react'
 import { TrashIcon } from '@heroicons/react/24/outline'
 import Select from 'react-select'
@@ -6,6 +7,8 @@ import Select from 'react-select'
 export default function Rents({auth}) {
 
     const [loading, setLoading] = useState(true)
+    const [modalOpened, modalHandlers] = useDisclosure(false)
+    const [selectedTenantToDestroy, setSelectedTenantToDestroy] = useState({id: '', name: '', rentID: ''})
     const [tenants, setTenants] = useState([])
     const [users, setUsers] = useState([])
     const [newTenant, setNewTenant] = useState({
@@ -46,7 +49,7 @@ export default function Rents({auth}) {
 
         getUsers()
         setNewTenant({id: '', rent: ''})
-        tenantDropdownRef.current.clearValue()
+        tenantDropdownRef.current ? tenantDropdownRef.current.clearValue() : ''
     }
 
     const removeTenancy = async (userId, rentId) => {
@@ -87,7 +90,7 @@ export default function Rents({auth}) {
                             <td className="border-b border-slate-300">
                                 <TrashIcon 
                                     className="h-5 w-5 cursor-pointer m-auto" 
-                                    onClick={(e) => removeTenancy(tenant.id, tenant.rent.id)}
+                                    onClick={() => {modalHandlers.open(); setSelectedTenantToDestroy({...selectedTenantToDestroy, id: tenant.id, name: tenant.name, rentID: tenant.rent.id})}}
                                 />
                             </td>
                         </tr>
@@ -132,6 +135,17 @@ export default function Rents({auth}) {
                     </div>
                 :''}
             </div>
+            <Modal opened={modalOpened} onClose={modalHandlers.close} title="Confirm Delete" centered>
+                <div className="mb-4">Are you sure you want to remove {selectedTenantToDestroy.name}'s tenancy?</div>
+                <button
+                    onClick={(e) => {removeTenancy(selectedTenantToDestroy.id, selectedTenantToDestroy.rentID); modalHandlers.close()}}
+                    className="bg-red-600 hover:bg-red-700 text-white h-9 w-20 border rounded-md mr-0.5"
+                >
+                    Confirm
+                </button>
+                <button className="bg-zinc-800 text-white h-9 w-20 border rounded-md" onClick={modalHandlers.close}>Cancel</button>
+            </Modal>
+
         </>
     )
 }

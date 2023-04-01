@@ -14,6 +14,8 @@ export default function Browse() {
                 title="Purchased"
                 productData="received"
                 model="purchases"
+                searchable
+                paginate
             />
         </>
     )
