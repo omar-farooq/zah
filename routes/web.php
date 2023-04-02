@@ -54,14 +54,14 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::controller(ScheduleController::class)->group(function() {
-	Route::get('/meetings/schedule', 'browse');	
+	Route::get('/meetings/schedule', 'browse')->name('schedule');	
 	Route::post('/meetings/schedule/suggestions/add', 'addSuggestion');
 	Route::post('/meetings/schedule/suggestions/delete', 'removeSuggestion');
 	Route::put('/meetings/schedule/availability/update', 'updateAvailability');
 });
 
 Route::post('/meetings/register-attendance', [MeetingController::class, 'markAttendance']);
-Route::get('/maintenance/upcoming', [MaintenanceController::class, 'upcoming']);
+Route::get('/maintenance/upcoming', [MaintenanceController::class, 'upcoming'])->name('maintenance.upcoming');
 
 //Comments
 Route::get('/purchase-requests/{purchaseRequest}/comments', function (PurchaseRequest $purchaseRequest) {
@@ -75,13 +75,13 @@ Route::get('/maintenance-requests/{maintenanceRequest}/comments', function (Main
 //Members Only
 Route::middleware(['member'])->group(function() {
     //Stats pages
-    Route::get('/treasury', [TreasuryReportController::class, 'summary']);
+    Route::get('/treasury', [TreasuryReportController::class, 'summary'])->name('treasury.summary');
 
     //Treasurable model
     Route::get('/treasurable/{id}', [TreasuryReportController::class, 'treasurableModel']);
 
     //Latest Treasury Plan
-    Route::get('/treasury-plans/latest', [TreasuryPlanController::class, 'latest']);
+    Route::get('/treasury-plans/latest', [TreasuryPlanController::class, 'latest'])->name('treasury-plans.latest');
 
     //Update Model Approval
     Route::patch('/update-approval-status', [ApprovalController::class, 'updateModelApproval']);

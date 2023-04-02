@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
+import MobileNavMenu from '@/Components/Nav/MobileNavMenu';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/inertia-react';
@@ -9,7 +10,7 @@ export default function Topbar({ auth, header, title }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
-            <nav className="bg-white border-b border-gray-100 shadow w-full bg-[url('/images/floral.webp')]">
+            <nav className="bg-white border-b border-gray-100 shadow w-full lg:bg-[url('/images/floral.webp')]">
                 <div className="w-5/6 mx-auto">
                     <div className="flex justify-between h-16">
                         <div className="flex">
@@ -94,7 +95,9 @@ export default function Topbar({ auth, header, title }) {
                             Dashboard
                         </ResponsiveNavLink>
                     </div>
-
+                    <div>
+                        <MobileNavMenu navHook={[showingNavigationDropdown, setShowingNavigationDropdown]} />
+                    </div>
                     <div className="pt-4 pb-1 border-t border-gray-200">
                         <div className="px-4">
                             <div className="font-medium text-base text-gray-800">{auth?.user.name}</div>
