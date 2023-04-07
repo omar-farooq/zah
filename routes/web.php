@@ -44,11 +44,7 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function() {
-    return redirect('/login');
-});
-
-Route::get('/public', function() {
-    return Inertia::render('Public/index');
+    return redirect('/dashboard');
 });
 
 Route::get('/dashboard', function () {
