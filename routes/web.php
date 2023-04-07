@@ -4,7 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\CommentController;
-use App\Http\Controllers\ContactFormController;
+use App\Http\Controllers\JobController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MaintenanceRequestController;
 use App\Http\Controllers\MeetingController;
@@ -61,7 +61,7 @@ Route::controller(ScheduleController::class)->group(function() {
 	Route::put('/meetings/schedule/availability/update', 'updateAvailability');
 });
 
-Route::post('/generate-contact-form-email', [ContactFormController::class, 'generateEmail']);
+Route::post('/generate-contact-form-email', [JobController::class, 'generateEmail'])->middleware(['throttle:contact-form-submission']);
 Route::post('/meetings/register-attendance', [MeetingController::class, 'markAttendance']);
 Route::get('/maintenance/upcoming', [MaintenanceController::class, 'upcoming'])->name('maintenance.upcoming');
 

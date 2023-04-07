@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ContactForm extends Mailable implements ShouldQueue
+class ContactForm extends Mailable
 {
     use Queueable, SerializesModels;
     protected $name, $email, $comments;

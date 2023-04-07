@@ -6,7 +6,7 @@ ARG uid
 ARG GID=33
 
 # Install additional required PHP extensions for Laravel
-RUN docker-php-ext-install bcmath pdo_mysql
+RUN docker-php-ext-install bcmath pdo_mysql pcntl
 
 # Install composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
