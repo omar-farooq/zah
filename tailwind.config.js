@@ -17,7 +17,8 @@ module.exports = {
 
 			animation: {
 				modaldown: 'setModalDown 0.3s ease-out',
-				modalup: 'setModalUp 0.3s ease-out'
+				modalup: 'setModalUp 0.3s ease-out',
+                fade: 'fadeIn 0.7s ease-in'
 			},
 
 			keyframes: theme => ({
@@ -30,6 +31,11 @@ module.exports = {
 					'0%': { transform: 'translateY(0px)' },
 					'100%': { transform: 'translateY(-3rem)' }
 				},
+
+                fadeIn: {
+                    '0%': { opacity: '0' },
+                    '100%': { opacity: '1' }
+                },
 
 			}),
         },

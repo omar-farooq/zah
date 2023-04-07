@@ -47,6 +47,10 @@ Route::get('/', function() {
     return redirect('/login');
 });
 
+Route::get('/public', function() {
+    return Inertia::render('Public/index');
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
         'title' => 'Dashboard'
