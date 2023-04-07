@@ -1,17 +1,27 @@
 import React from 'react';
-import Nav from './Nav';
-import "primereact/resources/themes/tailwind-light/theme.css"
-import "primereact/resources/primereact.min.css"
-import "primeicons/primeicons.css"
+import { MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
+import { NavbarNested } from '@/Components/Nav/Sidebar'
+import Topbar from '@/Components/Nav/Topbar'
 
-const Layout = ({ children }) => {
-	return (
-		<React.Fragment>
-			<Nav />
-			<main className="bg-gray-100">
-                {children}
-            </main>
-		</React.Fragment>
-	);
+const Layout = ({ children, auth, title }) => {
+    return (
+        <React.Fragment>
+            <MantineProvider withNormalizeCSS withGlobalStyles>
+                <Notifications />
+                <div className="flex flex-row flex-grow">
+                    <div className="hidden lg:flex">
+                        <NavbarNested />
+                    </div>
+                    <div className="w-full">
+                        <main className="min-h-screen bg-gray-100 flex flex-col items-center">
+                            <Topbar auth={auth} title={title} />
+                            {children}
+                        </main>
+                    </div>
+                </div>
+            </MantineProvider>
+        </React.Fragment>
+    );
 };
 export default Layout;

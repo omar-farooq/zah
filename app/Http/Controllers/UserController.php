@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use App\Models\User;
+use App\Models\Rent;
 
 class UserController extends Controller
 {
@@ -12,11 +14,29 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(User $user)
+    public function index(User $user, Request $request)
     {
-        return response()->json([
-            'users' => $user->all()
-        ]);
+        if($request->memberCount == 'true') {
+            return response()->json(
+                $user->currentMember()->get()->count()
+            );
+        } elseif ($request->filter == 'none') {
+            return response()->json(
+                $user->orderByDesc('created_at')->get()
+            );
+        } elseif ($request->filter == 'tenants') {
+            return response()->json(
+                $user->where('is_tenant', 1)->get()
+            );
+        } elseif ($request->filter == 'members') {
+            return response()->json(
+                $user->currentMember()->get()
+            );
+        } else {
+            return Inertia::render('Users/Manage', [
+                'title' => 'Manage Users'
+            ]);
+        }
     }
 
     /**
@@ -69,9 +89,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        //
+        $user->update($request->all());
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Schedule;
 use App\Models\ScheduleSuggestion;
 use App\Services\ScheduleService;
+use Carbon\Carbon;
 use Inertia\Inertia;
 
 class ScheduleController extends Controller
@@ -26,27 +27,13 @@ class ScheduleController extends Controller
 	public function browse(Schedule $schedule, User $users, ScheduleService $scheduleService)
 	{
         return Inertia::render('Meetings/Schedule', [
+            'title' => 'Meeting Schedule',
             'upcomingDate' => $scheduleService->upcoming()['upcomingDate'],
             'upcomingID' => $scheduleService->upcoming()['upcomingID'],
             'members' => $users->currentMember()->with('scheduleSuggestions')->get(),
             'schedule' => $schedule->current(),
 			'currentUser' => Auth::user()
         ]);
-	}
-
-	/**
-	* Create availability
-	*
-	* @param \App\Http\Requests\StoreScheduleAvailability $request
-	*
-	* @return \Illuminate\Http\Response
-	*/
-
-	public function addAvailability(Request $request) {
-		$newSchedule = Schedule::create($request->all());
-		return response()->json([
-			'id' => $newSchedule->id
-		]);
 	}
 
 	/**
@@ -58,9 +45,36 @@ class ScheduleController extends Controller
 	* @return \Illuminate\Http\Response
 	*/
 
-	public function updateAvailability(Request $request, $id) {
-		Schedule::find($id)->update($request->all());
-	}
+    public function updateAvailability(Request $request) {
+
+        $request->validate([
+            'availability' => 'string|required'
+        ]);
+
+        if(isset($request->updateDates)) {
+            foreach($request->updateDates as $date) {
+                Schedule::where('date', Carbon::parse($date)->format('Y-m-d H:i:s'))
+                    ->where('user_id', Auth::id())
+                    ->first()
+                    ->update(['availability' => $request->availability]);
+            }   
+        }
+
+        if(isset($request->addDates)) {
+            foreach($request->addDates as $date) {
+                $newSchedule = new Schedule;
+                $newSchedule->date = $date;
+                $newSchedule->user_id = Auth::id();
+                $newSchedule->availability = $request->availability;
+                $newSchedule->save();
+            }
+        }
+
+        $schedule = new Schedule();
+        return response()->json(
+            $schedule->current()
+		);
+    }
 
 	/**
 	* Create a suggestion
@@ -70,10 +84,18 @@ class ScheduleController extends Controller
 	* @return \Illuminatee\Http\Response
 	*/
 
-	public function addSuggestion(Request $request) {
+    public function addSuggestion(Request $request) {
+
+        if(ScheduleSuggestion::where('suggested_date', $request->suggested_date)->get()->count() > 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'A suggestion already exists for this date'
+            ], 400);
+        }
+
 		$scheduleSuggestion = new ScheduleSuggestion;
 		$scheduleSuggestion->suggested_date = $request->suggested_date;
-		$scheduleSuggestion->user_id = $request->user_id;
+		$scheduleSuggestion->user_id = Auth::id();
 		$scheduleSuggestion->save();
 		return response()->json([
 			'id' => $scheduleSuggestion->id

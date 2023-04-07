@@ -2,15 +2,35 @@
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApprovalController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\JobController;
+use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\MaintenanceRequestController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MeetingAgendaController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\MinuteController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PollController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseRequestController;
+use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\RecurringPaymentController;
+use App\Http\Controllers\RentController;
+use App\Http\Controllers\RoleAssignmentController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\SecretaryReportController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenancyController;
+use App\Http\Controllers\TreasuryReportController;
+use App\Http\Controllers\TreasuryPlanController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VoteController;
+use App\Models\PurchaseRequest;
+use App\Models\MaintenanceRequest;
+use App\Models\Meeting;
 use Inertia\Inertia;
 
 /*
@@ -24,43 +44,75 @@ use Inertia\Inertia;
 |
 */
 
-/*Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
- */
-
 Route::get('/', function() {
-    return redirect('/login');
+    return redirect('/dashboard');
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Dashboard', [
+        'title' => 'Dashboard'
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::controller(MeetingController::class)->group(function() {
-    Route::post('/meetings/create', 'create');
-    Route::get('/meetings/new', 'store');    
-});
-
 Route::controller(ScheduleController::class)->group(function() {
-	Route::get('/meetings/schedule', 'browse');	
+	Route::get('/meetings/schedule', 'browse')->name('schedule');	
 	Route::post('/meetings/schedule/suggestions/add', 'addSuggestion');
 	Route::post('/meetings/schedule/suggestions/delete', 'removeSuggestion');
-	Route::post('/meetings/schedule/availability/add', 'addAvailability');
-	Route::put('/meetings/schedule/availability/update/{id}', 'updateAvailability');
+	Route::put('/meetings/schedule/availability/update', 'updateAvailability');
+});
+
+Route::post('/generate-contact-form-email', [JobController::class, 'generateEmail'])->middleware(['throttle:contact-form-submission']);
+Route::post('/meetings/register-attendance', [MeetingController::class, 'markAttendance']);
+Route::get('/maintenance/upcoming', [MaintenanceController::class, 'upcoming'])->name('maintenance.upcoming');
+
+//Comments
+Route::get('/purchase-requests/{purchaseRequest}/comments', function (PurchaseRequest $purchaseRequest) {
+    return $purchaseRequest->comments()->paginate(5);
+});
+
+Route::get('/maintenance-requests/{maintenanceRequest}/comments', function (MaintenanceRequest $maintenanceRequest) {
+    return $maintenanceRequest->comments()->paginate(5);
+});
+
+//Members Only
+Route::middleware(['member'])->group(function() {
+    //Stats pages
+    Route::get('/treasury', [TreasuryReportController::class, 'summary'])->name('treasury.summary');
+
+    //Treasurable model
+    Route::get('/treasurable/{id}', [TreasuryReportController::class, 'treasurableModel']);
+
+    //Latest Treasury Plan
+    Route::get('/treasury-plans/latest', [TreasuryPlanController::class, 'latest'])->name('treasury-plans.latest');
+
+    //Update Model Approval
+    Route::patch('/update-approval-status', [ApprovalController::class, 'updateModelApproval']);
+
+    Route::resource('approval', ApprovalController::class);
+    Route::resource('memberships', MembershipController::class);
+    Route::resource('receipts', ReceiptController::class);
+    Route::resource('recurring-payments', RecurringPaymentController::class);
+    Route::resource('rents', RentController::class);
+    Route::resource('role-assignment', RoleAssignmentController::class);
+    Route::resource('treasury-plans', TreasuryPlanController::class);
+    Route::resource('treasury-reports', TreasuryReportController::class);
+    Route::resource('users', UserController::class);
 });
 
 Route::resource('agenda', MeetingAgendaController::class);
-Route::resource('memberships', MembershipController::class);
+Route::resource('comments', CommentController::class);
+Route::resource('maintenance', MaintenanceController::class);
+Route::resource('maintenance-requests', MaintenanceRequestController::class);
+Route::resource('meetings', MeetingController::class);
 Route::resource('minutes', MinuteController::class);
+Route::resource('payments', PaymentController::class);
+Route::resource('poll', PollController::class);
+Route::resource('purchases', PurchaseController::class);
 Route::resource('purchase-requests', PurchaseRequestController::class);
+Route::resource('roles', RoleController::class);
+Route::resource('secretary-reports', SecretaryReportController::class);
 Route::resource('tasks', TaskController::class);
 Route::resource('tenants', TenancyController::class);
-Route::resource('users', UserController::class);
+Route::resource('vote', VoteController::class);
 
 require __DIR__.'/auth.php';

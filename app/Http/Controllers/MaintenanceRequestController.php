@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreMaintenanceRequestRequest;
 use App\Http\Requests\UpdateMaintenanceRequestRequest;
 use App\Models\MaintenanceRequest;
+use Auth;
+use Inertia\Inertia;
+use Redirect;
 
 class MaintenanceRequestController extends Controller
 {
@@ -13,9 +16,13 @@ class MaintenanceRequestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(MaintenanceRequest $maintenanceRequest)
     {
-        //
+        return Inertia::render('MaintenanceRequests/Browse', [
+            'title' => 'Maintenance Requests - Need Approval',
+            'maintenanceRequests' => $maintenanceRequest->orderBy('created_at', 'desc')->paginate(10),
+            'unapprovedRequests' => $maintenanceRequest->notYetApproved()
+        ]);
     }
 
     /**
@@ -25,7 +32,9 @@ class MaintenanceRequestController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Maintenance/RequestForm', [
+            'title' => 'Request Maintenance',
+        ]);
     }
 
     /**
@@ -36,7 +45,9 @@ class MaintenanceRequestController extends Controller
      */
     public function store(StoreMaintenanceRequestRequest $request)
     {
-        //
+        $new_maintenance_request = Auth::User()->maintenanceRequests()->create($request->all());
+
+        return Redirect::route('maintenance-requests.show', $new_maintenance_request);
     }
 
     /**
@@ -47,7 +58,10 @@ class MaintenanceRequestController extends Controller
      */
     public function show(MaintenanceRequest $maintenanceRequest)
     {
-        //
+        return Inertia::render('Maintenance/ViewMaintenanceRequest', [
+            'maintenanceRequest' => $maintenanceRequest,
+            'title' => 'Maintenance Request for ' . $maintenanceRequest->required_maintenance
+        ]);
     }
 
     /**
@@ -58,7 +72,10 @@ class MaintenanceRequestController extends Controller
      */
     public function edit(MaintenanceRequest $maintenanceRequest)
     {
-        //
+        return Inertia::render('MaintenanceRequests/Edit', [
+            'maintenanceRequest' => $maintenanceRequest,
+            'title' => 'Edit Maintenance Request'
+        ]);
     }
 
     /**
@@ -70,7 +87,8 @@ class MaintenanceRequestController extends Controller
      */
     public function update(UpdateMaintenanceRequestRequest $request, MaintenanceRequest $maintenanceRequest)
     {
-        //
+        $maintenanceRequest->update($request->all());
+        return to_route('maintenance-requests.index');
     }
 
     /**

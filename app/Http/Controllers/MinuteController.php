@@ -10,14 +10,14 @@ use App\Models\Minute;
 class MinuteController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display Minutes for each meeting.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Minute $minute)
+    public function index(Minute $minute, Request $request)
     {
         return response()->json([
-            'minutes' => $minute->all()
+            'minutes' => $minute->where('meeting_id', $request->meeting_id)->get()
         ]);
     }
 

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
 use App\Models\Comment;
+use App\Models\User;
+use Auth;
 
 class CommentController extends Controller
 {
@@ -36,7 +38,12 @@ class CommentController extends Controller
      */
     public function store(StoreCommentRequest $request)
     {
-        //
+        $newComment = Auth::User()->comments()->create($request->all());
+        return response()->json([
+            'id' => $newComment->id,
+            'user_id' => $newComment->user_id,
+            'user_name' => User::find($newComment->user_id)->name
+        ]);
     }
 
     /**

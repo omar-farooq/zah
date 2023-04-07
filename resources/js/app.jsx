@@ -13,12 +13,11 @@ const appName = window.document.getElementsByTagName('title')[0]?.innerText || '
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
 	
-	resolve: (name) => {
-		const page = resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx'));
-
-		page.then((module) => {
-			module.default.layout ??= module => <Layout>{module}</Layout>;
-		});
+	resolve: async name => {
+		const page = await resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx'));
+        if(!(name.startsWith('Auth') || name.startsWith('Public'))) {
+    		page.default.layout ??= page => <Layout auth={page.props.auth} title={page.props.title}>{page}</Layout>;
+        }
 
 		return page;
 	},

@@ -1,0 +1,10 @@
+Dockerfile
+.env.example
+.git*
+.package*.json
+README.md
+tests
+node_modules
+public/build
+.env
+public/hot

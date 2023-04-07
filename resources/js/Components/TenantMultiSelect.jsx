@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react'
-import { MultiSelect } from 'primereact/multiselect'
-import "primereact/resources/themes/tailwind-light/theme.css"
-import "primereact/resources/primereact.min.css"
-import "primeicons/primeicons.css"
+import { MultiSelect } from '@mantine/core'
 
 export default function TenantMultiSelect(props) {
 
@@ -13,7 +10,10 @@ export default function TenantMultiSelect(props) {
 	useEffect(() => {
 			async function GetTenants() {
 				let tenantList = await axios.get('/tenants')
-				setTenants(tenantList.data.tenants)
+				setTenants(tenantList.data.tenants.map(x => ({
+                    value: x.id,
+                    label: x.name
+                })))
 			}
 
 			GetTenants()
@@ -21,19 +21,28 @@ export default function TenantMultiSelect(props) {
 
 	const handleChange = (e) => {
 		//Create objects for each tenant to manipulate in the parent
-		setSelectedTenants(e.value.map((x) => (
-			tenants.find(({id}) => id == x)
-		))	
-		.map(tenant => ( 
-			{id: tenant.id, name:tenant.name}
-		)))
+
+        setSelectedTenants(
+            tenants.reduce((a,b) => {
+                if(e.some(x => x == b.value)) {
+                    return [...a, {id: b.value, name: b.label}]
+                } else {
+                    return [...a]
+                }
+            },[])
+        )
 
 		//Set the selected IDs 
-		setIds(e.value)
+		setIds(e)
 	}
 
 	return (
-		 <MultiSelect display="chip" options={tenants} optionLabel="name" optionValue="id" value={ids} onChange={handleChange} placeholder={props.placeholder} />
+		 <MultiSelect 
+            data={tenants} 
+            label="Assign to members"
+            onChange={handleChange} 
+            placeholder={props.placeholder} 
+        />
 	)
                 
  

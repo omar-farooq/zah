@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePurchaseRequestRequest;
 use App\Http\Requests\UpdatePurchaseRequestRequest;
 use App\Models\PurchaseRequest;
+use Auth;
+use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
 use Inertia\Inertia;
+use Redirect;
 
 class PurchaseRequestController extends Controller
 {
@@ -14,9 +18,29 @@ class PurchaseRequestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(PurchaseRequest $purchaseRequest, Request $request)
     {
-        //
+        if(isset($request->cards)) {
+
+            if($request->cards == 'needApproval') {
+                return response()->json(
+                    $purchaseRequest->whereDoesntHave('approvals', function (Builder $q) {
+                        $q->where('user_id', Auth::id());
+                    })->paginate(4)
+                );
+            }
+
+            if($request->cards == 'all') {
+                return response()->json(
+                    $purchaseRequest->orderBy('created_at', 'desc')->paginate(4)
+                );
+            }
+
+        } else {
+            return Inertia::render('PurchaseRequests/Browse', [
+                'title' => 'All Purchase Requests'
+            ]);    
+        }
     }
 
     /**
@@ -26,7 +50,9 @@ class PurchaseRequestController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Purchases/RequestForm');
+        return Inertia::render('Purchases/RequestForm', [
+            'title' => 'Make a Purchase Request'
+        ]);
     }
 
     /**
@@ -37,7 +63,17 @@ class PurchaseRequestController extends Controller
      */
     public function store(StorePurchaseRequestRequest $request)
     {
-        //
+        $new_purchase_request = Auth::User()->purchaseRequests()->create($request->all());
+
+        if($request->file('image')) {
+            $imageName = time() . '.' .$request->image->getClientOriginalName();
+            $request->image->move(public_path('images'), $imageName);
+            $new_purchase_request['image'] = $imageName;
+            $new_purchase_request->save();
+        }
+
+            return Redirect::route('purchase-requests.show', $new_purchase_request);
+
     }
 
     /**
@@ -48,7 +84,10 @@ class PurchaseRequestController extends Controller
      */
     public function show(PurchaseRequest $purchaseRequest)
     {
-        //
+        return Inertia::render('Purchases/ViewPurchaseRequest', [
+            'purchaseRequest' => $purchaseRequest,
+            'title' => 'Request to purchase ' .$purchaseRequest->name
+        ]);
     }
 
     /**
@@ -59,7 +98,7 @@ class PurchaseRequestController extends Controller
      */
     public function edit(PurchaseRequest $purchaseRequest)
     {
-        //
+        return Inertia::render('Purchases/EditRequestForm', compact('purchaseRequest'));
     }
 
     /**
@@ -71,7 +110,20 @@ class PurchaseRequestController extends Controller
      */
     public function update(UpdatePurchaseRequestRequest $request, PurchaseRequest $purchaseRequest)
     {
-        //
+        $purchaseRequest->update($request->all());
+
+       /* 
+        if($request->file('image') != $purchaseRequest->image) {
+            $imageName = time() . '.' .$request->image->getClientOriginalName();
+            $request->image->move(public_path('images'), $imageName);
+            $purchaseRequest['image'] = $imageName;
+            $purchaseRequest->save();
+        }
+        */
+            
+        $purchaseRequest->approvals->each->delete();
+        return Redirect::route('purchase-requests.show', $purchaseRequest);
+
     }
 
     /**

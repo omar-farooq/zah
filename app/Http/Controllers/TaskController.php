@@ -21,13 +21,28 @@ class TaskController extends Controller
     {
         //Get the completed/non-completed tasks if queried
         $completed = $request->get('completed');
+        $id = $request->get('id');
+        $user_id = $request->get('user_id');
         $query = Task::query();
         if($completed) {
             $query->where('completed', $completed);
         }
 
+        //get tasks by id
+        if($id) {
+            $query->where('id', $id);
+        }
+
         //return the task with the results of the query and with the user relationship
-        $results = $query->with('users')->get();
+        //If a user id is set then return only those where the user has a task
+        if(isset($user_id)) {
+            $results = $query->whereHas('users', function($q) use($user_id)
+            {
+                $q->where('id', $user_id);
+            })->get();
+        } else {
+            $results = $query->with('users')->get();
+        }
 
 
         //return a JSON response

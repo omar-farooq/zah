@@ -9,7 +9,9 @@ class ScheduleSuggestion extends Model
 {
     use HasFactory;
 
-	protected $dates = ['suggested_date', 'created_at', 'updated_at'];
+    protected $casts = [
+        'suggested_date' => 'datetime' 
+    ];
 
 	public function user() {
 		return $this->belongsTo(User::class);

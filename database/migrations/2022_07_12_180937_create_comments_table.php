@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
 			$table->text('body');
-			$table->uuidMorphs('commentable');
+			$table->morphs('commentable');
 			$table->foreignId('user_id');
         });
     }

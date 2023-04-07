@@ -10,7 +10,14 @@ class Meeting extends Model
 
 {
     use HasFactory;
-	protected $dates = ['time_of_meeting', 'created_at', 'updated_at'];
+    protected $fillable = [
+        'cancelled',
+        'completed',
+        'notes',
+    ];
+    protected $casts = [
+        'time_of_meeting' => 'datetime'
+    ];
 
 	public function getTimeOfMeetingAttribute($date) {
 		//Get the date in the format Day of Week Month DD 
@@ -21,11 +28,27 @@ class Meeting extends Model
 		return $this->where('time_of_meeting', '>', Carbon::now('Europe/London'))->orderBy('time_of_meeting', 'asc')->first();		
     }
 
-    public function meetingAgenda() {
-        return $this->hasOne(MeetingAgenda::class);
+    public function scheduledNotYetStarted() {
+        return $this->where('completed',0)->where('cancelled',0)->orderBy('time_of_meeting','asc')->first();
     }
 
-    public function minute() {
+    public function meetingAgenda() {
+        return $this->hasMany(MeetingAgenda::class);
+    }
+
+    public function minutes() {
         return $this->hasMany(Minute::class);
+    }
+
+    public function attendees() {
+        return $this->hasMany(MeetingAttendance::class);
+    }
+
+    public function polls() {
+        return $this->hasMany(Poll::class);
+    }
+
+    public function secretaryReport() {
+        return $this->hasOne(SecretaryReport::class);
     }
 }

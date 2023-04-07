@@ -16,10 +16,10 @@ return new class extends Migration
         Schema::create('memberships', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-			$table->timestamp('start_date');
-			$table->timestamp('end_date')->nullable();
-			$table->boolean('rejoined')->default(0);
-			$table->foreignId('user_id');
+            $table->timestamp('start_date');
+            $table->timestamp('end_date')->nullable();
+            $table->boolean('rejoined')->default(0);
+            $table->foreignId('user_id');
         });
     }
 

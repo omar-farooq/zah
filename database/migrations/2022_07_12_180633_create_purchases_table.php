@@ -16,6 +16,16 @@ return new class extends Migration
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->foreignId('purchase_request_id');
+            $table->boolean('purchased')->default(0);
+            $table->boolean('received')->default(0);
+            $table->tinyText('name');
+            $table->float('price');
+            $table->float('delivery_cost')->nullable();
+            $table->text('description');
+            $table->text('reason');
+            $table->string('image')->nullable();
+            $table->integer('quantity')->default(1);
         });
     }
 

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\Models\Approval;
+use App\Models\Membership;
 use App\Models\User;
 
 class MembershipController extends Controller
@@ -35,9 +38,22 @@ class MembershipController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($id)
     {
-        //
+        $membership = new Membership;
+        if($membership->where('user_id', $id)->first()){
+            $membership->where('user_id', $id)
+                       ->update([
+                           'end_date' => null,
+                           'rejoined' => 1
+                        ]);
+        } else {
+            $membership->user_id = $id;
+            $membership->start_date = Carbon::now();
+            $membership->save();
+        }
+
+        Approval::where('approval', 'add')->delete();
     }
 
     /**
@@ -75,13 +91,15 @@ class MembershipController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Set an end date of now on the membership
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        //
+        $membership = new Membership;
+        $membership->where('user_id', $id)->update(['end_date' => Carbon::now()]);
+        Approval::where('approval', 'delete')->delete();
     }
 }

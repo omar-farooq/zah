@@ -19,7 +19,7 @@ class MeetingAgendaController extends Controller
     public function index(MeetingAgenda $agenda)
     {
         return response()->json([
-            'agenda' => $agenda->all()
+            'agenda' => $agenda->whereNull('meeting_id')->get()
       ]); 
     }
 
@@ -42,6 +42,7 @@ class MeetingAgendaController extends Controller
     public function store(Request $request)
     {
         $newAgenda = Auth::User()->meetingAgendas()->create($request->all());
+
         return response()->json([
             'id' => $newAgenda->id,
             'user_id' => $newAgenda->user_id

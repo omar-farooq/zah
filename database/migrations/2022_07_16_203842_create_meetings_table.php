@@ -18,6 +18,8 @@ return new class extends Migration
             $table->timestamps();
             $table->timestamp('time_of_meeting')->nullable();
             $table->mediumText('notes')->nullable();
+            $table->boolean('completed')->default(0);
+            $table->boolean('cancelled')->default(0);
         });
     }
 
