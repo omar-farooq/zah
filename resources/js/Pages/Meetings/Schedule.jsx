@@ -175,7 +175,7 @@ export default function Schedule(props) {
         }
 
         {/* Dropdown */}
-            <div className="mt-4">
+            <div className="mt-4 sm:max-w-none max-w-sm p-2 overflow-x-scroll">
                     <select
                         onChange={e => dispatch({type: 'selectWeekToDisplay', selectedWeek: e.currentTarget.value})}
                         className="lg:text-base"

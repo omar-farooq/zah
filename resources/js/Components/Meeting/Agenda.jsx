@@ -1,4 +1,5 @@
 import { Button, Textarea } from '@mantine/core'
+import { ComponentTitle } from '@/Components/Meeting'
 import { TrashIcon } from '@heroicons/react/24/outline'
 import { useState, useEffect, useReducer } from 'react'
 import Input from '@/Components/Input'
@@ -72,7 +73,7 @@ export default function Agenda() {
 
     return (
         <>
-            <div className="text-xl col-start-1 lg:col-start-3 col-end-5 bg-rose-700 text-white flex justify-center">Agenda</div>
+            <ComponentTitle bg="bg-rose-700">Agenda</ComponentTitle>
             <ul className="lg:col-start-3 lg:col-end-7 col-start-1 col-end-9">
                 {reactiveAgenda.map((agenda,i) =>
                     <li key={agenda.id} className={`${i % 2 == 0 ? 'border-black' : 'border-black'} bg-white text-black flex justify-between items-center m-1 border`}>
@@ -92,7 +93,7 @@ export default function Agenda() {
                     className="w-3/4 mt-1"
                     classNames={{ input: 'bg-gray-100 border-black'}}
                 />
-                <Button color="dark" type="submit" className="bg-black w-1/3 lg:w-1/4 mt-4">Add Agenda Item </Button>
+                <Button color="dark" type="submit" className="bg-black w-1/2 md:w-1/3 lg:w-1/4 mt-4">Add Agenda Item </Button>
             </form>
         </>
     )

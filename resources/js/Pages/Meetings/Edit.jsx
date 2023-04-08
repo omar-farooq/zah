@@ -81,7 +81,7 @@ export default function NewMeeting({meeting, tenants, auth}) {
                 <Polls auth={auth} />
             </ComponentWrapper>
 
-            <Button className="mb-14 mt-14 w-1/4" variant="outline" onClick={() => handleSubmit()}>
+            <Button className="mb-14 mt-14 w-1/2 lg:w-1/4" variant="outline" onClick={() => handleSubmit()}>
                 Submit Meeting
             </Button>
         </>

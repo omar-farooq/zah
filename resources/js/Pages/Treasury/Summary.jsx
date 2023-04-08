@@ -207,13 +207,13 @@ export default function TreasurySummary({currentYearPurchaseCount, previousYearP
             </div>
 
             <form 
-                className="grid grid-cols-2 gap-2 mt-8 mb-8"
+                className="grid grid-cols-2 gap-1 md:gap-2 mt-8 mb-8"
                 onSubmit={(e) => handleAddPayment(e)}
             >
                 <div className="col-start-1 col-end-3 text-center mb-2">Add a new payment</div>
                 <Input
                     placeholder={"Recipient"}
-                    className="h-10"
+                    className="h-10 w-full"
                     value={newPayment.recipient}
                     required={true}
                     handleChange={(e) => setNewPayment({...newPayment, recipient: e.target.value})}
@@ -221,7 +221,7 @@ export default function TreasurySummary({currentYearPurchaseCount, previousYearP
 
                 <Input
                     placeholder={"Short explanation"}
-                    className="h-10"
+                    className="h-10 w-full"
                     value={newPayment.description}
                     handleChange={(e) => setNewPayment({...newPayment, description: e.target.value})}
                 />
@@ -230,7 +230,7 @@ export default function TreasurySummary({currentYearPurchaseCount, previousYearP
                     type={"number"}
                     placeholder={"Amount"}
                     required={true}
-                    className="h-10"
+                    className="h-10 w-full"
                     value={newPayment.amount}
                     handleChange={(e) => setNewPayment({...newPayment, amount: e.target.value})}
                 />

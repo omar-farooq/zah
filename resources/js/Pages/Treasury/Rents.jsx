@@ -83,7 +83,7 @@ export default function Rents({auth}) {
                             <td className="border-b border-slate-300">
                                 <input 
                                     defaultValue={tenant.rent?.amount}
-                                    className="text-center"
+                                    className="text-center w-28 sm:w-auto"
                                     onChange={(e) => updateRent(tenant.rent.id, e.target.value)}
                                 />
                             </td>

@@ -102,11 +102,11 @@ export default function CreatePlan({lastPlan, balance, rent, weeklyRecurringPaym
 
     return (
         <>
-            <div className="grid grid-cols-6 bg-white m-4 shadow-md text-sm md:text-base">
-                <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2">£{calculateExpectedIncomings()}</span>
-                <span className="m-2 font-bold col-span-2">Expected outgoing (5 years):</span> <span className="mt-2">£{calculateExpectedOutgoings()}</span>
-                <span className="m-2 font-bold col-span-2">Available balance:</span> <span className="mt-2">£{balance}</span>
-                <span className="m-2 font-bold col-span-2">Expected 5 year balance:</span><span className="mt-2"> £{Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings())}</span>
+            <div className="grid grid-cols-6 bg-white md:m-4 mt-4 shadow-md text-sm md:text-base">
+                <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2 -ml-4 sm:ml-0">£{calculateExpectedIncomings()}</span>
+                <span className="m-2 font-bold col-span-2">Expected outgoing (5 years):</span> <span className="mt-2 -ml-4 sm:ml-0">£{calculateExpectedOutgoings()}</span>
+                <span className="m-2 font-bold col-span-2">Available balance:</span> <span className="mt-2 -ml-4 sm:ml-0">£{balance}</span>
+                <span className="m-2 font-bold col-span-2">Expected balance (in 5 years):</span><span className="mt-2 -ml-4 sm:ml-0"> £{Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings())}</span>
             </div>
             <ScrollArea>
               <DragDropContext

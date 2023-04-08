@@ -6,13 +6,13 @@ export default function ViewPlan({treasuryPlan}) {
 
     return (
         <>
-            <div className="grid grid-cols-6 bg-white m-4 shadow-md md:text-base text-sm">
-                <span className="m-2 font-bold col-span-2">Plan Created:</span><span className="mt-2">{DateToUKLocale(treasuryPlan.created_at)}</span>
-                <span className="m-2 font-bold col-span-2"></span><span className="mt-2"></span>
-                <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2">£{treasuryPlan.expected_incoming}</span>
-                <span className="m-2 font-bold col-span-2">Expected outgoing (5 years):</span> <span className="mt-2">£{treasuryPlan.expected_outgoing}</span>
-                <span className="m-2 font-bold col-span-2">Available balance:</span> <span className="mt-2">£{treasuryPlan.available_balance}</span>
-                <span className="m-2 font-bold col-span-2">Expected 5 year balance:</span><span className="mt-2"> £{treasuryPlan.expected_balance}</span>
+            <div className="grid grid-cols-6 bg-white md:m-4 mt-4 shadow-md md:text-base text-sm">
+                <span className="m-2 font-bold col-span-2">Plan Created:</span><span className="mt-2 -ml-3 sm:ml-0">{DateToUKLocale(treasuryPlan.created_at)}</span>
+                <span className="m-2 font-bold col-span-2"></span><span className="mt-2 -ml-3 sm:ml-0"></span>
+                <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2 -ml-3 sm:ml-0">£{treasuryPlan.expected_incoming}</span>
+                <span className="m-2 font-bold col-span-2">Expected outgoing (5 years):</span> <span className="mt-2 -ml-3 sm:ml-0">£{treasuryPlan.expected_outgoing}</span>
+                <span className="m-2 font-bold col-span-2">Available balance:</span> <span className="mt-2 -ml-3 sm:ml-0">£{treasuryPlan.available_balance}</span>
+                <span className="m-2 font-bold col-span-2">Expected balance (in 5 years):</span><span className="mt-2 -ml-3 sm:ml-0"> £{treasuryPlan.expected_balance}</span>
             </div>
 
             <table>

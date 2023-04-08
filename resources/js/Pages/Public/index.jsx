@@ -74,10 +74,10 @@ export default function FrontPage() {
                     `}
                 </style>
                 <nav className="h-16 flex justify-between">
-                    <div className="text-3xl md:text-5xl h-full mt-3 ml-8 flex">
+                    <div className="text-3xl md:text-5xl h-full mt-4 ml-8 flex">
                         <div>ZAH</div>
                     </div>
-                    <div className="text-3xl md:text-4xl h-full mt-3 mr-8 flex">
+                    <div className="text-2xl md:text-4xl h-full mt-4 mr-8 flex">
                         <Link href={'/login'}>Login</Link>
                     </div>
                 </nav>
@@ -148,7 +148,7 @@ export default function FrontPage() {
                     </div>
                 </div>
 
-                <footer className="h-60 bg-zinc-100 -skew-y-1 text-slate-500">
+                <footer className="h-60 bg-zinc-100 md:-skew-y-1 text-slate-500">
                     <div className="flex justify-center">
                         <div className="flex flex-col lg:flex-row w-3/5 mt-3">
 

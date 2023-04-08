@@ -127,8 +127,8 @@ export default function SecretaryReport() {
             <MantineProvider withNormalizeCSS withGlobalStyles>
                 <Notifications />
                     <form onSubmit={handleSubmit} className="grid grid-cols-8 gap-4">
-                        <div className="text-xl col-start-1 lg:col-start-3 col-end-5 bg-sky-700 text-white flex justify-center">Secretary's Report</div>
-                        <div className="col-start-1 lg:col-start-3 col-end-6">
+                        <div className="text-xl col-start-1 md:col-start-3 col-end-9 md:col-end-5 bg-sky-700 text-white flex justify-center">Secretary's Report</div>
+                        <div className="col-start-1 md:col-start-3 md:col-end-6 col-end-9">
                             <label htmlFor="write">Write Report</label>
                             <input 
                                 type="radio" 
@@ -158,7 +158,7 @@ export default function SecretaryReport() {
                                 autosize
                                 label="Write Report"
                                 minRows={3}
-                                className="col-start-2 lg:col-start-3 col-end-8 lg:col-end-7"
+                                className="col-start-1 md:col-start-3 col-end-9 md:col-end-7"
                             />
                             </>
                         }
@@ -217,7 +217,7 @@ export default function SecretaryReport() {
                             </div>
                         </>
                     }
-                        <Button type="submit" color="dark" className="col-start-2 lg:col-start-4 col-end-8 lg:col-end-6 bg-black w-1/2 place-self-center mb-10">{report.composeType == 'write' ? 'Save' : 'Upload'}</Button>
+                        <Button type="submit" color="dark" className="col-start-1 lg:col-start-4 col-end-9 lg:col-end-6 bg-black md:w-1/3 lg:w-1/2 w-1/2 place-self-center mb-10">{report.composeType == 'write' ? 'Save' : 'Upload'}</Button>
                     </form>
             </MantineProvider>
             <div className="flex flex-col items-center">

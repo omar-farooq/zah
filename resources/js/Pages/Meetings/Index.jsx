@@ -37,7 +37,7 @@ export default function ListMinutes ({meetingsPageOne}) {
 
             if(pollResults) {
                 return (
-                    <div key={i} className="bg-white w-1/3 border mt-4">
+                    <div key={i} className="bg-white w-4/5 lg:w-1/3 border mt-4">
                         <div className="text-xl">Poll <br />{pollResults.name}</div>
                         <div>from {result.time_of_meeting}</div>
                         <InertiaLink href={route('meetings.show', result.id)}>
@@ -48,7 +48,7 @@ export default function ListMinutes ({meetingsPageOne}) {
             }
             if(minuteResults) {
                 return (
-                    <div key={i} className="bg-white w-1/3 border mt-4">
+                    <div key={i} className="bg-white w-4/5 lg:w-1/3 border mt-4">
                         <div className="text-xl">Minute </div>
                         <div>{minuteResults.minute_text}</div>
                         <div>from {result.time_of_meeting}</div>
@@ -64,7 +64,7 @@ export default function ListMinutes ({meetingsPageOne}) {
     return (
         <>
             <div className="w-full flex flex-col items-center">
-                <div className="w-5/6 flex flex-row mt-6">
+                <div className="w-5/6 flex flex-row mt-6 justify-center md:justify-start">
                     <Input
                         className="w-full pr-10"
                         placeholder="Search"

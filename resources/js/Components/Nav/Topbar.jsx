@@ -10,7 +10,7 @@ export default function Topbar({ auth, header, title }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
-            <nav className="bg-white border-b border-gray-100 shadow w-full lg:bg-[url('/images/floral.webp')]">
+            <nav className="bg-white border-b border-gray-100 shadow w-full">
                 <div className="w-5/6 mx-auto">
                     <div className="flex justify-between h-16">
                         <div className="flex">

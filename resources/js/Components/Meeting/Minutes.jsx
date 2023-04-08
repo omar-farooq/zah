@@ -1,4 +1,5 @@
 import { ComponentTitle, Form } from '@/Components/Meeting'
+import { TrashIcon } from '@heroicons/react/24/outline'
 import { useState, useEffect, useReducer } from 'react'
 import { useForm } from '@inertiajs/inertia-react'
 import { Button, Textarea } from '@mantine/core'
@@ -80,7 +81,7 @@ export default function Minutes({meetingID}) {
                 {reactiveMinutes.map(minute =>
                     <li key={minute.id} className='bg-white flex justify-between border m-1 bg-white border-sky-700 text-slate-700'>
                         <div className="ml-2 whitespace-pre-line">{minute.minute_text}</div> 
-                        <button onClick={() => deleteMinute(minute.id)}>X</button>
+                        <div><TrashIcon className="w-5 h-5 cursor-pointer mr-2" onClick={() => deleteMinute(minute.id)} /></div>
                     </li>
                 )}
             </ul>
@@ -95,7 +96,7 @@ export default function Minutes({meetingID}) {
                     className="w-3/4 mt-1"
                     classNames={{ input: 'bg-gray-100 border-black'}}
                 />
-                <Button color="dark" type="submit" className="bg-black w-1/3 lg:w-1/4 mt-4">Add Minute</Button>
+                <Button color="dark" type="submit" className="bg-black w-1/2 md:w-1/3 lg:w-1/4 mt-4">Add Minute</Button>
             </form>
         </>
     )
