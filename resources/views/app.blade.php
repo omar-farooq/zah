@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Zah is a housing Co-Operative based in Didsbury Manchester. It is one of the longest running Co-Ops in the UK and promotes social housing. This website offers a way for the members to connect internally and to the wider social housing community">
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>{{ config('app.name', 'Zah') }}</title>
 
         <!-- Fonts -->
         <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
@@ -21,6 +21,11 @@
         @viteReactRefresh
         @vite('resources/js/app.jsx')
         @inertiaHead
+
+        <!-- import Raleway Font -->
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+        </style>
     </head>
     <body class="font-sans antialiased">
         @inertia

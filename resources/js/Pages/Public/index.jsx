@@ -86,7 +86,7 @@ export default function FrontPage() {
                         </div>
                 </div>
 
-                <div className="flex justify-center animate-fade">
+                <div className="flex justify-center animate-fade font-raleway">
                     <div className="flex md:flex-row flex-col mt-10 mb-4 w-4/5 space-evenly">
 
                         <div className="w-full md:w-1/3 m-1">
