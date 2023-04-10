@@ -13,7 +13,7 @@ export default function RoleNomination({auth, nominee, role, nomination, userIni
 
     if(auth.user) {
         verified = auth.user.membership.start_date != null && auth.user.membership.end_date == null
-        isChair = auth.user.role.name == 'Chair'
+        isChair = auth.user.role?.name == 'Chair'
     }
 
     return (
@@ -25,7 +25,7 @@ export default function RoleNomination({auth, nominee, role, nomination, userIni
                     approvalStatusHook={[approvalStatus, setApprovalStatus]}
                     model={model} 
                     verified={auth.user.membership.start_date != null && auth.user.membership}
-                    isChair={auth.user.role.name == 'Chair'}
+                    isChair={auth.user.role?.name == 'Chair'}
                 />
             </div>
         </>

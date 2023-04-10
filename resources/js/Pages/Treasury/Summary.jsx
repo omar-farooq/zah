@@ -156,7 +156,7 @@ export default function TreasurySummary({currentYearPurchaseCount, previousYearP
 
     return (
         <>           
-            <div className={classes.root}>
+            <div className={classes.root} className="mt-10 lg:mt-20">
                 <SimpleGrid cols={3} breakpoints={[{ maxWidth: 'sm', cols: 1 }]}>
                    {stats}
                 </SimpleGrid>

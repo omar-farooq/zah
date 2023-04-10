@@ -56,6 +56,15 @@ return [
             'throw' => false,
         ],
 
+        'spaces' => [
+            'driver' => 's3',
+            'key' => env('SPACES_KEY'),
+            'secret' => env('SPACES_SECRET'),
+            'endpoint' => env('SPACES_ENDPOINT'),
+            'region' => env('SPACES_REGION'),
+            'bucket' => env('SPACES_BUCKET'),
+        ],
+
     ],
 
     /*

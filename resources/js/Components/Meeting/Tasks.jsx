@@ -150,7 +150,7 @@ export default function Tasks() {
                     {tasks.taskList.map(task =>
                         <tr key={task.id} className={`${task.completed == 0 ? '' : 'line-through decoration-green-500 decoration-2'}`}>
                             <td className="border border-collapse border-slate-600" >{task.item}</td>
-                            <td className="border border-collapse border-slate-600">{task.users.map(x => x.name)}</td>
+                            <td className="border border-collapse border-slate-600">{task.users.map((x,i) => i == task.users.length - 1 ? x.name : x.name + ', ')}</td>
                             <td className="border border-collapse border-slate-600">{task.due_by ? new Date(task.due_by).toDateString() : ''}</td>
                             <td className="border border-collapse border-slate-600"><CheckIcon className="h-6 w-6 text-green-400 cursor-pointer hover:text-green-600 ml-2" onClick={() => completeTaskItem(task.id)} /></td>
                         </tr>

@@ -78,12 +78,17 @@ export default function Minutes({meetingID}) {
                 Minutes
             </ComponentTitle>
             <ul className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7">
-                {reactiveMinutes.map(minute =>
-                    <li key={minute.id} className='bg-white flex justify-between border m-1 bg-white border-sky-700 text-slate-700'>
-                        <div className="ml-2 whitespace-pre-line">{minute.minute_text}</div> 
-                        <div><TrashIcon className="w-5 h-5 cursor-pointer mr-2" onClick={() => deleteMinute(minute.id)} /></div>
-                    </li>
-                )}
+                {
+                    reactiveMinutes.length == 0 ?
+                    <div className="text-2xl mb-4">There are no minutes yet</div>
+                    :
+                    reactiveMinutes.map(minute =>
+                        <li key={minute.id} className='bg-white flex justify-between border m-1 bg-white border-sky-700 text-slate-700'>
+                            <div className="ml-2 whitespace-pre-line">{minute.minute_text}</div> 
+                            <div><TrashIcon className="w-5 h-5 cursor-pointer mr-2" onClick={() => deleteMinute(minute.id)} /></div>
+                        </li>
+                    )
+                }
             </ul>
 
             <form onSubmit={handleSubmit} className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7 flex flex-col items-center">

@@ -73,17 +73,21 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
 
     //Calculate the total amount paid to recurring payments as this should be added to the total
     const calculateRecurring = () => {
-        setCalculatedRecurring(
-				recurringPayments.reduce((a,b) => {
-				if(b.frequency === 'weekly') {
-					return Number(b.amount) * Number(FrequencyOfWeekDay(b.day_of_week_due))
-				} else if (b.frequency === 'monthly') {
-					return Number(b.amount) * Number(FrequencyOfDayOfMonth(b.day_of_month_due)) + Number(a)
-				} else {
-					return Number(b.amount) * Number(FrequencyOfAnnualPayments(b.day_of_month_due, b.month_due)) + Number(a)
-				}
-			},[])
-		)
+        if(dates[1] < dates[0]) {
+            setCalculatedRecurring(0)
+        } else {
+            setCalculatedRecurring(
+                    recurringPayments.reduce((a,b) => {
+                    if(b.frequency === 'weekly') {
+                        return Number(b.amount) * Number(FrequencyOfWeekDay(b.day_of_week_due)) + Number(a)
+                    } else if (b.frequency === 'monthly') {
+                        return Number(b.amount) * Number(FrequencyOfDayOfMonth(b.day_of_month_due)) + Number(a)
+                    } else {
+                        return Number(b.amount) * Number(FrequencyOfAnnualPayments(b.day_of_month_due, b.month_due)) + Number(a)
+                    }
+                },[])
+            )
+        }
     }
     const recurringOccurrences = recurringPayments.map(payment => ({
             id: payment.id,

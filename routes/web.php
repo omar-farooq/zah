@@ -54,16 +54,9 @@ Route::get('/dashboard', function () {
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::controller(ScheduleController::class)->group(function() {
-	Route::get('/meetings/schedule', 'browse')->name('schedule');	
-	Route::post('/meetings/schedule/suggestions/add', 'addSuggestion');
-	Route::post('/meetings/schedule/suggestions/delete', 'removeSuggestion');
-	Route::put('/meetings/schedule/availability/update', 'updateAvailability');
-});
 
 Route::post('/generate-contact-form-email', [JobController::class, 'generateEmail'])->middleware(['throttle:contact-form-submission']);
 Route::post('/meetings/register-attendance', [MeetingController::class, 'markAttendance']);
-Route::get('/maintenance/upcoming', [MaintenanceController::class, 'upcoming'])->name('maintenance.upcoming');
 
 //Comments
 Route::get('/purchase-requests/{purchaseRequest}/comments', function (PurchaseRequest $purchaseRequest) {
@@ -75,7 +68,7 @@ Route::get('/maintenance-requests/{maintenanceRequest}/comments', function (Main
 });
 
 //Members Only
-Route::middleware(['member'])->group(function() {
+Route::middleware(['member', 'auth'])->group(function() {
     //Stats pages
     Route::get('/treasury', [TreasuryReportController::class, 'summary'])->name('treasury.summary');
 
@@ -97,22 +90,37 @@ Route::middleware(['member'])->group(function() {
     Route::resource('treasury-plans', TreasuryPlanController::class);
     Route::resource('treasury-reports', TreasuryReportController::class);
     Route::resource('users', UserController::class);
+
+    //Schedule
+    Route::controller(ScheduleController::class)->group(function() {
+        Route::get('/meetings/schedule', 'browse')->name('schedule');	
+        Route::post('/meetings/schedule/suggestions/add', 'addSuggestion');
+        Route::post('/meetings/schedule/suggestions/delete', 'removeSuggestion');
+        Route::put('/meetings/schedule/availability/update', 'updateAvailability');
+    });
 });
 
-Route::resource('agenda', MeetingAgendaController::class);
-Route::resource('comments', CommentController::class);
-Route::resource('maintenance', MaintenanceController::class);
-Route::resource('maintenance-requests', MaintenanceRequestController::class);
-Route::resource('meetings', MeetingController::class);
-Route::resource('minutes', MinuteController::class);
-Route::resource('payments', PaymentController::class);
-Route::resource('poll', PollController::class);
-Route::resource('purchases', PurchaseController::class);
-Route::resource('purchase-requests', PurchaseRequestController::class);
-Route::resource('roles', RoleController::class);
-Route::resource('secretary-reports', SecretaryReportController::class);
-Route::resource('tasks', TaskController::class);
-Route::resource('tenants', TenancyController::class);
-Route::resource('vote', VoteController::class);
+//View upcoming maintenance
+Route::get('/maintenance/upcoming', [MaintenanceController::class, 'upcoming'])->middleware(['auth'])->name('maintenance.upcoming');
+
+//Requires user to be signed in
+Route::middleware(['auth'])->group(function() {
+    Route::resource('agenda', MeetingAgendaController::class);
+    Route::resource('comments', CommentController::class);
+    Route::resource('maintenance', MaintenanceController::class);
+    Route::resource('maintenance-requests', MaintenanceRequestController::class);
+    Route::resource('meetings', MeetingController::class);
+    Route::resource('minutes', MinuteController::class);
+    Route::resource('payments', PaymentController::class);
+    Route::resource('poll', PollController::class);
+    Route::resource('purchases', PurchaseController::class);
+    Route::resource('purchase-requests', PurchaseRequestController::class);
+    Route::resource('roles', RoleController::class);
+    Route::resource('secretary-reports', SecretaryReportController::class);
+    Route::resource('tasks', TaskController::class);
+    Route::resource('tenants', TenancyController::class);
+    Route::resource('vote', VoteController::class);
+
+});
 
 require __DIR__.'/auth.php';

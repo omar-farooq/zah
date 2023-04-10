@@ -33,7 +33,7 @@ export default function PurchaseRequest(props) {
             <TileContainer>
                 <PreviewTile>
                     <FlexAlignLeft>
-                        <div className={`${approvalStatus == 'Chair to decide' && props.auth.user.role.name == 'Chair' ? '' : 'flex'} content-between min-w-full`}>
+                        <div className={`${approvalStatus == 'Chair to decide' && props.auth.user.role?.name == 'Chair' ? '' : 'flex'} content-between min-w-full`}>
                             <RequestName name={requestItem.name} />
                                 <div className="ml-auto mt-2 flex flex-row space-x-1">
                                     <Approval 
@@ -41,12 +41,12 @@ export default function PurchaseRequest(props) {
                                         approvalStatusHook={[approvalStatus, setApprovalStatus]}
                                         model={model} 
                                         verified={verified} 
-                                        isChair={props.auth.user.role.name == 'Chair'}
+                                        isChair={props.auth.user.role?.name == 'Chair'}
                                     />
                                 </div>
                         </div>
 
-                        <p className="text-xl font-semibold leading-none text-gray-600 dark:text-white">{"£" + requestItem.price }{requestItem.deliveryCost == '' ? '' : <span className="text-sm"> with £{ requestItem.delivery_cost }  delivery fee</span>}</p> 
+                        <p className="text-xl font-semibold leading-none text-gray-600 dark:text-white">{"£" + requestItem.price }{requestItem.deliveryCost == '' ? '' : <span className="text-sm"> with £{ requestItem.delivery_cost ?? '0' }  delivery fee</span>}</p> 
                     </FlexAlignLeft>
 
                     <PreviewImageContainer>

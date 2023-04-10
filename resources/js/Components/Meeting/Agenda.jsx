@@ -75,12 +75,15 @@ export default function Agenda() {
         <>
             <ComponentTitle bg="bg-rose-700">Agenda</ComponentTitle>
             <ul className="lg:col-start-3 lg:col-end-7 col-start-1 col-end-9">
-                {reactiveAgenda.map((agenda,i) =>
-                    <li key={agenda.id} className={`${i % 2 == 0 ? 'border-black' : 'border-black'} bg-white text-black flex justify-between items-center m-1 border`}>
-                        <div className="ml-2 whitespace-pre-line">{agenda.item}</div> 
-                        <div><TrashIcon className="w-5 h-5 cursor-pointer mr-2" onClick={() => deleteAgendaItem(agenda.id)} /></div>
-                    </li>
-                )}
+                {
+                    reactiveAgenda.length === 0 ? <div className="text-2xl">No agenda has been set</div> :
+                    reactiveAgenda.map((agenda,i) =>
+                        <li key={agenda.id} className={`${i % 2 == 0 ? 'border-black' : 'border-black'} bg-white text-black flex justify-between items-center m-1 border`}>
+                            <div className="ml-2 whitespace-pre-line">{agenda.item}</div> 
+                            <div><TrashIcon className="w-5 h-5 cursor-pointer mr-2" onClick={() => deleteAgendaItem(agenda.id)} /></div>
+                        </li>
+                    )
+                }
             </ul>
 
             <form onSubmit={handleSubmit} className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7 flex flex-col items-center">

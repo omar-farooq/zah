@@ -8,7 +8,7 @@ import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } fr
 export default function CreateReport({rents, arrears, previousReport, recurringPayments, unreported}) {
 
     function calculatePayableRent(rentPerWeek) {
-        if(dates[0] && dates[1]) {
+        if((dates[0] && dates[1]) && dates[0] <= dates[1]) {
             let diffinMs = new Date(dates[1]) - new Date(dates[0])
             let numberOfDays = Math.round(diffinMs / (1000 * 60 * 60 * 24)) + 1
             let payableRent = (rentPerWeek / 7) * numberOfDays
@@ -18,8 +18,10 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
         }
     }
 
+    //Get when the previous report ended and make the start date of the report the previous day +1 by default
     let previousReportEnd = new Date(previousReport.end_date)
     let newReportDefaultStart = new Date(previousReportEnd.getFullYear(), previousReportEnd.getMonth(), previousReportEnd.getDate()+1)
+
     const [dates, setDates] = useState([newReportDefaultStart, LastDayOfTheMonth()])
     const [updatedArrears, setUpdatedArrears] = useState(arrears);
     const [paidRent, setPaidRent] = useState(rents.map(rent => ({
@@ -35,6 +37,7 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
     const [calculatedBalanceCheckbox, setCalculatedBalanceCheckbox] = useState(true)
     const [manualBalance, setManualBalance] = useState(null)
 
+    //For displaying purchases and services and adding receipts
     function unreportedReducer(unreportedItems, action) {
         switch (action.type) {
 			case 'map':
@@ -52,6 +55,21 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
         }
     }
 
+    //Update arrears when the dates change
+    useEffect(() => {
+        let arrearsArr = updatedArrears
+        dates[1] && (dates[1] > dates[0]) ?
+        setUpdatedArrears(
+            arrearsArr.map(x => (
+                {
+                    ...x,
+                    amount: Number(Number(calculatePayableRent(rents.find(y => y.user_id === x.user_id).amount)) - Number(paidRent.find(y => y.user_id === x.user_id).amount_paid) + Number(arrears.find(y => y.user_id === x.user_id).amount)).toFixed(2)
+                }
+            ))
+        )
+        : setUpdatedArrears(arrears)
+    },[dates])
+
     const [unreportedItems, dispatch] = useReducer(unreportedReducer, [])
 
     const updatePaidRent = (userId, amount, payable) => {
@@ -64,6 +82,7 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
             setUpdatedArrears([...updatedArrears, {user_id: userId, amount: (calculatePayableRent(payable) - amount).toFixed(2)}])
     }
 
+    //Add additional incomings and outgoings
     const addInOut = (e) => {
         e.preventDefault()
         setPayables([
@@ -95,7 +114,7 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
         },[])
 
         const rentTotal = paidRent.reduce((a,b) => {
-            return a + Number(b.amount_paid)
+            return Number(a) + Number(b.amount_paid)
         },[])
 
         const purchasesAndServicesTotal = unreported.reduce((a,b) => {

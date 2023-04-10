@@ -44,7 +44,7 @@ class ReceiptController extends Controller
     {
         $receipt = new Receipt;
         $receiptName = date('Ymdhis') . $request->receiptFile->getClientOriginalName();
-        Storage::disk('public')->putFileAs('documents/receipts', $request->receiptFile, $receiptName);
+        Storage::disk('spaces')->putFileAs('documents/receipts', $request->receiptFile, $receiptName);
         $receipt['receipt'] = $receiptName;
         $receipt['payable_type'] = $request->payable_type;
         $receipt['payable_id'] = $request->payable_id;
@@ -63,7 +63,7 @@ class ReceiptController extends Controller
         //Storage::temporaryUrl($receipt->receipt, now()->addMinutes(2));
 
         //Local driver
-        return Storage::disk('public')->download('documents/receipts/'.$receipt->receipt);
+        return Storage::disk('spaces')->download('documents/receipts/'.$receipt->receipt);
 
     }
 
@@ -98,7 +98,7 @@ class ReceiptController extends Controller
      */
     public function destroy(Receipt $receipt)
     {
-        Storage::disk('public')->delete('documents/receipts/'.$receipt->receipt);
+        Storage::disk('spaces')->delete('documents/receipts/'.$receipt->receipt);
         Receipt::destroy($receipt->id);
     }
 }

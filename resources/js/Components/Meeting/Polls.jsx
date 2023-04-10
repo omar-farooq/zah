@@ -96,9 +96,14 @@ export default function Polls({auth}) {
             </ComponentTitle>
 
             <div className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7">
-                {polls.map(poll => ( 
-                    <DisplayPoll auth={auth} poll={poll} key={poll.id} dispatch={dispatch} />
-                ))}
+                {
+                    polls.length === 0 ?
+                        <div className="text-2xl">There are no polls</div>
+                    :
+                        polls.map(poll => ( 
+                            <DisplayPoll auth={auth} poll={poll} key={poll.id} dispatch={dispatch} />
+                        ))
+                }
             </div>
                 <Button color="dark" className="col-start-1 lg:col-start-4 col-end-9 lg:col-end-6 bg-black w-1/2 place-self-center mb-10" onClick={() => setOpened(true)}>Create new poll</Button>
 

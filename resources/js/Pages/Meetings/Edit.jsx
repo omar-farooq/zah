@@ -17,8 +17,9 @@ export default function NewMeeting({meeting, tenants, auth}) {
     const notInAttendance = tenants.filter(option => !(register.some(item => item.value === option.value) || lateRegister.some(item => item.value === option.value)))
 
     const handleSubmit = async () => {
-        axios.post('/meetings/register-attendance', {meetingID: meeting.id, Attendees: register, LateAttendees: lateRegister, Guests: guests})
-        axios.patch('/meetings/'+meeting.id)
+        await axios.post('/meetings/register-attendance', {meetingID: meeting.id, Attendees: register, LateAttendees: lateRegister, Guests: guests})
+        await axios.patch('/meetings/'+meeting.id)
+        window.location = "/meetings/"+meeting.id
     }
 
     return (
