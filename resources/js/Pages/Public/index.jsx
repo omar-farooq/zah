@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Button, MantineProvider } from '@mantine/core'
+import { Alert, Button, MantineProvider } from '@mantine/core'
 import { Notifications } from '@mantine/notifications';
 import { ErrorNotification } from '@/Components/Notifications'
 import { Link } from '@inertiajs/inertia-react';
@@ -21,6 +21,8 @@ export default function FrontPage() {
     //To catch bots
     const [protection, setProtection] = useState(false)
 
+    const [showVacancyAd, setShowVacancyAd] = useState(false)
+
     const handleSubmit = async (e) => {
         protection ? '' :
         e.preventDefault()
@@ -35,6 +37,14 @@ export default function FrontPage() {
             return ErrorNotification("Error sending email", error)
         }
     }
+
+    //Get vacancy status
+    useEffect(() => {
+        const areThereVacancies = async () => { let res = await axios.get('/api/vacancies') 
+            setShowVacancyAd(res.data)
+        }
+        areThereVacancies()
+    },[])
 
     //Fade in effects on scrolling
     useEffect(() => {
@@ -73,6 +83,18 @@ export default function FrontPage() {
                         }
                     `}
                 </style>
+                {
+                    showVacancyAd &&
+                    <Alert 
+                        title="We have a Vacancy. Contact us below for an interview" 
+                        color="red" 
+                        variant="filled" 
+                        classNames={{ title: 'justify-center mt-3 md:text-base lg:text-xl', closeButton: 'mt-3 text-white' }} 
+                        radius="xs" 
+                        withCloseButton onClose={() => setShowVacancyAd(false)} 
+                        closeButtonLabel="Close alert"
+                    />
+                }
                 <nav className="h-16 flex justify-between">
                     <div className="text-3xl md:text-5xl h-full mt-4 ml-8 flex">
                         <div>ZAH</div>
@@ -92,23 +114,33 @@ export default function FrontPage() {
                         <div className="w-full md:w-1/3 m-1">
                             <h1 className="text-2xl md:text-3xl lg:text-4xl">About Us</h1>
                             <div className="text-sm md:text-base">
-                                Some text here about how great we are and how we are one of the longest running co-ops with no one able to leave because we're all actually stuck here
+                                Zah is one of the longest running Housing Co-Operatives in the UK, founded by Buddhists in the 1980s and still going strong. It presently has a small community of six members who all work with each other to make a positive living environment.
+
+                                <br /> <br />
+                                The co-op is located in Didsbury in the heart of Manchester. It provides affordable housing to people at a period of time where housing is unaffordable to many.
+
+                                <br /> <br />
+                                Zah is an equals opportunity co-op and doesn't discriminate against anyone based on gender, race, disability, orientation or any other differences.
+
+                                <br /> <br />
+                                If you would like to learn more about the co-op and how it operates then feel free to contact us via the form at the bottom of the page
                             </div>
                         </div>
 
                         <div className="w-full md:w-1/3 m-1">
                             <h1 className="text-2xl md:text-3xl lg:text-4xl">Our Ethos</h1>
                             <div className="text-sm md:text-base">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pretium quam vulputate dignissim suspendisse in. A iaculis at erat pellentesque adipiscing commodo. Morbi tincidunt ornare massa eget egestas purus viverra accumsan in. Lacus vel facilisis volutpat est velit egestas. Ut tellus elementum sagittis vitae et. Sagittis id consectetur purus ut faucibus. Sed turpis tincidunt id aliquet risus feugiat in ante metus. Felis bibendum ut tristique et egestas quis. Vel risus commodo viverra maecenas accumsan lacus vel.
-
-            Et malesuada fames ac turpis egestas. Diam maecenas sed enim ut sem. Tristique sollicitudin nibh sit amet commodo nulla facilisi nullam. Amet cursus sit amet dictum sit. Suscipit adipiscing bibendum est ultricies integer quis auctor. Posuere morbi leo urna molestie at elementum eu facilisis. Enim facilisis gravida neque convallis a. Pellentesque massa placerat duis ultricies lacus sed turpis tincidunt id. Vel facilisis volutpat est velit egestas dui id ornare. Scelerisque in dictum non consectetur a. In mollis nunc sed id semper risus.
+                                We aim to provide affordable housing to those that need it and sustain a comfortable living environment for each other. We presently work with and look after each other, aiming to sustain the co-op in the long term, long after we are all gone.
                             </div>
                         </div>
 
                         <div className="w-full md:w-1/3 m-1">
                             <h1 className="text-2xl md:text-3xl lg:text-4xl">Co-operative Living</h1>
                             <div className="text-sm md:text-base">
-                                Some text here about how great we are and how we are one of the longest running co-ops with no one able to leave because we're all actually stuck here
+                                Our housing co-op gives each member an equal vote on each matter to allow us to manage the co-op in a democratic way. Everybody gets involved in managing the accounts, organising meetings, maintaining the property and trying to progress the co-op. 
+
+                                <br /><br />
+                                We all abide by a set of rules which we all self-enforce and have regular meetings and votes on matters to ensure that everyone is in agreement. This has allowed for us to maintain a healthy co-operative for a long period of time.
                             </div>
                         </div>
 

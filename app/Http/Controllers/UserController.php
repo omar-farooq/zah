@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Inertia\Inertia;
+use Auth;
 use App\Models\User;
 use App\Models\Rent;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
@@ -66,9 +68,17 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        //
+        if($request->query('view') && $request->query('view') == 'avatar') {
+            $avatar = User::where('id', $id)->first()->avatar;
+            return Storage::disk('spaces')->get('avatars/'.$avatar);
+        } else {
+            return Inertia::render('Users/Profile', [
+                'title' => 'User Profile',
+                'user' => User::find($id)
+            ]);
+        }
     }
 
     /**
@@ -77,9 +87,17 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
-        //
+        $current_user_id = Auth::id();
+        if($current_user_id !== $user->id) {
+            abort(403);
+        }
+        $current_user = User::where('id', $current_user_id)->with('nextOfKin')->first();
+        return Inertia::render('Users/EditProfile', [
+            'title' => 'Edit Profile',
+            'user' => $current_user
+        ]);
     }
 
     /**
@@ -91,7 +109,28 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $user->update($request->all());
+        $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'phone' => 'nullable|string'
+        ]);
+        if($user->id !== Auth::id()) {
+            abort(403);
+        }        
+
+        $user->update($request->except(['avatar']));
+
+        if($request->file('avatar')) {
+            $avatarName = str_replace('@', '_', $user->email) . '_avatar.' . $request->file('avatar')->extension();
+            Storage::disk('spaces')->putFileAs('avatars', $request->file('avatar'), $avatarName);
+            $user->update(['avatar' => $avatarName]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'updated your profile',
+        ]);
+
     }
 
     /**

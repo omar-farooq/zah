@@ -55,6 +55,13 @@ export default function Topbar({ auth, header, title }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
+                                        <Dropdown.Link 
+                                            href={route('users.edit', auth.user.id)} 
+                                            method="get" 
+                                            as="button"
+                                        >
+                                            Edit Profile
+                                        </Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
                                             Log Out
                                         </Dropdown.Link>

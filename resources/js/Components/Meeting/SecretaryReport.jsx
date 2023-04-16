@@ -36,13 +36,13 @@ export default function SecretaryReport() {
 
 	//Reducer
 	const initialReportState = {
-		id: '',
-		written_report: '',
+        id: '',
+        written_report: '',
         attachment: '',
-		uploaded: '',
+        uploaded: '',
         attachment_link: '',
-		composeType: 'write',
-		_method: ''
+        composeType: 'write',
+        _method: ''
 	}
 	
 	function reducer(report, action) {

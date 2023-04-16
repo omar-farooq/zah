@@ -11,6 +11,7 @@ use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MeetingAgendaController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\MinuteController;
+use App\Http\Controllers\NextOfKinController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PollController;
 use App\Http\Controllers\PurchaseController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\RoleAssignmentController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SecretaryReportController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenancyController;
 use App\Http\Controllers\TreasuryReportController;
@@ -53,7 +55,6 @@ Route::get('/dashboard', function () {
         'title' => 'Dashboard'
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
-
 
 Route::post('/generate-contact-form-email', [JobController::class, 'generateEmail'])->middleware(['throttle:contact-form-submission']);
 Route::post('/meetings/register-attendance', [MeetingController::class, 'markAttendance']);
@@ -87,6 +88,9 @@ Route::middleware(['member', 'auth'])->group(function() {
     Route::resource('recurring-payments', RecurringPaymentController::class);
     Route::resource('rents', RentController::class);
     Route::resource('role-assignment', RoleAssignmentController::class);
+    Route::resource('settings', SettingsController::class)->parameters([
+        'settings' => 'settings:name'
+    ]);
     Route::resource('treasury-plans', TreasuryPlanController::class);
     Route::resource('treasury-reports', TreasuryReportController::class);
     Route::resource('users', UserController::class);
@@ -111,6 +115,7 @@ Route::middleware(['auth'])->group(function() {
     Route::resource('maintenance-requests', MaintenanceRequestController::class);
     Route::resource('meetings', MeetingController::class);
     Route::resource('minutes', MinuteController::class);
+    Route::resource('nextOfKin', NextOfKinController::class);
     Route::resource('payments', PaymentController::class);
     Route::resource('poll', PollController::class);
     Route::resource('purchases', PurchaseController::class);
