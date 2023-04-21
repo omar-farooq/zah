@@ -3,6 +3,7 @@ import { Document, Page } from 'react-pdf/dist/esm/entry.vite'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { Alert, MantineProvider, Text, Group, Button, createStyles, Textarea, rem } from '@mantine/core'
+import { ComponentTitle } from '@/Components/Meeting'
 import { Dropzone, MIME_TYPES } from '@mantine/dropzone'
 import { Notifications, showNotification } from '@mantine/notifications'
 import { SuccessNotificationSettings } from '@/Shared/Functions'
@@ -126,9 +127,11 @@ export default function SecretaryReport() {
         <>
             <MantineProvider withNormalizeCSS withGlobalStyles>
                 <Notifications />
-                    <form onSubmit={handleSubmit} className="grid grid-cols-8 gap-4">
-                        <div className="text-xl col-start-1 md:col-start-3 col-end-9 md:col-end-5 bg-sky-700 text-white flex justify-center">Secretary's Report</div>
-                        <div className="col-start-1 md:col-start-3 md:col-end-6 col-end-9">
+                    <form onSubmit={handleSubmit} className="w-full col-start-1 col-end-9 flex flex-col justify-center">
+                        <div className="md:w-1/2">
+                        <ComponentTitle bg="bg-sky-700">Secretary's Report</ComponentTitle>
+                        </div>
+                        <div>
                             <label htmlFor="write">Write Report</label>
                             <input 
                                 type="radio" 
@@ -151,21 +154,22 @@ export default function SecretaryReport() {
 
                         {report.composeType == 'write' &&
                             <>
-                            {report.uploaded ? <Alert title="Warning" color="red" className="col-start-3 col-end-7"> writing a report will remove your attached report</Alert> : ''}
+                            {report.uploaded ? <Alert title="Warning" color="red"> writing a report will remove your attached report</Alert> : ''}
                             <Textarea 
                                 value={report.written_report? report.written_report : ''} 
                                 onChange={(e) => dispatch({type: 'write', report: e.target.value})} 
                                 autosize
                                 label="Write Report"
-                                minRows={3}
-                                className="col-start-1 md:col-start-3 col-end-9 md:col-end-7"
+                                minRows={4}
+                                className="w-3/4 self-center"
+                                classNames={{ input: 'bg-zinc-100' }}
                             />
                             </>
                         }
                         
                         {report.composeType == 'upload' &&
                         <>
-                            {report.written_report ? <Alert title="Warning" color="red" className="col-start-3 col-end-7"> uploading a report will delete your written report</Alert> : ''}
+                            {report.written_report ? <Alert title="Warning" color="red"> uploading a report will delete your written report</Alert> : ''}
                             <div className="col-start-1 col-end-9">
                                 <div className={classes.wrapper}>
                                     <Dropzone
@@ -217,7 +221,7 @@ export default function SecretaryReport() {
                             </div>
                         </>
                     }
-                        <Button type="submit" color="dark" className="col-start-1 lg:col-start-4 col-end-9 lg:col-end-6 bg-black md:w-1/3 lg:w-1/2 w-1/2 place-self-center mb-10">{report.composeType == 'write' ? 'Save' : 'Upload'}</Button>
+                        <Button type="submit" color="dark" className="col-start-1 col-end-9 bg-black w-1/2 md:w-1/3 xl:w-1/4 place-self-center top-4">{report.composeType == 'write' ? 'Save' : 'Upload'}</Button>
                     </form>
             </MantineProvider>
             <div className="flex flex-col items-center">

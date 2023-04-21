@@ -74,11 +74,11 @@ export default function Agenda() {
     return (
         <>
             <ComponentTitle bg="bg-rose-700">Agenda</ComponentTitle>
-            <ul className="lg:col-start-3 lg:col-end-7 col-start-1 col-end-9">
+            <ul className="col-start-1 col-end-9">
                 {
                     reactiveAgenda.length === 0 ? <div className="text-2xl">No agenda has been set</div> :
                     reactiveAgenda.map((agenda,i) =>
-                        <li key={agenda.id} className={`${i % 2 == 0 ? 'border-black' : 'border-black'} bg-white text-black flex justify-between items-center m-1 border`}>
+                        <li key={agenda.id} className={`${i % 2 == 0 ? 'border-black bg-white' : 'border-black bg-zinc-100'} text-black flex justify-between items-center m-1 border`}>
                             <div className="ml-2 whitespace-pre-line">{agenda.item}</div> 
                             <div><TrashIcon className="w-5 h-5 cursor-pointer mr-2" onClick={() => deleteAgendaItem(agenda.id)} /></div>
                         </li>
@@ -86,17 +86,17 @@ export default function Agenda() {
                 }
             </ul>
 
-            <form onSubmit={handleSubmit} className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7 flex flex-col items-center">
+            <form onSubmit={handleSubmit} className="col-start-1 col-end-9 flex flex-col items-center">
                 <Textarea
                     value={inputValue}
                     onChange={handleChange}
                     autosize
                     minRows={4}
                     required={true}
-                    className="w-3/4 mt-1"
-                    classNames={{ input: 'bg-gray-100 border-black'}}
+                    className="w-3/4 mt-6"
+                    classNames={{ input: 'bg-zinc-100'}}
                 />
-                <Button color="dark" type="submit" className="bg-black w-1/2 md:w-1/3 lg:w-1/4 mt-4">Add Agenda Item </Button>
+                <Button color="dark" type="submit" className="bg-black w-1/2 md:w-1/3 lg:w-1/4 mt-4 top-4">Add Agenda Item </Button>
             </form>
         </>
     )

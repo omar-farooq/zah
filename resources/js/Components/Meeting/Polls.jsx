@@ -77,7 +77,8 @@ export default function Polls({auth}) {
 
         Echo.private(`meeting`)
         .listen('.PollCreated', (e) => {
-            dispatch({type: 'add', model: e.model})
+            getPolls()
+//            dispatch({type: 'add', model: e.model})
         })
         .listen('.VoteCreated', (e) => {
             getPolls()
@@ -95,24 +96,24 @@ export default function Polls({auth}) {
                 Polls
             </ComponentTitle>
 
-            <div className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7">
+            <div className="col-start-1 col-end-9">
                 {
                     polls.length === 0 ?
-                        <div className="text-2xl">There are no polls</div>
+                        <div className="text-2xl mb-4">There are no polls</div>
                     :
                         polls.map(poll => ( 
                             <DisplayPoll auth={auth} poll={poll} key={poll.id} dispatch={dispatch} />
                         ))
                 }
             </div>
-                <Button color="dark" className="col-start-1 lg:col-start-4 col-end-9 lg:col-end-6 bg-black w-1/2 place-self-center mb-10" onClick={() => setOpened(true)}>Create new poll</Button>
+                <Button color="dark" className="col-start-1 col-end-9 bg-black w-1/2 md:w-1/3 xl:w-1/4 place-self-center top-4" onClick={() => setOpened(true)}>Create new poll</Button>
 
             <Modal
                 opened={opened}
                 onClose={() => setOpened(false)}
                 title="Create Poll"
             >
-                <CreatePoll />
+                <CreatePoll modalState={[opened, setOpened]} />
 
             </Modal>
         </>

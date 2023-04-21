@@ -76,7 +76,7 @@ class UserController extends Controller
         } else {
             return Inertia::render('Users/Profile', [
                 'title' => 'User Profile',
-                'user' => User::find($id)
+                'user' => User::where('id', $id)->with('nextOfKin')->first()
             ]);
         }
     }

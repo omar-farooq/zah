@@ -74,9 +74,9 @@ class MinuteController extends Controller
      * @param  \App\Models\Minute  $minute
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateMinuteRequest $request, Minute $minute)
+    public function update(Request $request, Minute $minute)
     {
-        //
+        $minute->update($request->all());
     }
 
     /**

@@ -21,6 +21,7 @@ use App\Http\Controllers\RecurringPaymentController;
 use App\Http\Controllers\RentController;
 use App\Http\Controllers\RoleAssignmentController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RuleController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SecretaryReportController;
 use App\Http\Controllers\SettingsController;
@@ -121,6 +122,7 @@ Route::middleware(['auth'])->group(function() {
     Route::resource('purchases', PurchaseController::class);
     Route::resource('purchase-requests', PurchaseRequestController::class);
     Route::resource('roles', RoleController::class);
+    Route::resource('rules', RuleController::class);
     Route::resource('secretary-reports', SecretaryReportController::class);
     Route::resource('tasks', TaskController::class);
     Route::resource('tenants', TenancyController::class);

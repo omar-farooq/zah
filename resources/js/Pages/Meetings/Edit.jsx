@@ -1,6 +1,6 @@
 import { Button } from '@mantine/core'
 import { useState, useEffect, Fragment } from 'react'
-import { Agenda, ComponentWrapper, Minutes, SecretaryReport, Polls, Tasks } from '@/Components/Meeting'
+import { Agenda, ComponentWrapper, ComponentWrapperWhite, Minutes, SecretaryReport, Polls, Tasks } from '@/Components/Meeting'
 import CreatableSelect from 'react-select/creatable'
 import Select from 'react-select'
 
@@ -62,25 +62,25 @@ export default function NewMeeting({meeting, tenants, auth}) {
                 </div>
             </div>
 
-            <ComponentWrapper>
+            <ComponentWrapperWhite>
                 <Agenda />
-            </ComponentWrapper>
+            </ComponentWrapperWhite>
 
-            <div className="mt-10 w-full">
+            <ComponentWrapperWhite>
                 <SecretaryReport />
-            </div>
+            </ComponentWrapperWhite>
 
-            <ComponentWrapper>
+            <ComponentWrapperWhite>
                 <Minutes meetingID={meeting.id} />
-            </ComponentWrapper>
+            </ComponentWrapperWhite>
 
-            <ComponentWrapper>
+            <ComponentWrapperWhite>
                 <Tasks />
-            </ComponentWrapper>
+            </ComponentWrapperWhite>
 
-            <ComponentWrapper>
+            <ComponentWrapperWhite>
                 <Polls auth={auth} />
-            </ComponentWrapper>
+            </ComponentWrapperWhite>
 
             <Button className="mb-14 mt-14 w-1/2 lg:w-1/4" variant="outline" onClick={() => handleSubmit()}>
                 Submit Meeting

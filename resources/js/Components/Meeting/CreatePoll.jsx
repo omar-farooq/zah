@@ -3,7 +3,9 @@ import { Fragment, useReducer } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/solid'
 import Input from '@/Components/Input'
 
-export default function CreatePoll() {
+export default function CreatePoll({modalState}) {
+
+    const [opened, setOpened] = modalState
 
     const initialPollState = {
         key: 3,
@@ -46,16 +48,17 @@ export default function CreatePoll() {
 
     const [currentPoll, dispatch] = useReducer(updatePoll, initialPollState)
 
-    const handleSubmit = e => {
+    const handleSubmit = async(e) => {
         e.preventDefault()
 
         const timeToEnd = (currentPoll.ends.days * 24 * 60 * 60000) + (currentPoll.ends.hours * 60 * 60000) + (currentPoll.ends.minutes * 60000)
 
-        axios.post('/poll', {
+        await axios.post('/poll', {
             title: currentPoll.title, 
             options: currentPoll.items.map(x => ({option: x.value})),
             end: new Date(Date.now() + timeToEnd)
         })
+        setOpened(false)
     }
 
     return (
