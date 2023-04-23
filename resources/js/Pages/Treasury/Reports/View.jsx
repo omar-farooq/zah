@@ -19,6 +19,14 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
                 return treasuryItems.filter(x => x.is_incoming == 0) 
             case 'rent':
                 return treasuryItems.filter(x => x.treasurable_type == "App\\Models\\PaidRent")
+            case 'payment':
+                return treasuryItems.filter(x => x.treasurable_type == "App\\Models\\Payment")
+            case 'recurring':
+                return treasuryItems.filter(x => x.treasurable_type == "App\\Models\\PaidRecurringPayment")
+            case 'purchase':
+                return treasuryItems.filter(x => x.treasurable_type == "App\\Models\\Purchase")
+            case 'maintenance':
+                return treasuryItems.filter(x => x.treasurable_type == "App\\Models\\Maintenance")
             case 'reset':
                 return init(filter.payload)
             default:
@@ -43,6 +51,41 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
         }
         getReceipts()
     },[])
+
+    // for the dropdown
+    const groupedOptions = [
+        {
+            label: 'Payment Direction',
+            options: [
+                {value: 'incoming', label: 'Incoming'},
+                {value: 'outgoing', label: 'Outgoing'}
+            ]
+        },
+        {
+            label: 'Payment Type',
+            options: [
+                {value: 'rent', label: 'Rent'},
+                {value: 'recurring', label: 'Recurring'},
+                {value: 'purchase', label: 'Purchase'},
+                {value: 'maintenance', label: 'Maintenance'},
+                {value: 'payment', label: 'Other/General'},
+            ]
+        }
+    ]
+
+    //optional for the dropdown, not currently used
+    const groupStyles = {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    }
+
+    const formatGroupLabel = (data) => (
+        <div style={groupStyles}>
+            <span>{data.label}</span>
+            <span>{data.options.length}</span>
+        </div>
+    )
 
     useEffect(() => {
         const mapTreasuryItems = async () => {
@@ -100,11 +143,7 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
                         className="w-full md:w-1/2 lg:w-1/4"
                         placeholder="Filter"
                         isClearable
-                        options={[
-                            {value: 'incoming', label: 'Incoming'},
-                            {value: 'outgoing', label: 'Outgoing'},
-                            {value: 'rent', label: 'Type: Rent'},
-                        ]}
+                        options={groupedOptions}
                         onChange={(e) => e ? dispatch({type: e.value}) : dispatch({type: 'reset', payload: treasuryItems})}
                     />
                 </div>

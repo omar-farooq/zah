@@ -2,12 +2,17 @@ import { ComponentTitle, Form } from '@/Components/Meeting'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { useState, useEffect, useReducer } from 'react'
 import { useForm } from '@inertiajs/inertia-react'
+import { useDisclosure } from '@mantine/hooks'
 import { Button, Textarea } from '@mantine/core'
+import ConfirmModal from '@/Components/ConfirmModal'
 
 export default function Minutes({meetingID}) {
 
-    //selected minute for editing
+    //selected minute for editing or deleting
     const [selectedMinute, setSelectedMinute] = useState('')
+
+    //Modal state
+    const [modalOpened, modalHandlers] = useDisclosure(false)
 
     const initialState = []
 
@@ -23,9 +28,16 @@ export default function Minutes({meetingID}) {
                     return reactiveMinutes
                 }
             case 'edit':
-                setSelectedMinute(reactiveMinutes.find(x => x.id == action.itemId))
+                let foundMinuteForEditing = reactiveMinutes.find(x => x.id == action.itemId)
+                setSelectedMinute({...foundMinuteForEditing, action: 'edit'})
                 return reactiveMinutes.filter(x => x.id != action.itemId)
+            case 'selectToDelete':
+                let foundMinute = reactiveMinutes.find(x => x.id == action.itemId)
+                setSelectedMinute({...foundMinute, action: 'delete'})
+                modalHandlers.open()
+                return reactiveMinutes
             case 'delete':
+                setSelectedMinute('')
                 return reactiveMinutes.filter(x => x.id != action.itemId)
             default:
                 throw new Error();
@@ -106,7 +118,7 @@ export default function Minutes({meetingID}) {
                         <li key={minute.id} className='bg-white flex justify-between border m-1 bg-white border-sky-700 text-slate-700'>
                             <div className="ml-2 whitespace-pre-line">{minute.minute_text}</div> 
                             <div className="flex flex-row">
-                                <div><TrashIcon className="w-6 h-6 cursor-pointer" onClick={() => deleteMinute(minute.id)} /></div>
+                                <div><TrashIcon className="w-6 h-6 cursor-pointer" onClick={() => dispatch({type: 'selectToDelete', itemId: minute.id})} /></div>
                                 <div><PencilSquareIcon className="w-6 h-6 cursor-pointer mr-2" onClick={() => dispatch({type: 'edit', itemId: minute.id})} /></div>
                             </div>
                         </li>
@@ -115,7 +127,7 @@ export default function Minutes({meetingID}) {
             </ul>
 
             {
-                selectedMinute ?
+                selectedMinute.action == 'edit' ?
                     <form onSubmit={handleEdit} className="col-start-1 col-end-9 flex flex-col items-center">
                         <Textarea 
                             defaultValue={selectedMinute.minute_text}
@@ -148,6 +160,14 @@ export default function Minutes({meetingID}) {
                         <Button color="dark" type="submit" className="bg-black w-1/2 md:w-1/3 lg:w-1/4 mt-4 top-4">Add Minute</Button>
                     </form>
             }
+            <ConfirmModal 
+                text=<p>Are you sure you want to delete this minute?<br /> "{selectedMinute.minute_text}"</p>
+                actionRoute={"minutes.destroy"}
+                itemID={selectedMinute.id}
+                modalDisclosure={[modalOpened, modalHandlers]}
+                clickFunction={deleteMinute}
+            />
         </>
+
     )
 }

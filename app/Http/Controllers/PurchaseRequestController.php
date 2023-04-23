@@ -23,10 +23,16 @@ class PurchaseRequestController extends Controller
         if(isset($request->cards)) {
 
             if($request->cards == 'needApproval') {
+                $user_role = \App\Models\Role::where('user_id', Auth::id())->first()->name ?? 'null';
                 return response()->json(
-                    $purchaseRequest->whereDoesntHave('approvals', function (Builder $q) {
-                        $q->where('user_id', Auth::id());
-                    })->paginate(4)
+                    $purchaseRequest::where('approval_status', 'in voting')
+                        ->when($user_role === 'Chair', function (Builder $q) {
+                           $q->orWhere('approval_status', 'Chair to decide');
+                        })
+                        ->whereDoesntHave('approvals', function (Builder $q) {
+                            $q->where('user_id', Auth::id());
+                        })
+                        ->paginate(4)
                 );
             }
 
