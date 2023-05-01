@@ -143,7 +143,7 @@ class User extends Authenticatable
      * Relationship with Meeting Attendances
      */
      public function attendance() {
-        return $this->hasMany(MeetingAttendance::class);
+        return $this->belongsToMany(Meeting::class, 'meeting_attendances')->withPivot('late');
      } 
 
     /**

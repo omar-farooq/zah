@@ -17,6 +17,12 @@ export default function Historical ({meeting, auth}) {
                         </li>
                     )}
                     </ul>
+                    <ul> {meeting.guests?.map(x =>
+                        <li key={x.id} className="text-xl">
+                            {x.name}
+                        </li>
+                    )}
+                    </ul>
                 </div>
             </div>
 

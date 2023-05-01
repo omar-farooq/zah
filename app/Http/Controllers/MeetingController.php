@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AttendanceUpdated;
+use App\Events\GuestListUpdated;
 use App\Http\Requests\StoreMeetingRequest;
 use App\Http\Requests\UpdateMeetingRequest;
 use App\Models\Meeting;
 use App\Models\MeetingAgenda;
 use App\Models\MeetingAttendance;
+use App\Models\MeetingGuest;
 use App\Models\Minute;
 use App\Models\SecretaryReport;
 use App\Models\Poll;
@@ -68,7 +71,7 @@ class MeetingController extends Controller
         } else {
             return Inertia::render('Meetings/Edit', [
                 'title' => 'Meeting',
-                'meeting' => $meeting->scheduledNotYetStarted(),
+                'meeting' => $meeting->scheduledNotYetStarted()->load(['attendees', 'guests']),
                 'tenants' => $user->where('is_tenant',1)->get()->map(function($user, $key) {
                     return [
                         'value' => $user->id,
@@ -129,7 +132,7 @@ class MeetingController extends Controller
      */
     public function destroy(Meeting $meeting)
     {
-        //
+        $meeting->update(['cancelled' => 1]);
     }
 
     /**
@@ -137,36 +140,47 @@ class MeetingController extends Controller
      * @param Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function markAttendance (Request $request) {
-        if(!empty($request->Attendees)) {
-            foreach($request->Attendees as $attendee) {
-                $meetingAttendance = new MeetingAttendance;
-                $meetingAttendance->user_id = $attendee['value'];
-                $meetingAttendance->meeting_id = $request->meetingID;
-                $meetingAttendance->save();
+    public function registerAttendance(Request $request) {
+        $allAttendees = [];
+
+        foreach($request->attendees as $punctual) {
+            $allAttendees[$punctual] = ['late' => false];
+        }
+
+        forEach($request->lateAttendees as $late) {
+            $allAttendees[$late] = ['late' => true];
+        }
+
+        $meeting = Meeting::find($request->meetingID);
+        $meeting->attendees()->sync($allAttendees);
+
+        $lateAttendees = $meeting->attendees()->where('meeting_attendances.late', '1')->select('name', 'user_id')->get();
+        $punctualAttendees = $meeting->attendees()->where('meeting_attendances.late', '0')->select('name', 'user_id')->get();
+
+        AttendanceUpdated::dispatch($lateAttendees, $punctualAttendees);
+
+    }
+
+    public function registerGuest(Request $request) {
+        $meeting = Meeting::find($request->meetingID);
+        $registered_guests = MeetingGuest::where('meeting_id', $request->meetingID)->get();
+        forEach($registered_guests as $registered_guest) {
+            if(!in_array($registered_guest, $request->guests)) {
+                $registered_guest->delete(); 
             }
         }
 
-        if(!empty($request->LateAttendees)) {
-            foreach($request->LateAttendees as $attendee) {
-                $meetingAttendance = new MeetingAttendance;
-                $meetingAttendance->user_id = $attendee['value'];
-                $meetingAttendance->meeting_id = $request->meetingID;
-                $meetingAttendance->late = 1;
-                $meetingAttendance->save();
+        forEach($request->guests as $guest) {
+            if(!$registered_guests->contains($guest)) {
+                $meetingGuest = new MeetingGuest;
+                $meetingGuest->name = $guest;
+                $meetingGuest->meeting_id = $request->meetingID;
+                $meetingGuest->save();
             }
         }
 
-        if(!empty($request->Guests)) {
-            foreach($request->Guests as $guest) {
-                $meetingAttendance = new MeetingAttendance;
-                $meetingAttendance->name = $guest['value'];
-                $meetingAttendance->meeting_id = $request->meetingID;
-                $meetingAttendance->guest = 1;
-                $meetingAttendance->save();
-            }
-        }
-
+        $updatedGuests = MeetingGuest::where('meeting_id', $request->meetingID)->get();
+        GuestListUpdated::dispatch($updatedGuests);
     }
 
 }

@@ -15,7 +15,7 @@ class RuleController extends Controller
     {
         return Inertia::render('Rules/index', [
             'title' => 'Rules',
-            'rules' => Rule::paginate(10)
+            'rules' => Rule::all()
         ]);
     }
 
@@ -26,6 +26,7 @@ class RuleController extends Controller
     {
         return Inertia::render('Rules/Create', [
             'title' => 'Create a rule',
+            'pending' => Rule::where('approval_status', 'in voting')->get()
         ]);
     }
 
@@ -34,7 +35,34 @@ class RuleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'rule_number' => 'required|decimal:1,2',
+            'rule' => 'required'
+        ]);
+
+        //Check if the rule number already exists
+        $existing_rule = Rule::where('rule_number', $request->rule_number)
+                              ->whereNot(function ($q) {
+                                  $q->where('approval_status', 'rejected');
+                              })
+                              ->count();
+        if($existing_rule > 0) {
+            return response()->json([
+                'success' => 'false',
+                'message' => 'rule number already exists'
+            ],409);
+        }
+
+        $rule = new Rule;
+        $created = $rule->create($request->all());
+
+        if($created) {
+            return response()->json([
+                'success' => 'true',
+                'message' => 'rule successfully created for voting',
+                'createdRule' => $created
+            ],200);
+        }
     }
 
     /**
@@ -67,5 +95,11 @@ class RuleController extends Controller
     public function destroy(Rule $rule)
     {
         //
+    }
+
+    public function approved($id) {
+        $approve_rule = Rule::findOrFail($id);
+        $approve_rule->updated(['approval_status' => 'approved']);
+        return response()->json('approved');
     }
 }

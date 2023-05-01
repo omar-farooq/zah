@@ -58,7 +58,8 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::post('/generate-contact-form-email', [JobController::class, 'generateEmail'])->middleware(['throttle:contact-form-submission']);
-Route::post('/meetings/register-attendance', [MeetingController::class, 'markAttendance']);
+Route::post('/meetings/register-attendance', [MeetingController::class, 'registerAttendance']);
+Route::post('/meetings/register-guests', [MeetingController::class, 'registerGuest']);
 
 //Comments
 Route::get('/purchase-requests/{purchaseRequest}/comments', function (PurchaseRequest $purchaseRequest) {

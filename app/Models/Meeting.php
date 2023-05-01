@@ -41,7 +41,11 @@ class Meeting extends Model
     }
 
     public function attendees() {
-        return $this->hasMany(MeetingAttendance::class);
+        return $this->belongsToMany(User::class, 'meeting_attendances')->withPivot('late');
+    }
+
+    public function guests() {
+        return $this->hasMany(MeetingGuest::class);
     }
 
     public function polls() {

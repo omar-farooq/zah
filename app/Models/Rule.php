@@ -13,6 +13,17 @@ class Rule extends Model
 
     protected $fillable = [
         'rule',
-        'rule_number'
+        'rule_number',
+        'approval_status'
     ];
+
+    protected $with = ['approvals'];
+
+    /*
+     *Relationship with approvals
+     */
+    public function approvals()
+    {
+        return $this->morphMany(Approval::class, 'approvable');
+    }
 }

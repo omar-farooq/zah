@@ -1,7 +1,7 @@
 import { HandThumbDownIcon, HandThumbUpIcon } from '@heroicons/react/24/solid'
 import { HandThumbDownIcon as HandThumbDownIconEmpty, HandThumbUpIcon as HandThumbUpIconEmpty } from '@heroicons/react/24/outline'
 
-export default function ApprovalButtons({model, authUserApprovalHook}) {
+export default function ApprovalButtons({model, authUserApprovalHook, buttonType='icon'}) {
 
     //hook from the parent
     //Note that this must be the whole object for the auth user from the model's relationship array
@@ -35,8 +35,31 @@ export default function ApprovalButtons({model, authUserApprovalHook}) {
 
     return (
         <>
-            {authUserApproval?.approval == 'approved' ? <HandThumbUpIcon className="h-6 w-6 text-green-500 cursor-pointer" onClick={handleApproval} /> : <HandThumbUpIconEmpty className="h-6 w-6 cursor-pointer" onClick={handleApproval} />}
-            {authUserApproval?.approval == 'rejected' ? <HandThumbDownIcon className="h-6 w-6 text-red-500 cursor-pointer" onClick={handleRejection} /> : <HandThumbDownIconEmpty className="h-6 w-6 cursor-pointer"  onClick={handleRejection} />}
+            {authUserApproval?.approval == 'approved' 
+                ? 
+                    buttonType == 'icon' ? 
+                        <HandThumbUpIcon className="h-6 w-6 text-green-500 cursor-pointer" onClick={handleApproval} /> 
+                    :
+                        <button className="text-green-500 cursor-pointer" onClick={handleApproval}>Approved</button>
+                :
+                    buttonType == 'icon' ?
+                        <HandThumbUpIconEmpty className="h-6 w-6 cursor-pointer" onClick={handleApproval} />
+                    :
+                        <button className="cursor-pointer" onClick={handleApproval}>Approve</button>
+            }
+
+            {authUserApproval?.approval == 'rejected' 
+                    ? 
+                        buttonType == 'icon' ?
+                            <HandThumbDownIcon className="h-6 w-6 text-red-500 cursor-pointer" onClick={handleRejection} /> 
+                        :
+                            <button className="text-red-500 cursor-pointer" onClick={handleRejection}>Rejected</button>
+                    :
+                        buttonType == 'icon' ?
+                            <HandThumbDownIconEmpty className="h-6 w-6 cursor-pointer"  onClick={handleRejection} />
+                        :
+                            <button className="cursor-pointer" onClick={handleRejection}>Reject</button>
+            }
         </>
     )
 }

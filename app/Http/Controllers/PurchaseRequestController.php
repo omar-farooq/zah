@@ -21,6 +21,7 @@ class PurchaseRequestController extends Controller
     public function index(PurchaseRequest $purchaseRequest, Request $request)
     {
         if(isset($request->cards)) {
+            $term = $request->search;
 
             if($request->cards == 'needApproval') {
                 $user_role = \App\Models\Role::where('user_id', Auth::id())->first()->name ?? 'null';
@@ -38,7 +39,13 @@ class PurchaseRequestController extends Controller
 
             if($request->cards == 'all') {
                 return response()->json(
-                    $purchaseRequest->orderBy('created_at', 'desc')->paginate(4)
+                    $purchaseRequest
+                        ->when($term, function($q) use ($term) {
+                            return $q->where('name', 'like', '%'.$term.'%')
+                                     ->orWhere('description', 'like', '%'.$term.'%');
+                        })
+                        ->orderBy('created_at', 'desc')
+                        ->paginate(4)
                 );
             }
 

@@ -118,8 +118,12 @@ export default function Minutes({meetingID}) {
                         <li key={minute.id} className='bg-white flex justify-between border m-1 bg-white border-sky-700 text-slate-700'>
                             <div className="ml-2 whitespace-pre-line">{minute.minute_text}</div> 
                             <div className="flex flex-row">
+                                {!selectedMinute &&
+                                    <>
                                 <div><TrashIcon className="w-6 h-6 cursor-pointer" onClick={() => dispatch({type: 'selectToDelete', itemId: minute.id})} /></div>
                                 <div><PencilSquareIcon className="w-6 h-6 cursor-pointer mr-2" onClick={() => dispatch({type: 'edit', itemId: minute.id})} /></div>
+                                    </>
+                                }
                             </div>
                         </li>
                     )
@@ -162,10 +166,9 @@ export default function Minutes({meetingID}) {
             }
             <ConfirmModal 
                 text=<p>Are you sure you want to delete this minute?<br /> "{selectedMinute.minute_text}"</p>
-                actionRoute={"minutes.destroy"}
-                itemID={selectedMinute.id}
-                modalDisclosure={[modalOpened, modalHandlers]}
-                clickFunction={deleteMinute}
+                confirmFunction={() => {deleteMinute(selectedMinute.id); modalHandlers.close()}}
+                cancelFunction={() => {setSelectedMinute(''); modalHandlers.close()}}
+                modalOpened={modalOpened}
             />
         </>
 

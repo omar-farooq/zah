@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import ApprovalButtons from './ApprovalButtons'
 import ChairApproval from './ChairApproval'
 
-export default function Approval({model, authUserApprovalHook, approvalStatusHook, verified, isChair, isEmergency=false}) {
+export default function Approval({model, authUserApprovalHook, approvalStatusHook, verified, isChair, isEmergency=false, buttonType='icon'}) {
     const [memberApprovalCount, setMemberApprovalCount] = useState('')
     const [authUserApproval, setAuthUserApproval] = authUserApprovalHook
     const [approvalStatus, setApprovalStatus] = approvalStatusHook
@@ -54,6 +54,7 @@ export default function Approval({model, authUserApprovalHook, approvalStatusHoo
             <ApprovalButtons
                 authUserApprovalHook={[authUserApproval, setAuthUserApproval]}
                 model={model}
+                buttonType={buttonType}
             />
             : <span>only members can vote</span>
         : approvalStatus == 'Chair to decide' && isChair ?

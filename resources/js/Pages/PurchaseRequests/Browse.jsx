@@ -13,6 +13,8 @@ export default function Browse() {
                 title="All Purchase Requests"
                 productData="all" 
                 model="purchase-requests"
+                searchable
+                paginate
             />
         </>
     )

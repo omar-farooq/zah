@@ -1,90 +1,85 @@
 import { Button } from '@mantine/core'
-import { useState, useEffect, Fragment } from 'react'
-import { Agenda, ComponentWrapper, ComponentWrapperWhite, Minutes, SecretaryReport, Polls, Tasks } from '@/Components/Meeting'
-import CreatableSelect from 'react-select/creatable'
-import Select from 'react-select'
+import { useState } from 'react'
+import { Agenda, ComponentWrapper, ComponentWrapperWhite, Minutes, SecretaryReport, Polls, Register, Tasks } from '@/Components/Meeting'
+import { useDisclosure } from '@mantine/hooks'
+import ConfirmModal from '@/Components/ConfirmModal'
 
 export default function NewMeeting({meeting, tenants, auth}) {
     
-    //Define the register array destructuring
-    const [register, updateRegister] = useState([])
-    const [lateRegister, updateLateRegister] = useState([])
-    const [guests, updateGuests] = useState([])
+    //handle submit
+    const [submitModalOpened, submitModalHandlers] = useDisclosure(false)
+    const submitMeeting = async () => {
+       await axios.patch('/meetings/'+meeting.id)
+       window.location = "/meetings/"+meeting.id
+    }
 
-    //for the modal
-    const [opened, setOpened] = useState(false)
-
-    const notInAttendance = tenants.filter(option => !(register.some(item => item.value === option.value) || lateRegister.some(item => item.value === option.value)))
-
-    const handleSubmit = async () => {
-        await axios.post('/meetings/register-attendance', {meetingID: meeting.id, Attendees: register, LateAttendees: lateRegister, Guests: guests})
-        await axios.patch('/meetings/'+meeting.id)
-        window.location = "/meetings/"+meeting.id
+    //Handle meeting cancellation
+    const [cancelled, setCancelled] = useState(false)
+    const [modalOpened, modalHandlers] = useDisclosure(false)
+    const cancelMeeting = async () => {
+        await axios.delete('/meetings/'+meeting.id)
+        setCancelled(true)
     }
 
     return (
         <>
             <div className="text-xl mt-3 mb-3"> Meeting: {meeting.time_of_meeting} </div>
-            <div className="grid grid-cols-4 w-full gap-2">
-                <div className="lg:col-start-2 lg:col-end-4 col-start-1 col-end-5"> Attending
-                    <Select
-                        isMulti
-                        name="attendance"
-                        options={notInAttendance}
-                        className="basic-multi-select"
-                        classNamePrefix="select"
-                        closeMenuOnSelect={false}
-                        noOptionsMessage={() => null}
-                        onChange={(e) => updateRegister([...e])}
-                    />
-                </div>
+            {
+                cancelled ?
+                    <div>Meeting Cancelled</div>
+                :
+                    <>
+                        <div className="lg:w-2/3 w-full flex lg:justify-end relative lg:-top-10">
+                            <button className="text-red-500 hover:text-red-600" onClick={() => modalHandlers.open()}>Cancel</button>
+                        </div>
 
-                <div className="lg:col-start-2 col-end-3 col-start-1"> 
-                    <Select
-                        isMulti
-                        name="late"
-                        options={notInAttendance}
-                        className="basic-multi-select"
-                        placeholder="Late"
-                        classNamePrefix="select"
-                        noOptionsMessage={() => "Everyone is in attendance"}
-                        onChange={(e) => updateLateRegister([...e])}
-                    />
-                </div>
+                        <ConfirmModal
+                            title="Confirm Meeting Cancellation"
+                            text=<p>Are you sure you want to cancel this meeting?</p>
+                            confirmFunction={() => {cancelMeeting(); modalHandlers.close()}}
+                            cancelFunction={() => modalHandlers.close()}
+                            modalOpened={modalOpened}
+                        />
 
-                <div className="col-start-3 lg:col-end-4 col-end-5">
-                    <CreatableSelect
-                        isMulti
-                        placeholder="Guests"
-                        noOptionsMessage={() => "Type to add Guest"}
-                        onChange={(e) => updateGuests([...e])}
-                    />
-                </div>
-            </div>
+                        <Register 
+                            tenants={tenants} 
+                            meeting={meeting} 
+                        />
 
-            <ComponentWrapperWhite>
-                <Agenda />
-            </ComponentWrapperWhite>
+                        <ComponentWrapperWhite>
+                            <Agenda />
+                        </ComponentWrapperWhite>
 
-            <ComponentWrapperWhite>
-                <SecretaryReport />
-            </ComponentWrapperWhite>
+                        <ComponentWrapperWhite>
+                            <SecretaryReport />
+                        </ComponentWrapperWhite>
 
-            <ComponentWrapperWhite>
-                <Minutes meetingID={meeting.id} />
-            </ComponentWrapperWhite>
+                        <ComponentWrapperWhite>
+                            <Minutes meetingID={meeting.id} />
+                        </ComponentWrapperWhite>
 
-            <ComponentWrapperWhite>
-                <Tasks />
-            </ComponentWrapperWhite>
+                        <ComponentWrapperWhite>
+                            <Tasks />
+                        </ComponentWrapperWhite>
 
-            <ComponentWrapperWhite>
-                <Polls auth={auth} />
-            </ComponentWrapperWhite>
+                        <ComponentWrapperWhite>
+                            <Polls auth={auth} />
+                        </ComponentWrapperWhite>
 
-            <Button className="mb-14 mt-14 w-1/2 lg:w-1/4" variant="outline" onClick={() => handleSubmit()}>
-                Submit Meeting
-            </Button>
+                        <Button className="mb-14 mt-14 w-1/2 lg:w-1/4" variant="outline" onClick={() => submitModalHandlers.open()}>
+                            Submit Meeting
+                        </Button>
+
+                        <ConfirmModal
+                            title="Confirm Meeting Submission"
+                            text=<p>Are you sure you want to submit this meeting?</p>
+                            confirmFunction={() => {submitMeeting(); submitModalHandlers.close()}}
+                            cancelFunction={() => submitModalHandlers.close()}
+                            modalOpened={submitModalOpened}
+                        />
+                    </>
+            }
         </>
+            
     )
 }
