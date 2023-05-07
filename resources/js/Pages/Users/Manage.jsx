@@ -1,7 +1,10 @@
 import { Button, Loader } from '@mantine/core'
 import { InertiaLink } from '@inertiajs/inertia-react'
 import { useEffect, useRef, useState } from 'react'
+import { useDisclosure } from '@mantine/hooks'
 import { TrashIcon, UserIcon, UserMinusIcon } from '@heroicons/react/24/outline'
+import ConfirmModal from '@/Components/ConfirmModal'
+import RegisterUser from '@/Components/RegisterUser'
 import Select from 'react-select'
 
 export default function Manage({auth}) {
@@ -10,7 +13,10 @@ export default function Manage({auth}) {
     const [users, setUsers] = useState([])
     const [members, setMembers] = useState([])
     const [membershipApproval, setMembershipApproval] = useState([])
+    const [selectedUserToDelete, setSelectedUserToDelete] = useState({})
     const [advertiseVacancy, setAdvertiseVacancy] = useState('')
+
+    const [modalOpened, modalHandlers] = useDisclosure(false)
 
     const getUsers = async () => {
         setLoading(true)
@@ -57,6 +63,11 @@ export default function Manage({auth}) {
     const unvote = async (id) => {
         await axios.delete('/approval/'+id)
         getMembershipApproval()
+    }
+
+    const deleteUser = async (id) => {
+        await axios.delete('/users/'+id)
+        setUsers(users.filter(x => x.id != id))
     }
 
     return (
@@ -141,6 +152,36 @@ export default function Manage({auth}) {
                 }
 
             </div>
+            <RegisterUser
+                usersHook={[users, setUsers]}
+            />
+
+            <div className="w-full lg:w-1/3">
+                <h2 className="text-xl">Delete User</h2>
+                <Select 
+                    options={
+                        users.reduce((a,b) => {
+                            if(!members.find(x => x.id == b.id) && !b.is_tenant) {
+                                return [...a, {value: b.id, label: b.name}]
+                            }
+                            return a
+                        },[])
+                    }
+                    onChange={
+                        (e) => {
+                            setSelectedUserToDelete(e);
+                            modalHandlers.open();
+                            clearValue
+                        }
+                    }
+                />
+            </div>
+            <ConfirmModal
+                text=<p>Are you want to delete {selectedUserToDelete.label}?</p>
+                confirmFunction={() => {deleteUser(selectedUserToDelete.value); modalHandlers.close()}}
+                cancelFunction={() => {setSelectedUserToDelete(''); modalHandlers.close()}}
+                modalOpened={modalOpened}
+            />
         </>
     )
 }

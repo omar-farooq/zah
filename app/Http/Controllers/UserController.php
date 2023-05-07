@@ -6,7 +6,9 @@ use Auth;
 use App\Models\User;
 use App\Models\Rent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class UserController extends Controller
@@ -59,7 +61,11 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $random_password = Hash::make(Str::random(8));
+        $new_user = User::create(['name' => $request->name, 'email' => $request->email, 'password' => $random_password]);
+        app('App\Http\Controllers\Auth\PasswordResetLinkController')->store($request);
+
+        return $new_user;
     }
 
     /**
@@ -141,6 +147,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = User::find($id);
+        $user->delete();
     }
 }
