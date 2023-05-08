@@ -44,11 +44,26 @@ class ReceiptController extends Controller
     {
         $receipt = new Receipt;
         $receiptName = date('Ymdhis') . $request->receiptFile->getClientOriginalName();
-        Storage::disk('spaces')->putFileAs('documents/receipts', $request->receiptFile, $receiptName);
+
+        //Upload to storage
+        try {
+            Storage::disk('spaces')->putFileAs('documents/receipts', $request->receiptFile, $receiptName);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+
+        //Add to the database
         $receipt['receipt'] = $receiptName;
         $receipt['payable_type'] = $request->payable_type;
         $receipt['payable_id'] = $request->payable_id;
         $receipt->save();
+
+        if(isset($receipt->id)) {
+            return response()->json([
+                'success' => 'true',
+                'message' => 'receipt successfully uploaded'
+            ],200);
+        }
     }
 
     /**

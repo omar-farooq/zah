@@ -8,6 +8,10 @@ ARG GID=33
 # Install additional required PHP extensions for Laravel
 RUN docker-php-ext-install bcmath pdo_mysql pcntl
 
+# Change upload size
+RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini && \
+    sed -i -e "s/upload_max_filesize = 2M/upload_max_filesize = 20M/g" /usr/local/etc/php/php.ini
+
 # Install composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

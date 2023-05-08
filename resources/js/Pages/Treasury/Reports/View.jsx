@@ -1,10 +1,61 @@
 import { useEffect, useReducer, useState } from 'react'
 import { ArrowLongRightIcon } from '@heroicons/react/24/solid'
+import { DocumentArrowUpIcon } from '@heroicons/react/24/outline'
 import { DateTimeToUKDate } from '@/Shared/Functions'
-import { Loader } from '@mantine/core';
+import { ErrorNotification, SuccessNotification } from '@/Components/Notifications'
+import { Button, Loader, Modal, FileInput } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks'
 import Select from 'react-select'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
+//Upload any missing receipts via this component in a modal
+export function ReceiptModal({modalDisclosure, model}) {
+
+    const [modalOpened, modalHandlers] = modalDisclosure
+    const [attached, setAttached] = useState('')
+    const [uploading, setUploading] = useState(false)
+
+    const uploadReceipt = async () => {
+        setUploading(true)
+        let config = { headers: { 'content-type': 'multipart/form-data' }}
+        try {
+            let res = await axios.post('/receipts', {
+                receiptFile: attached,
+                payable_type: model.type,
+                payable_id: model.id
+            },config)
+            SuccessNotification('Success!', res.data.message)
+            modalHandlers.close()
+            setAttached('')
+            setUploading(false)
+        } catch (err) {
+            ErrorNotification(err)
+            setUploading(false)
+        }
+    }
+
+    return (
+        <Modal opened={modalOpened} onClose={() => {modalHandlers.close(); setAttached('')}} title="No receipt found!" centered>
+            <div className="mb-4">
+                upload receipt
+                <FileInput
+                    value={attached}
+                    onChange={setAttached}
+                    icon={<DocumentArrowUpIcon />}
+                />
+            </div>
+            {attached && !uploading ?
+                <button className="bg-sky-600 text-white h-9 w-20 border rounded-md" onClick={() => uploadReceipt()}>Upload</button>
+                : attached && uploading ?
+                <Button loading={true} className="bg-sky-600">Upload</Button>
+                : ''
+            }
+            <button className="bg-zinc-800 text-white h-9 w-20 border rounded-md" onClick={() => {modalHandlers.close(); setAttached('')}}>Cancel</button>
+        </Modal>
+    )
+}
+
+//The main page to view reports
 export default function ViewTreasuryReport({report, rents, treasuryItems, previousBudget}) {
 
     function init(treasuryItems) {
@@ -40,6 +91,10 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
     const [mappedTreasuryItems, setMappedTreasuryItems] = useState([])
     const [loading, setLoading] = useState(true)
 
+    const [modalOpened, modalHandlers] = useDisclosure(false)
+
+    const [selectedModel, setSelectedModel] = useState({id: '', model: ''})
+
     useEffect(() => {
         const getReceipts = async () => {
             let arr = []
@@ -49,8 +104,10 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
             }
             setReceipts(arr)
         }
-        getReceipts()
-    },[])
+        if(!modalOpened) {
+            getReceipts()
+        }
+    },[modalOpened])
 
     // for the dropdown
     const groupedOptions = [
@@ -115,8 +172,10 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
         if(rcpt) {
             let url = "/receipts/" + rcpt.id
             return <a href={url}>Download Receipt</a>
-        } else {
+        } else if (type == 'App\\Models\\PaidRent') {
             return ''
+        } else {
+            return <button onClick={() => {setSelectedModel({id: id, type: type}); modalHandlers.open()}}>Upload Receipt</button>
         }
     }
 
@@ -181,6 +240,7 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
 
             <div className="mt-5 text-2xl">Calculated remaining budget: £{report.calculated_remaining_budget}</div>
             {report.remaining_budget != report.calculated_remaining_budget && <div>Adjusted budget: £{report.remaining_budget}</div>}
+            <ReceiptModal modalDisclosure={[modalOpened, modalHandlers]} model={selectedModel} />
         </>
     )
 }
