@@ -75,7 +75,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }) {
           <UnstyledButton onClick={() => setOpened((o) => !o)} className={`${classes.control} text-slate-300`}>
             <Group position="apart" spacing={0}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <ThemeIcon variant="light" size={30}>
+                <ThemeIcon variant="dark" size={30}>
                     <Icon />
                 </ThemeIcon>
                 <Box ml="md">{label}</Box>
@@ -98,7 +98,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }) {
                 <UnstyledButton onClick={() => setOpened((o) => !o)} className={`${classes.control} text-slate-300`}>
                     <Group position="apart" spacing={0}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <ThemeIcon variant="light" size={30}>
+                            <ThemeIcon variant="dark" size={30}>
                                 <Icon />
                             </ThemeIcon>
                             <Box ml="md">{label}</Box>

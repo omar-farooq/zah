@@ -5,7 +5,7 @@ import NavMenu from './NavMenu'
 const useStyles = createStyles((theme) => ({
   navbar: {
 //    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
-    backgroundColor: 'rgb(17 24 39)',
+    backgroundColor: 'rgb(19 39 85)',
     paddingBottom: 0,
   },
 

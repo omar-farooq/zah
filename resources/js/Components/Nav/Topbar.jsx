@@ -13,7 +13,8 @@ export default function Topbar({ auth, header, title }) {
             <nav className="bg-white border-b border-gray-100 shadow w-full">
                 <div className="w-5/6 mx-auto">
                     <div className="flex justify-between h-16">
-                        <div className="flex">
+                        <div className="flex items-center lg:items-stretch">
+                            <div className="text-3xl lg:hidden">ZAH</div>
                             <div className="shrink-0 flex items-center hidden">
                                 <Link href="/">
                                     <ApplicationLogo className="block h-9 w-auto text-gray-500" />
