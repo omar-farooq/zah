@@ -175,7 +175,7 @@ export default function Schedule(props) {
         }
 
         {/* Dropdown */}
-            <div className="mt-4 sm:max-w-none max-w-sm p-2 overflow-x-scroll">
+            <div className="mt-4 sm:max-w-none p-2 overflow-x-scroll">
                     <select
                         onChange={e => dispatch({type: 'selectWeekToDisplay', selectedWeek: e.currentTarget.value})}
                         className="lg:text-base"
@@ -189,7 +189,7 @@ export default function Schedule(props) {
 
                 {/* Schedule */}
 
-                <table className="table-fixed bg-white max-w-sm md:max-w-fit">
+                <table className="table-fixed bg-white md:max-w-fit">
                     <thead>
                         <tr className="md:text-base text-sm">
                             <th className="lg:w-48"></th>
@@ -207,7 +207,7 @@ export default function Schedule(props) {
                     {sevenDays().map((day, index) => {
                         return (
                             <tr key={index}>
-                                <th className="md:text-base text-sm lg:h-8">
+                                <th className="sm:text-base text-xs lg:h-8">
                                     <button onClick={() => { 
                                         dispatch({type: 'selectDayForMeeting', selectedDay: day}); 
                                         setModalOpenState(!modalOpenState) 
