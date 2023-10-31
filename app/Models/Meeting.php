@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
@@ -9,7 +11,8 @@ use Carbon\Carbon;
 class Meeting extends Model
 
 {
-    use HasFactory;
+    use BroadcastsEvents, HasFactory;
+
     protected $fillable = [
         'cancelled',
         'completed',
@@ -18,6 +21,17 @@ class Meeting extends Model
     protected $casts = [
         'time_of_meeting' => 'datetime'
     ];
+
+    /**
+     * Get the channels that the model should be broadcast on
+     *
+     * @param string $event
+     * @return \Illuminate\Broadcasting\Channel|array
+     */
+    public function broadcastOn($event)
+    {
+        return [new PrivateChannel ('meeting')];
+    }
 
 	public function getTimeOfMeetingAttribute($date) {
 		//Get the date in the format Day of Week Month DD 
