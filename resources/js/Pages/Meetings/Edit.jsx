@@ -1,5 +1,5 @@
 import { Button } from '@mantine/core'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Agenda, ComponentWrapper, ComponentWrapperWhite, Minutes, SecretaryReport, Polls, Register, Tasks } from '@/Components/Meeting'
 import { useDisclosure } from '@mantine/hooks'
 import ConfirmModal from '@/Components/ConfirmModal'
@@ -20,6 +20,23 @@ export default function NewMeeting({meeting, tenants, auth}) {
         await axios.delete('/meetings/'+meeting.id)
         setCancelled(true)
     }
+
+    //Join the channel via a websocket
+    useEffect(() => {
+        Echo.private(`meeting`)
+            .listen('.MeetingUpdated', (e) => {
+                console.log(e.model.completed)
+                if(e.model.cancelled == 1) {
+                    setCancelled(true)
+                }
+                if(e.model.completed == 1) {
+                    window.location = "/meetings/"+meeting.id
+                }
+            })
+        return function cleanup() {
+            Echo.leaveChannel('meeting')
+        }
+    }, [])
 
     return (
         <>
