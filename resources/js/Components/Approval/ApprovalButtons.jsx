@@ -9,14 +9,14 @@ export default function ApprovalButtons({model, authUserApprovalHook, buttonType
 
     //handle when the thumbs up is clicked
     const handleApproval = () => {
-        authUserApproval?.approval == 'approved' ? updateApproval('removed') 
+        authUserApproval?.approval == 'approved' ? deleteApproval() 
         : authUserApproval?.approval == 'rejected' || authUserApproval?.approval == 'removed' ? updateApproval('approved')
         : createApproval('approved')
     }
 
     //handle when the thumbs down is clicked
     const handleRejection = () => {
-        authUserApproval?.approval == 'rejected' ? updateApproval('removed') 
+        authUserApproval?.approval == 'rejected' ? deleteApproval() 
         : authUserApproval?.approval == 'approved' || authUserApproval?.approval == 'removed' ? updateApproval('rejected')
         : createApproval('rejected')
     }
@@ -31,6 +31,11 @@ export default function ApprovalButtons({model, authUserApprovalHook, buttonType
     async function updateApproval(approval) {
         await axios.patch('/approval/' + authUserApproval?.id, {approval: approval}) 
         setAuthUserApproval(approvalObj => ({...approvalObj, approval: approval}))
+    }
+
+    async function deleteApproval() {
+        await axios.delete('/approval/' + authUserApproval?.id)
+        setAuthUserApproval('')
     }
 
     return (

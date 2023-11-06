@@ -13,7 +13,8 @@ class Rule extends Model
 
     protected $fillable = [
         'rule',
-        'rule_number',
+        'number',
+        'rule_section_id',
         'approval_status'
     ];
 
@@ -25,5 +26,13 @@ class Rule extends Model
     public function approvals()
     {
         return $this->morphMany(Approval::class, 'approvable');
+    }
+
+    /*
+     * Relationship with Rule Sections
+     */
+    public function ruleSection()
+    {
+        return $this->belongsTo(RuleSection::class);
     }
 }

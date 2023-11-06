@@ -1,44 +1,56 @@
 import { useState } from 'react'
 import { ErrorNotification, SuccessNotification } from '@/Components/Notifications'
 import PendingApproval from '@/Components/Rules/PendingApproval'
+import Select from 'react-select'
 import TextArea from '@/Components/TextArea'
+import Input from '@/Components/Input'
 
-export default function CreateRule({pending, auth}) {
+export default function CreateRule({pending, auth, sections}) {
 
-    const [ruleNumber, setRuleNumber] = useState('')
     const [newRule, setNewRule] = useState('')
     const [createdRules, setCreatedRules] = useState([])
+    const [selectedSection, setSelectedSection] = useState('')
 
     const submitRule = async () => {
         try {
             let res = await axios.post('/rules', {
-                rule_number: ruleNumber,
+                section: selectedSection,
                 rule: newRule
             })
-            console.log(res.data)
-            setCreatedRules([...createdRules, res.data.createdRule]) 
+            setCreatedRules([...createdRules, {rule: res.data.createdRule, sectionTitle: res.data.sectionTitle, sectionNumber: res.data.sectionNumber, id: res.data.ruleId}]) 
             SuccessNotification('Success', res.data.message)            
             setNewRule('')
-            setRuleNumber('')
+            setSelectedSection('')
         } catch (error) {
             ErrorNotification('Error', error)
         }
     }
+
+    let sectionOptions = [...sections.map(x => ({label: x.title, value: x.id})), {label: '+ New Section', value: 'newSection'}]
+
     return (
         <>
             <div className="lg:w-1/2 w-3/4 flex flex-col items-center">
                 <div className="text-2xl">Create Rules</div>
                 <div className="flex flex-col w-full">
-                    <label htmlFor="rule-number">Rule Number</label>
-                    <input
-                        type='number'
-                        step="0.01"
-                        value={ruleNumber}
-                        onChange={(e) => setRuleNumber(e.target.value)}
+                    <label htmlFor="section">Section</label>
+                    <Select
+                        name="section"
+                        options={sectionOptions}
+                        onChange={(e) => selectedSection.value == 'newSection' && e.value == 'newSection' ? '' : setSelectedSection(e)}
                     />
-                </div>
+                        
+                    {selectedSection.value === 'newSection' &&
+                        <>
+                            <label htmlFor="newSection">Section Title</label>
+                            <Input 
+                                name='new-section-title'
+                                required={true}
+                                handleChange={(e) => setSelectedSection({value: 'newSection', label: e.target.value})}
+                            />
+                        </>
+                    }
 
-                <div className="flex flex-col w-full">
                     <label htmlFor="rule">Rule</label>
                     <TextArea
                         className="h-28 w-full"
@@ -53,14 +65,15 @@ export default function CreateRule({pending, auth}) {
                 {createdRules.length > 0 || pending.length > 0 && <div className="text-xl">Rules pending approval</div>}
                 <ul>
                     {createdRules.map(x => (
-                        <li key={x.id} className="w-full bg-white flex flex-row space-x-3 mt-4 w-full shadow">
-                            <div>{x.rule_number}</div>
+                        <li key={x.id} className="w-full bg-white flex flex-col mt-4 w-full shadow">
+                            <div>{x.sectionTitle} (Section {x.sectionNumber})</div>
                             <div>{x.rule}</div>
                         </li>
                     ))}
 
                     {pending.map(x => (
-                        <li key={x.id} className="w-full bg-white flex flex-row space-x-3 mt-4 w-full shadow">
+                        <li key={x.id} className="w-full bg-white flex flex-col mt-4 w-full shadow">
+                            <div className="ml-2">Section {x.rule_section.number}: {x.rule_section.title}</div>
                             <PendingApproval
                                 auth={auth}
                                 rule={x}

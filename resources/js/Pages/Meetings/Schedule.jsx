@@ -270,7 +270,7 @@ export default function Schedule(props) {
                                 :
                                     null
                         }
-                    <div className="mb-6">
+                    <div className="mb-6 flex flex-col flex-wrap justify-center space-y-2 w-3/5 md:flex-row md:space-y-0 md:w-initial">
                 
                         {/*available on selected days*/}
                         <ButtonColoured 

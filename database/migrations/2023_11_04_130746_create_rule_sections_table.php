@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rules', function (Blueprint $table) {
+        Schema::create('rule_sections', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('rule_section_id');
-            $table->text('rule');
-            $table->integer('number')->nullable();
-            $table->softDeletes($column = 'deleted_at', $precision = 0);
-            $table->string('approval_status')->default('in voting');
+            $table->text('title');
+            $table->integer('number');
         });
     }
 
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rules');
+        Schema::dropIfExists('rule_sections');
     }
 };

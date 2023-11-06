@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\RuleSectionController;
 use App\Models\Rule;
+use App\Models\RuleSection;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -15,7 +17,9 @@ class RuleController extends Controller
     {
         return Inertia::render('Rules/index', [
             'title' => 'Rules',
-            'rules' => Rule::all()
+            'ruleSections' => RuleSection::with(['rules' => function($q) {
+                $q->where('approval_status', '=', 'approved');
+            }])->get()
         ]);
     }
 
@@ -26,7 +30,8 @@ class RuleController extends Controller
     {
         return Inertia::render('Rules/Create', [
             'title' => 'Create a rule',
-            'pending' => Rule::where('approval_status', 'in voting')->get()
+            'pending' => Rule::with(['ruleSection'])->where('approval_status', 'in voting')->get(),
+            'sections' => RuleSection::all()
         ]);
     }
 
@@ -36,31 +41,44 @@ class RuleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'rule_number' => 'required|decimal:1,2',
+            'section' => 'required|array',
             'rule' => 'required'
         ]);
 
-        //Check if the rule number already exists
-        $existing_rule = Rule::where('rule_number', $request->rule_number)
-                              ->whereNot(function ($q) {
-                                  $q->where('approval_status', 'rejected');
-                              })
-                              ->count();
-        if($existing_rule > 0) {
-            return response()->json([
-                'success' => 'false',
-                'message' => 'rule number already exists'
-            ],409);
-        }
+        $section_title = $request['section']['label'];
+        $section_number = $request['section']['value'];
 
+        //Check if the section is new and get the new id if creating, otherwise get the existing id
+        if($section_number == 'newSection') {
+            $existing_sections = RuleSection::where('title', $section_title)->count();
+            if($existing_sections > 0) {
+                return response()->json([
+                    'success' => 'false',
+                    'message' => 'section already exists'
+                ],409);
+            } else {
+                $ruleSectionController = new RuleSectionController();
+                $rule_section_id = $ruleSectionController->store($section_title);
+                $section_number = RuleSection::where('id', $rule_section_id)->first()->number;
+            }
+        } else {
+            $rule_section_id = RuleSection::where('title', $section_title)->first()->id;
+        }
+        
         $rule = new Rule;
-        $created = $rule->create($request->all());
+        $rule->rule_section_id = $rule_section_id;
+        $rule->rule = $request->rule;
+        $created = $rule->save();
+        $rule_id = $rule->id;
 
         if($created) {
             return response()->json([
                 'success' => 'true',
                 'message' => 'rule successfully created for voting',
-                'createdRule' => $created
+                'createdRule' => $rule->rule,
+                'ruleId' => $rule_id,
+                'sectionTitle' => $section_title,
+                'sectionNumber' => $section_number
             ],200);
         }
     }
