@@ -135,7 +135,7 @@ class ApprovalService {
 
             case "App\Models\RuleChange":
                 $ruleChangeController = new RuleChangeController();
-                return $ruleChangeController->approved($id);
+                return $ruleChangeController->update($id);
                 break;
         }
     }

@@ -18,7 +18,10 @@ class RuleController extends Controller
         return Inertia::render('Rules/index', [
             'title' => 'Rules',
             'ruleSections' => RuleSection::with(['rules' => function($q) {
-                $q->where('approval_status', '=', 'approved');
+                $q->where('approval_status', '=', 'approved')
+                  ->with(['ruleChanges' => function($q2) {
+                    $q2->where('approval_status', 'in voting');
+                  }]);
             }])->get()
         ]);
     }
@@ -31,7 +34,7 @@ class RuleController extends Controller
         return Inertia::render('Rules/Create', [
             'title' => 'Create & approve rules',
             'pending' => Rule::with(['ruleSection'])->where('approval_status', 'in voting')->get(),
-            'changeRequests' => Rule::with(['ruleSection'])->has('ruleChange')->get(),
+            'changeRequests' => Rule::with(['ruleSection','ruleChanges'])->whereRelation('ruleChanges', 'approval_status', '=', 'in voting')->get(),
             'sections' => RuleSection::all()
         ]);
     }
@@ -117,8 +120,15 @@ class RuleController extends Controller
     }
 
     public function approved($id) {
-        $approve_rule = Rule::findOrFail($id);
-        $approve_rule->updated(['approval_status' => 'approved']);
+        $approved_rule = Rule::findOrFail($id);
+        $section_id = $approved_rule->rule_section_id;
+        $rules_in_section = Rule::where('rule_section_id', $section_id)->get();
+        $last_rule_in_section = $rules_in_section->sortBy('number')->last()->number;
+        $new_rule_number = $last_rule_in_section + 1;
+
+        $approved_rule->number = $new_rule_number;
+        $approved_rule->save();
+
         return response()->json('approved');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\RuleChange;
+use App\Models\Rule;
 use Illuminate\Http\Request;
 
 class RuleChangeController extends Controller
@@ -67,15 +68,13 @@ class RuleChangeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($id, $approval)
+    public function update($id)
     {
-        if($approval == 'approved') {
-            //
-        } else if($approval == 'rejected') {
-            //
-        } else {
-            return;
-        }
+        $rule_change = RuleChange::where('id', $id)->first();
+        $rule = Rule::where('id', $rule_change->rule_id)->first();
+
+        $rule->rule = $rule_change->rule;
+        $rule->save();
     }
 
     /**

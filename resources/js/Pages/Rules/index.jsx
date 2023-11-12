@@ -56,15 +56,15 @@ export default function Rules({ruleSections}) {
                             {section.rules.map(x => (
                                 <Fragment key={x.id}>
                                     <li onClick={() => editorMode && setRuleToEdit(x)}>
-                                        {section.number}.{x.number}: {ruleToEdit.id == x.id && !ruleToEdit.rule_change ? 
+                                        {section.number}.{x.number}: {ruleToEdit.id == x.id && !ruleToEdit.rule_changes.length > 0 ? 
                                             <>
                                                 <br />
                                                 <textarea defaultValue={x.rule} onChange={(e) => setRuleToEdit({...ruleToEdit, rule: e.target.value})} />
                                             </> 
                                             : x.rule}
-                                        {editorMode && x.rule_change ? <span className="text-orange-600 ml-2">under review</span> : ''}
+                                        {editorMode && x.rule_changes.length > 0 ? <span className="text-orange-600 ml-2">under review</span> : ''}
                                     </li>
-                                    <div className={`flex space-x-1.5 ${(ruleToEdit.id != x.id) || x.rule_change ? 'hidden' : 'visible'}`}>
+                                    <div className={`flex space-x-1.5 ${(ruleToEdit.id != x.id) || x.rule_changes.length > 0 ? 'hidden' : 'visible'}`}>
                                         <button onClick={() => saveChanges()}>save</button> 
                                         <button onClick={() => setRuleToEdit('')}>cancel</button>
                                     </div>
