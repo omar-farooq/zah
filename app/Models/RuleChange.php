@@ -16,8 +16,19 @@ class RuleChange extends Model
         'approval_status'
     ];
 
+    protected $with = ['approvals'];
+
     public function rule()
     {
         return $this->belongsTo(Rule::class);
     }
+
+    /*
+     * Relationship with approvals
+     */
+    public function approvals()
+    {
+        return $this->morphMany(Approval::class, 'approvable');
+    }
+
 }

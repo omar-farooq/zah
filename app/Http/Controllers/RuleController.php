@@ -24,13 +24,14 @@ class RuleController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new resource and approvals section
      */
     public function create()
     {
         return Inertia::render('Rules/Create', [
-            'title' => 'Create a rule',
+            'title' => 'Create & approve rules',
             'pending' => Rule::with(['ruleSection'])->where('approval_status', 'in voting')->get(),
+            'changeRequests' => Rule::with(['ruleSection'])->has('ruleChange')->get(),
             'sections' => RuleSection::all()
         ]);
     }

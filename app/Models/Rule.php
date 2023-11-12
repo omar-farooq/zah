@@ -18,7 +18,7 @@ class Rule extends Model
         'approval_status'
     ];
 
-    protected $with = ['approvals'];
+    protected $with = ['approvals', 'ruleChange'];
 
     /*
      *Relationship with approvals
@@ -34,5 +34,13 @@ class Rule extends Model
     public function ruleSection()
     {
         return $this->belongsTo(RuleSection::class);
+    }
+
+    /*
+     * Relationship with changes to the rule
+     */
+    public function ruleChange() 
+    {
+        return $this->hasOne(RuleChange::class);
     }
 }

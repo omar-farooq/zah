@@ -28,7 +28,24 @@ class RuleChangeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'rule' => 'required|string',
+            'rule_id' => 'required|integer'
+        ]);
+
+        $existing_change_count = RuleChange::where('rule_id', $request->rule_id)->count();
+        if($existing_change_count > 0) {
+            return response()->json([
+                'success' => 'false',
+                'message' => 'There is already a change for this rule'
+            ],409);
+        } else {
+            RuleChange::create($request->all());
+            return response()->json([
+                'success' => 'true',
+                'message' => 'Rule change has entered voting'
+            ],200);
+        }
     }
 
     /**
@@ -50,9 +67,15 @@ class RuleChangeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, RuleChange $ruleChange)
+    public function update($id, $approval)
     {
-        //
+        if($approval == 'approved') {
+            //
+        } else if($approval == 'rejected') {
+            //
+        } else {
+            return;
+        }
     }
 
     /**

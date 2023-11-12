@@ -14,8 +14,6 @@ class RuleSection extends Model
         'number'
     ];
 
-    protected $with = ['rules'];
-
     public function rules() {
         return $this->hasMany(Rule::class);
     }

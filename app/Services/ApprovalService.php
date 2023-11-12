@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\RuleChangeController;
 use App\Http\Controllers\RuleController;
 use App\Models\Approval;
 use App\Models\Maintenance;
@@ -130,6 +131,11 @@ class ApprovalService {
             case "App\Models\Rule":
                 $ruleController = new RuleController();
                 return $ruleController->approved($id);
+                break;
+
+            case "App\Models\RuleChange":
+                $ruleChangeController = new RuleChangeController();
+                return $ruleChangeController->approved($id);
                 break;
         }
     }

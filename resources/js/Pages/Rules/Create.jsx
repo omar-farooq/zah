@@ -5,7 +5,7 @@ import Select from 'react-select'
 import TextArea from '@/Components/TextArea'
 import Input from '@/Components/Input'
 
-export default function CreateRule({pending, auth, sections}) {
+export default function CreateRule({pending, auth, sections, changeRequests}) {
 
     const [newRule, setNewRule] = useState('')
     const [createdRules, setCreatedRules] = useState([])
@@ -62,7 +62,7 @@ export default function CreateRule({pending, auth, sections}) {
             </div>
 
             <div className="lg:w-1/2 w-5/6 mt-4">
-                {createdRules.length > 0 || pending.length > 0 && <div className="text-xl">Rules pending approval</div>}
+                {createdRules.length > 0 || pending.length > 0 && <div className="text-xl">New rules pending approval</div>}
                 <ul>
                     {createdRules.map(x => (
                         <li key={x.id} className="w-full bg-white flex flex-col mt-4 w-full shadow">
@@ -77,6 +77,19 @@ export default function CreateRule({pending, auth, sections}) {
                             <PendingApproval
                                 auth={auth}
                                 rule={x}
+                            />
+                        </li>
+                    ))}
+                </ul>
+                {changeRequests.length > 0 && <div className="text-xl mt-4">Rule changes pending approval</div>}
+                <ul>
+                    {changeRequests.map(x => (
+                        <li key={x.id} className="w-full bg-white flex flex-col mt-4 w-full shadow">
+                            <div className="ml-2">Section {x.rule_section.number}: {x.rule_section.title}</div>
+                            <PendingApproval
+                                auth={auth}
+                                rule={x}
+                                type={'change'}
                             />
                         </li>
                     ))}

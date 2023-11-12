@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamps();
             $table->foreignId('rule_id');
             $table->text('rule');
-            $table->string('approval_status');
+            $table->string('approval_status')->default('in voting');
         });
     }
 
