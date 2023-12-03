@@ -20,10 +20,11 @@ export default function CommentBox({model, commentHook}) {
                 [
                     {
                         body: textareaValue, 
-                        id: res.data.user_id, 
+                        id: res.data.id, 
                         user: 
                         {
-                            name: res.data.user_name
+                            name: res.data.user_name,
+                            id: res.data.user_id
                         }
                     }, 
                     ...comments.data

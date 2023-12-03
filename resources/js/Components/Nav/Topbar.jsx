@@ -37,6 +37,7 @@ export default function Topbar({ auth, header, title }) {
                                                 type="button"
                                                 className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                                             >
+                                                <img src={`/users/${auth?.user.id}?view=avatar`} className="relative rounded-3xl h-8 w-8 mr-2" />
                                                 {auth?.user.name}
 
                                                 <svg

@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\JobController;
@@ -85,6 +86,7 @@ Route::middleware(['member', 'auth'])->group(function() {
     //Update Model Approval
     Route::patch('/update-approval-status', [ApprovalController::class, 'updateModelApproval']);
 
+    Route::resource('accounts', AccountController::class);
     Route::resource('approval', ApprovalController::class);
     Route::resource('memberships', MembershipController::class);
     Route::resource('receipts', ReceiptController::class);
