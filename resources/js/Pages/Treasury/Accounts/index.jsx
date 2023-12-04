@@ -24,10 +24,16 @@ function reducer(accounts, action) {
 
 export default function AccountsIndex({initialAccounts, defaultAccounts}) {
 
+    //State for Accounts
     const [newAccount, setNewAccount] = useState({account_name: '', bank: '', description: '', starting_balance: ''})
     const [accounts, dispatch] = useReducer(reducer, initialAccounts)
 	const [selectedAccountToDestroy, setSelectedAccountToDestroy] = useState({id: '', account_name: ''})
 	const [modalOpened, modalHandlers] = useDisclosure(false)
+
+    //State for Default Accounts
+    const [defaultAccountsList, setDefaultAccountsList] = useState(defaultAccounts)
+    const [defaultPaymentType, setDefaultPaymentType] = useState('')
+    const [defaultAccount, setDefaultAccount] = useState('')
 
     const SubmitNewAccount = async (e) => {
         e.preventDefault()
@@ -40,6 +46,20 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
             ErrorNotification('Error', error)
         }
     }
+
+    const SubmitDefaultAccount = async (e) => {
+        e.preventDefault()
+        try {
+            let res = await axios.post('/accounts?default', {account_id: defaultAccount, model: defaultPaymentType})
+            await SuccessNotification('Made Default', 'Successfully added a default account for '+defaultPaymentType)
+            setDefaultPaymentType('')
+            setDefaultAccount('')
+            setDefaultAccountList(res.data)
+        } catch (error) {
+            ErrorNotification('Error', error)
+        }
+    }
+    console.log(defaultAccountsList)
 
     return (
         <>
@@ -74,20 +94,6 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
                 </TBody>
             </Table>
             
-            {/*Table of Default accounts*/}
-            {
-                defaultAccounts.length > 0 ?
-                    <div className="text-xl mt-10">Default account set</div>
-                    :
-                    <div>The default account hasn't been set for anything as of yet</div>
-
-            }
-
-            {/* Set the default account for each payable model */}
-            <div className="text-xl mt-10">Set a default account</div>
-            <Select 
-                
-            />
        
             {/* Form to add a new account to the accounts table */}
             <div className="text-xl mt-10">Add an account</div>
@@ -145,6 +151,64 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
                 </InertiaLink>
                 <button className="bg-zinc-800 text-white h-9 w-20 border rounded-md" onClick={modalHandlers.close}>Cancel</button>
             </Modal>
+
+            {/*Table of Default accounts*/}
+            {
+                defaultAccountsList.length > 0 ?
+                    <>
+                    <div className="text-xl mt-10">Default account set</div>
+                    <Table>
+                        <THead>
+                            <FirstTH heading="Payment Type" />
+                            <TH heading="Account" />
+                        </THead>
+                        <TBody>
+                            {defaultAccountsList.map(x =>
+                                <Fragment key={x.id}>
+                                    <tr>
+                                        <FirstTD data={x.model} />
+                                        <TD data={x.account_id} />
+                                    </tr>
+                                </Fragment>
+                            )}
+                        </TBody>
+                    </Table>
+                    </>
+                    :
+                    <div className="mt-10">The default account hasn&apos;t been set for anything as of yet</div>
+
+            }
+
+            {/* Set the default account for each payable model */}
+            <div className="text-xl mt-10">Set the default account for each payment type</div>
+            <div className="w-full flex flex-row items-center justify-center gap-x-4 mb-4">
+                <Select 
+                    options={[
+                        {value: 'App\\Models\\Purchase', label: 'Purchases'},
+                        {value: 'App\\Models\\Maintenance', label: 'Maintenance'},
+                        {value: 'App\\Models\\PaidRent', label: 'Rent'},
+                        {value: 'App\\Models\\RecurringPayment', label: 'Recurring Payments'},
+                        {value: 'App\\Models\\Payment', label: 'General Payments'},
+                    ]}
+                    placeholder={"Payment type"}
+                    className="w-1/4"
+                    onChange={(e) => setDefaultPaymentType(e.value)}
+                />
+                <Select 
+                    options={accounts.map(x => ({
+                        value: x.id,
+                        label: x.account_name
+                    }))}
+                    placeholder={"Select Account"}
+                    className="w-1/4"
+                    onChange={(e) => setDefaultAccount(e.value)}
+                />
+            </div>
+            <ButtonColoured
+                bgcolour="bg-red-600"
+                buttonText="Make Default"
+                onclick={(e) => SubmitDefaultAccount(e)}
+            />
         </>
     )
 }

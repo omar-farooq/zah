@@ -37,14 +37,23 @@ class AccountController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'account_name' => 'required|string',
-            'bank' => 'required|string',
-            'starting_balance' => 'required|numeric'
-        ]);
+        if(isset($request['default'])) {
+            if(DefaultAccount::where('model', $request->model)->count() > 0) {
+                dd('exists');
+            } else {
+                DefaultAccount::create($request->all());
+                return DefaultAccount::all();
+            }
+        } else {
+            $request->validate([
+                'account_name' => 'required|string',
+                'bank' => 'required|string',
+                'starting_balance' => 'required|numeric'
+            ]);
 
-        $new_account = Account::create($request->all());
-        return $new_account;
+            $new_account = Account::create($request->all());
+            return $new_account;
+        }
     }
 
     /**
