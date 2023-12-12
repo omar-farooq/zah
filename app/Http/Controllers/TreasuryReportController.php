@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
+use App\Models\DefaultAccount;
 use App\Models\PaidRent;
 use App\Models\Purchase;
 use App\Models\RecurringPayment;
@@ -55,10 +57,15 @@ class TreasuryReportController extends Controller
     public function create()
     {
         $arrears = new RentArrear;
+        $latest_treasury_report = TreasuryReport::all()->last()->id;
         return Inertia::render('Treasury/Reports/Create', [
             'title' => 'Create Treasury Report',
             'rents' => Rent::with('user')->get(),
             'arrears' => $arrears->currentTenant()->get(),
+            'accounts' => Account::with(['treasuryReports' => function($q) use($latest_treasury_report){
+                $q->where('treasury_report_id', '=', $latest_treasury_report);
+            }])->get(),
+            'defaultAccounts' => DefaultAccount::all(),
             'previousReport' => TreasuryReport::latest()->first(),
             'recurringPayments' => RecurringPayment::all(),
             'unreported' => TreasuryItem::where('treasury_report_id', NULL)->get(),

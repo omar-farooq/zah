@@ -4,7 +4,7 @@ import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } fr
 export default function CalculateRecurringPayments({recurringPayments, recurringPaymentsToBeMadeHook, calculatedRecurringHook, dates}) {
 
     const [recurringPaymentsToBeMade, setRecurringPaymentsToBeMade] = recurringPaymentsToBeMadeHook
-	const [calculatedRecurring, setCalculatedRecurring] = calculatedRecurringHook
+    const [calculatedRecurring, setCalculatedRecurring] = calculatedRecurringHook
 
     function FrequencyOfWeekDay(day) {
         //Calculate the frequency of a given day
@@ -111,7 +111,7 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
         }
 
         mapRecurringPaymentsToBeMade()
-		calculateRecurring()
+        calculateRecurring()
     },[dates])
 
     const addReceiptToRecurringPayment = (e,originalIndex) => {
@@ -126,9 +126,9 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
         )
     }
 
-	return (
-		<>
-	        <div className="text-xl mt-8 font-bold">Recurring Payments</div>
+    return (
+        <>
+            <div className="text-xl mt-8 font-bold">Recurring Payments</div>
             <SmallTable>
                 <THead>
                     <FirstTH heading="recipient" />
@@ -143,18 +143,18 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
                                 <TD data={payment.amount} />
                                 <TD>
                                     <input 
-										type="file" 
-										id="receipt" 
-										name="receipt" 
-										accept="image/*, .pdf" 
-										onChange={(e) => addReceiptToRecurringPayment(e, i)} 
-									/>
+                                        type="file" 
+                                        id="receipt" 
+                                        name="receipt" 
+                                        accept="image/*, .pdf" 
+                                        onChange={(e) => addReceiptToRecurringPayment(e, i)} 
+                                    />
                                 </TD>
                             </tr>
                         </Fragment>
                     ))}
                 </TBody>
             </SmallTable>
-		</>
-	)
+        </>
+    )
 }

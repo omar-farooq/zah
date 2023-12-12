@@ -18,7 +18,8 @@ export default function Schedule(props) {
         overwriteSelected: [],
         scheduledSelected: [],
         selectedDay: '',
-        upcomingMeeting: props.upcomingDate,
+        upcomingMeeting: props.upcoming['date'],
+        cancelStatus: props.upcoming['status'],
         userSuggestions: props.members.reduce((a,b) => {
             if(b.id == props.currentUser.id) {
                 return [b.schedule_suggestions][0]
@@ -162,6 +163,15 @@ export default function Schedule(props) {
                 variant="outline"
             >
                 Arrange a meeting by clicking on one of the dates on the schedule
+            </Alert>
+        : schedule.cancelStatus == 1 ?
+            <Alert 
+                color="red" 
+                icon={<ExclamationCircleIcon className="h-6 w-6" />}
+                title="Meeting cancelled" 
+                className="mt-4" 
+            >
+                Upcoming meeting at {schedule.upcomingMeeting} has been cancelled
             </Alert>
         :
             <Alert 

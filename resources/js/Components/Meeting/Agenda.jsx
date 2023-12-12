@@ -4,19 +4,22 @@ import { TrashIcon } from '@heroicons/react/24/outline'
 import { useState, useEffect, useReducer } from 'react'
 import Input from '@/Components/Input'
 
-export default function Agenda() {
+export default function Agenda({auth}) {
 
     const initialState = []
 
     function reducer(reactiveAgenda, action) {
         switch (action.type) {
             case 'initialFetch':
-                return action.fetched
+                return action.fetched.sort((a,b) => a.user_id - b.user_id)
             case 'add':
                 //add a failsafe to prevent the possibility of duplicates.
                 if(!reactiveAgenda.find(x => x.id == action.id)) {
+                    //don't sort and instead return the latest one after the rest for visibility
+                    //return [...reactiveAgenda, {id: action.id, item: action.item, user_id: action.user_id}].sort((a,b) =>a.user_id - b.user_id)
                     return [...reactiveAgenda, {id: action.id, item: action.item, user_id: action.user_id}]
                 } else {
+                    //return reactiveAgenda.sort((a,b) =>a.user_id - b.user_id)
                     return reactiveAgenda
                 }
             case 'delete':
@@ -27,6 +30,9 @@ export default function Agenda() {
     }
 
     const [reactiveAgenda, dispatch] = useReducer(reducer, initialState);
+    
+    //members
+    const [users, setUsers] = useState('')
 
     //agenda form input
     const [inputValue, setInputValue] = useState('')
@@ -48,6 +54,8 @@ export default function Agenda() {
     //Receive the current agenda items via an api call
     useEffect(() => {
 		async function getAgendaItems() { 
+            let fetchedUsers = await axios.get('/users?filter=none')
+            await setUsers(fetchedUsers.data)
 			let res = await axios.get('/agenda')
             dispatch({type: 'initialFetch', fetched: res.data.agenda})
 		}
@@ -79,8 +87,14 @@ export default function Agenda() {
                     reactiveAgenda.length === 0 ? <div className="text-2xl">No agenda has been set</div> :
                     reactiveAgenda.map((agenda,i) =>
                         <li key={agenda.id} className={`${i % 2 == 0 ? 'border-black bg-white' : 'border-black bg-zinc-100'} text-black flex justify-between items-center m-1 border`}>
-                            <div className="ml-2 whitespace-pre-line">{agenda.item}</div> 
-                            <div><TrashIcon className="w-5 h-5 cursor-pointer mr-2" onClick={() => deleteAgendaItem(agenda.id)} /></div>
+                            <div className="ml-2 whitespace-pre-line">
+                                <span className="text-sm">{users?.find(x => x.id === agenda.user_id).name}:</span>
+                                <br />
+                                {agenda.item} 
+                            </div> 
+                            <div className={`${auth.user.id === agenda.user_id ? '' : 'hidden'}`}>
+                                <TrashIcon className="w-5 h-5 cursor-pointer mr-2" onClick={() => deleteAgendaItem(agenda.id)} />
+                            </div>
                         </li>
                     )
                 }

@@ -1,11 +1,11 @@
 import { Button } from '@mantine/core'
-import { CalculateRecurringPayments, PurchasesAndServices } from '@/Components/Treasury'
+import { CalculateAccountBalance, CalculateRecurringPayments, PurchasesAndServices } from '@/Components/Treasury'
 import { FirstDayOfTheMonth, LastDayOfTheMonth } from '@/Shared/Functions'
 import { Fragment, useEffect, useReducer, useState } from 'react'
 import { DatePicker } from '@mantine/dates'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
-export default function CreateReport({rents, arrears, previousReport, recurringPayments, unreported}) {
+export default function CreateReport({rents, arrears, accounts, defaultAccounts, previousReport, recurringPayments, unreported}) {
 
     function calculatePayableRent(rentPerWeek) {
         if((dates[0] && dates[1]) && dates[0] <= dates[1]) {
@@ -104,24 +104,38 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
         setPayables(payables.filter(x => x.key !== id))
     }
 
-    function calculateBalance() {
-        const payableTotal = payables.reduce((a,b) => {
-            if (b.incoming) {
-                return a + Number(b.amount)
-            } else {
-                return a - Number(b.amount)
-            }
-        },[])
+    //Calculate each model's total separately
+    const payableTotal = payables.reduce((a,b) => {
+        if (b.incoming) {
+            return a + Number(b.amount)
+        } else {
+            return a - Number(b.amount)
+        }
+    },[])
 
-        const rentTotal = paidRent.reduce((a,b) => {
-            return Number(a) + Number(b.amount_paid)
-        },[])
+    const rentTotal = paidRent.reduce((a,b) => {
+        return Number(a) + Number(b.amount_paid)
+    },[])
 
-        const purchasesAndServicesTotal = unreported.reduce((a,b) => {
+    const purchasesTotal = unreported.reduce((a,b) => {
+        if(b.treasurable_type == 'App\\Models\\Purchase') {
             return Number(a) + Number(b.amount)
-        },[])
+        } else {
+            return Number(a)
+        }
+    },[])
 
-        return (Number(payableTotal) + Number(rentTotal) + Number(previousReport.remaining_budget) - Number(calculatedRecurring) - Number(purchasesAndServicesTotal)).toFixed(2)
+    const servicesTotal = unreported.reduce((a,b) => {
+        if(b.treasurable_type == 'App\\Models\\Maintenance') {
+            return Number(a) + Number(b.amount)
+        } else {
+            return Number(a)
+        }
+    },[])
+
+    //return the TOTAL balance for all accounts
+    function calculateBalance() {
+        return (Number(payableTotal) + Number(rentTotal) + Number(previousReport.remaining_budget) - Number(calculatedRecurring) - Number(purchasesTotal) - Number(servicesTotal)).toFixed(2)
     }
 
     const submitReport = async (e) => {
@@ -285,6 +299,19 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
         </SmallTable>
 
         <div className="mt-10">
+            <div className="text-xl font-bold">Balance</div>
+            {accounts.map(x => ( 
+                <CalculateAccountBalance 
+                    key={x.id} 
+                    account={x}
+                    rentTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\PaidRent') ? rentTotal : 0}
+                    purchasesTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Purchase') ? purchasesTotal : 0}
+                    servicesTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Maintenance') ? servicesTotal : 0}
+                    recurringTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\RecurringPayment') ? calculatedRecurring : 0}
+                    payableTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Purchase') ? payableTotal : 0}
+                />
+            ))}
+
             Starting balance: £{previousReport.remaining_budget}<br />
             Calculated remaining balance: £{calculateBalance()}
 

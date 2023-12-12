@@ -33,10 +33,12 @@ class ScheduleService
 		{
 			$upcomingDate = 'null';
 			$upcomingID = -1;
+            $upcomingStatus = 'unscheduled';
 		} else {
 			$upcomingDate = $meeting->findUpcoming()->time_of_meeting;
-			$upcomingID = $meeting->findUpcoming()->id;
+            $upcomingID = $meeting->findUpcoming()->id;
+            $upcomingStatus = $meeting->findUpcoming()->cancelled;
 		}
-		return array('upcomingID' => $upcomingID, 'upcomingDate' => $upcomingDate);
+		return array('id' => $upcomingID, 'date' => $upcomingDate, 'status' => $upcomingStatus);
 	}
 }

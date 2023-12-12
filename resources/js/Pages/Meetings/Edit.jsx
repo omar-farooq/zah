@@ -64,7 +64,7 @@ export default function NewMeeting({meeting, tenants, auth}) {
                         />
 
                         <ComponentWrapperWhite>
-                            <Agenda />
+                            <Agenda auth={auth} />
                         </ComponentWrapperWhite>
 
                         <ComponentWrapperWhite>

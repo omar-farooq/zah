@@ -59,7 +59,29 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
             ErrorNotification('Error', error)
         }
     }
-    console.log(defaultAccountsList)
+
+    const ModelToName = (model) => {
+        switch (model) {
+            case "App\\Models\\Purchase":
+                return "Purchases"
+                break;
+            case "App\\Models\\Maintenance":
+                return "Maintenance and Services"
+                break;
+            case "App\\Models\\PaidRent":
+                return "Rent"
+                break;
+            case "App\\Models\\RecurringPayment":
+                return "Recurring Payments"
+                break;
+            case "App\\Models\\Payment":
+                return "General Payements"
+                break;
+            default:
+                return "Payment model not correctly defined"
+        }
+    }
+    console.log(accounts)
 
     return (
         <>
@@ -166,8 +188,8 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
                             {defaultAccountsList.map(x =>
                                 <Fragment key={x.id}>
                                     <tr>
-                                        <FirstTD data={x.model} />
-                                        <TD data={x.account_id} />
+                                        <FirstTD data={ModelToName(x.model)} />
+                                        <TD data={accounts.find(y => y.id === x.account_id).account_name} />
                                     </tr>
                                 </Fragment>
                             )}
