@@ -30,9 +30,14 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
     })))
 
     const [payables, setPayables] = useState([])
+    const [payableTotal, setPayableTotal] = useState(0)
     const [recurringPaymentsToBeMade, setRecurringPaymentsToBeMade] = useState([])
     const [calculatedRecurring, setCalculatedRecurring] = useState('')
 
+    const [accountBalances, setAccountBalances] = useState(accounts.map(x => ({
+        id: x.id,
+        amount: '0'
+    })))
     const [adjustedBalance, setAdjustedBalance] = useState('')
     const [calculatedBalanceCheckbox, setCalculatedBalanceCheckbox] = useState(true)
     const [manualBalance, setManualBalance] = useState(null)
@@ -105,13 +110,15 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
     }
 
     //Calculate each model's total separately
-    const payableTotal = payables.reduce((a,b) => {
-        if (b.incoming) {
-            return a + Number(b.amount)
-        } else {
-            return a - Number(b.amount)
-        }
-    },[])
+    useEffect(() => {
+        setPayableTotal(payables.reduce((a,b) => {
+            if (b.incoming) {
+                return a + Number(b.amount)
+            } else {
+                return a - Number(b.amount)
+            }
+        },[]))
+    },[payables])
 
     const rentTotal = paidRent.reduce((a,b) => {
         return Number(a) + Number(b.amount_paid)
@@ -308,7 +315,8 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
                     purchasesTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Purchase') ? purchasesTotal : 0}
                     servicesTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Maintenance') ? servicesTotal : 0}
                     recurringTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\RecurringPayment') ? calculatedRecurring : 0}
-                    payableTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Purchase') ? payableTotal : 0}
+                    payableTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Payment') ? payableTotal : 0}
+                    balanceHook={[accountBalances, setAccountBalances]}
                 />
             ))}
 
