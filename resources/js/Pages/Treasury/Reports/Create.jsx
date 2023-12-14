@@ -36,11 +36,12 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
 
     const [accountBalances, setAccountBalances] = useState(accounts.map(x => ({
         id: x.id,
-        amount: '0'
+        calculated: 0,
+        final: null,
+        changeReason: '',
     })))
-    const [adjustedBalance, setAdjustedBalance] = useState('')
-    const [calculatedBalanceCheckbox, setCalculatedBalanceCheckbox] = useState(true)
-    const [manualBalance, setManualBalance] = useState(null)
+    const [calculatedTotalBalance, setCalculatedTotalBalance] = useState(0)
+    const [calculatedFinalBalance, setCalculatedFinalBalance] = useState(0)
 
     //For displaying purchases and services and adding receipts
     function unreportedReducer(unreportedItems, action) {
@@ -141,17 +142,22 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
     },[])
 
     //return the TOTAL balance for all accounts
-    function calculateBalance() {
-        return (Number(payableTotal) + Number(rentTotal) + Number(previousReport.remaining_budget) - Number(calculatedRecurring) - Number(purchasesTotal) - Number(servicesTotal)).toFixed(2)
-    }
+    useEffect(() => {
+        setCalculatedTotalBalance(
+            accountBalances.reduce((a,b) => Number(a) + Number(b.calculated),0).toFixed(2)
+        )
+        setCalculatedFinalBalance(
+            accountBalances.reduce((a,b) => Number(a) + Number(b.final ?? b.calculated),0).toFixed(2)
+        )
+    },[accountBalances])
 
     const submitReport = async (e) => {
         let config = { headers: { 'content-type': 'multipart/form-data' }}
         let reportID = await axios.post('/treasury-reports', {
             start_date: dates[0],
             end_date: dates[1],
-            calculated_remaining_budget: calculateBalance(),
-            remaining_budget: manualBalance ?? calculateBalance(),
+            calculated_remaining_budget: calculatedTotalBalance,
+            remaining_budget: manualBalance ?? calculatedTotalBalance,
             paid_rents: paidRent,
             recurring: recurringPaymentsToBeMade,
             unreported: unreportedItems
@@ -239,7 +245,34 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
             />
 
             <div className="text-xl mt-12 font-bold">Additional incomings/outgoings</div>
-                <form className="grid grid-cols-2" onSubmit={(e) => addInOut(e)}>
+                {payables.length > 0 &&
+                    <SmallTable>
+                        <THead>
+                            <FirstTH heading="Payable" />
+                            <TH heading="Description" />
+                            <TH heading="Amount" />
+                            <TH heading="Incoming or Outgoing" />
+                            <TH heading="Date" />
+                            <LastTH />
+                        </THead>
+                        <TBody>
+                            {payables.map(payable => (
+                                <Fragment key={payable.key}>
+                                    <tr>
+                                        <FirstTD data={payable.name} />
+                                        <TD data={payable.description} />
+                                        <TD data={payable.amount} />
+                                        <TD data={payable.incoming ? 'incoming' : 'outgoing'} />
+                                        <TD data={payable.payment_date} />
+                                        <LastTD><button onClick={() => removePayable(payable.key)}>Delete</button></LastTD>
+                                    </tr>
+                                </Fragment>
+                            ))}
+                        </TBody>
+                    </SmallTable>
+                }
+
+                <form className={`grid grid-cols-2 ${payables.length > 0 ? 'mt-8' : 'mt-4'} bg-white p-4 md:w-2/3`} onSubmit={(e) => addInOut(e)}>
                 <div className="flex flex-col w-11/12 place-self-center">
                     <label htmlFor="name">Payable Item</label>
                     <input type="text" id="name" required="required" />
@@ -267,7 +300,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
                     <input type="number" step="0.01" id="amount" required="required" />
                 </div>
 
-                <div className="flex flex-col col-start-1 col-end-3 w-11/12 ml-2">
+                <div className="flex flex-col col-start-1 col-end-3 w-11/12 md:ml-6">
                     <label htmlFor="description">Description</label>
                     <input type="text" id="description" />
                 </div>
@@ -280,76 +313,58 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
                 <button type="submit" className="bg-sky-600 hover:bg-sky-700 text-white col-start-1 col-end-3 mt-2 h-8 w-1/2 place-self-center">add</button>
             </form>
 
-        <SmallTable>
-            <THead>
-                <FirstTH heading="Payable" />
-                <TH heading="Description" />
-                <TH heading="Amount" />
-                <TH heading="Incoming or Outgoing" />
-                <TH heading="Date" />
-                <LastTH />
-            </THead>
-            <TBody>
-                {payables.map(payable => (
-                    <Fragment key={payable.key}>
-                        <tr>
-                            <FirstTD data={payable.name} />
-                            <TD data={payable.description} />
-                            <TD data={payable.amount} />
-                            <TD data={payable.incoming ? 'incoming' : 'outgoing'} />
-                            <TD data={payable.payment_date} />
-                            <LastTD><button onClick={() => removePayable(payable.key)}>Delete</button></LastTD>
-                        </tr>
-                    </Fragment>
-                ))}
-            </TBody>
-        </SmallTable>
 
-        <div className="mt-10">
+        <div className="mt-10 w-full flex flex-col items-center">
             <div className="text-xl font-bold">Balance</div>
-            {accounts.map(x => ( 
-                <CalculateAccountBalance 
-                    key={x.id} 
-                    account={x}
-                    rentTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\PaidRent') ? rentTotal : 0}
-                    purchasesTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Purchase') ? purchasesTotal : 0}
-                    servicesTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Maintenance') ? servicesTotal : 0}
-                    recurringTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\RecurringPayment') ? calculatedRecurring : 0}
-                    payableTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Payment') ? payableTotal : 0}
-                    balanceHook={[accountBalances, setAccountBalances]}
-                />
-            ))}
-
-            Starting balance: £{previousReport.remaining_budget}<br />
-            Calculated remaining balance: £{calculateBalance()}
-
-            <div>
-                <input 
-                    type="checkbox" 
-                    id="calculated-balance-checkbox"
-                    checked={calculatedBalanceCheckbox} 
-                    onChange={() => setCalculatedBalanceCheckbox(!calculatedBalanceCheckbox)} 
-                /> 
-                <label htmlFor="calculated-balance-checkbox" className="ml-1">Use Calculated Balance</label>
-            </div>
-
-            {!calculatedBalanceCheckbox && 
-                <>
-                    <div className="flex flex-col mt-2">
-                        <label htmlFor="set-balance">Set a new balance manually:</label>
-                        <input 
-                            type="number" 
-                            step="0.01" 
-                            id="set-balance" 
-                            onChange={(e) => setManualBalance(e.target.value)} 
+            <SmallTable>
+                <THead>
+                    <FirstTH heading="Account" />
+                    <TH heading="Starting" />
+                    <TH heading="Calculated" />
+                    <TH heading="Use Calculated" />
+                    <TH heading="Final" />
+                </THead>
+                <TBody>
+                    {accounts.map(x => ( 
+                        <CalculateAccountBalance 
+                            key={x.id} 
+                            account={x}
+                            rentTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\PaidRent') ? rentTotal : 0}
+                            purchasesTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Purchase') ? purchasesTotal : 0}
+                            servicesTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Maintenance') ? servicesTotal : 0}
+                            recurringTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\RecurringPayment') ? calculatedRecurring : 0}
+                            payableTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Payment') ? payableTotal : 0}
+                            balanceHook={[accountBalances, setAccountBalances]}
                         />
-                    </div>
-                </>
-            }
+                    ))}
+                    <tr>
+                        <FirstTD>
+                            <span className="font-bold">Total</span>
+                        </FirstTD>
+                        <TD>
+                            £{accounts.reduce((a,b) => 
+                                Number(a) + Number(b.treasury_reports[0]?.pivot.account_balance ?? b.starting_balance),0
+                            ).toFixed(2)}
+                        </TD>
+                        <TD 
+                            data={'£' + calculatedTotalBalance} 
+                        />
+                        <TD 
+                            data={''} 
+                        />
+                        <TD>
+                            <span className="font-bold">{'£' + calculatedFinalBalance}</span>
+                        </TD>
+                    </tr>
+            
+                </TBody>
+            </SmallTable>
+
+
         </div>
 
         <Button 
-            className="bg-white border-blue-400 text-blue-400 hover:text-white hover:bg-sky-600 mt-4"
+            className="bg-white border-blue-400 text-blue-400 hover:text-white hover:bg-sky-600 mt-12 mb-8"
             onClick={(e) => submitReport(e)}
         >
             Submit Report

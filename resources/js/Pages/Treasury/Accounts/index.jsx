@@ -81,7 +81,6 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
                 return "Payment model not correctly defined"
         }
     }
-    console.log(accounts)
 
     return (
         <>
