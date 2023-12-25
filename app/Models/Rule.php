@@ -43,4 +43,12 @@ class Rule extends Model
     {
         return $this->hasMany(RuleChange::class);
     }
+
+    /*
+     * Relationship with attempted deletes to the rule
+     */
+    public function ruleDeletes() 
+    {
+        return $this->hasMany(RuleDelete::class);
+    }
 }

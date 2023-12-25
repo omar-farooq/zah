@@ -1,22 +1,11 @@
 import { Button } from '@mantine/core'
 import { CalculateAccountBalance, CalculateRecurringPayments, PurchasesAndServices } from '@/Components/Treasury'
-import { FirstDayOfTheMonth, LastDayOfTheMonth } from '@/Shared/Functions'
+import { FirstDayOfTheMonth, LastDayOfTheMonth, NumberOfMonths } from '@/Shared/Functions'
 import { Fragment, useEffect, useReducer, useState } from 'react'
-import { DatePicker } from '@mantine/dates'
+import { MonthPicker } from '@mantine/dates'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
 export default function CreateReport({rents, arrears, accounts, defaultAccounts, previousReport, recurringPayments, unreported}) {
-
-    function calculatePayableRent(rentPerWeek) {
-        if((dates[0] && dates[1]) && dates[0] <= dates[1]) {
-            let diffinMs = new Date(dates[1]) - new Date(dates[0])
-            let numberOfDays = Math.round(diffinMs / (1000 * 60 * 60 * 24)) + 1
-            let payableRent = (rentPerWeek / 7) * numberOfDays
-            return payableRent.toFixed(2)
-        } else {
-            return "Select Dates"
-        }
-    }
 
     //Get when the previous report ended and make the start date of the report the previous day +1 by default
     let previousReportEnd = new Date(previousReport.end_date)
@@ -26,7 +15,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
     const [updatedArrears, setUpdatedArrears] = useState(arrears);
     const [paidRent, setPaidRent] = useState(rents.map(rent => ({
         user_id: rent.user.id,
-        amount_paid: ''
+        amount_paid: calculatePayableRent(rent.amount)
     })))
 
     const [payables, setPayables] = useState([])
@@ -63,22 +52,29 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
 
     //Update arrears when the dates change
     useEffect(() => {
-        let arrearsArr = updatedArrears
-        dates[1] && (dates[1] > dates[0]) ?
-        setUpdatedArrears(
-            arrearsArr.map(x => (
-                {
-                    ...x,
-                    amount: Number(Number(calculatePayableRent(rents.find(y => y.user_id === x.user_id).amount)) - Number(paidRent.find(y => y.user_id === x.user_id).amount_paid) + Number(arrears.find(y => y.user_id === x.user_id).amount)).toFixed(2)
-                }
-            ))
-        )
-        : setUpdatedArrears(arrears)
+        setUpdatedArrears(arrears)
     },[dates])
 
     const [unreportedItems, dispatch] = useReducer(unreportedReducer, [])
+   
+    function calculatePayableRent(rentPerMonth) {
+        if (NumberOfMonths(dates[0],dates[1]) > 0) {
+            return (NumberOfMonths(dates[0],dates[1]) * rentPerMonth)
+        } else {
+            return "Select Months"
+        }
+    }
 
-    const updatePaidRent = (userId, amount, payable) => {
+    useEffect(() => {
+        setPaidRent(
+            rents.map(rent => ({
+                user_id: rent.user.id,
+                amount_paid: calculatePayableRent(rent.amount)
+            }))
+        )
+    },[dates])
+
+    const updateSinglePaidRent = (userId, amount, payable) => {
         setPaidRent([...paidRent.filter(x => x.user_id !== userId), {...paidRent.find(x => x.user_id === userId), amount_paid: Number(amount)}])
 
         updatedArrears.find(x => x.user_id === userId) ?
@@ -190,11 +186,30 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
 
     return (
         <>
-        <DatePicker
+        <MonthPicker
             type="range"
+            allowSingleDateInRange
             value={dates} 
             onChange={setDates} 
             minDate={newReportDefaultStart}
+            styles={{ 
+                calendar: { width: '600px', backgroundColor: 'white', marginTop: '20px' },
+                calendarHeader: { width: '600px' },
+                calendarHeaderControl: { minWidth: '200px' },
+                calendarHeaderControlIcon: { minWidth: '200px' },
+                calendarHeaderLevel: { minWidth: '200px' },
+                decadeLevelGroup: { width: '600px' },
+                decadeLevel: { width: '600px' },
+                monthsList: { width: '600px' },
+                monthsListCell: { width: '600px' },
+                monthsListRow: { width: '600px' },
+                pickerControl: { width: '200px' },
+                yearLevel: { minWidth: '200px' },
+                yearLevelGroup: { minWidth: '200px' },
+                yearsList: { minWidth: '200px' },
+                yearsListRow: { minWidth: '200px' },
+                yearsListCell: { minWidth: '200px' },
+            }}
         />
 
         <div className="text-xl mt-4 mb-4 font-bold">Rents Paid</div>
@@ -218,7 +233,8 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
                             <td>
                                 <input 
                                     className="w-40"
-                                    onChange={(e) => updatePaidRent(rent.user.id, e.target.value, rent.amount)}
+                                    value={paidRent.find(x => x.user_id === rent.user.id).amount_paid}
+                                    onChange={(e) => updateSinglePaidRent(rent.user.id, e.target.value, rent.amount)}
                                 />
                             </td>
                             <td>

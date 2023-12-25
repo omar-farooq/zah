@@ -21,6 +21,9 @@ class RuleController extends Controller
                 $q->where('approval_status', '=', 'approved')
                   ->with(['ruleChanges' => function($q2) {
                     $q2->where('approval_status', 'in voting');
+                  }])
+                  ->with(['ruleDeletes' => function($q3) {
+                    $q3->where('approval_status', 'in voting');
                   }]);
             }])->get()
         ]);

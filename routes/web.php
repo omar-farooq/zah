@@ -22,8 +22,9 @@ use App\Http\Controllers\RecurringPaymentController;
 use App\Http\Controllers\RentController;
 use App\Http\Controllers\RoleAssignmentController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\RuleChangeController;
 use App\Http\Controllers\RuleController;
+use App\Http\Controllers\RuleChangeController;
+use App\Http\Controllers\RuleDeleteController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SecretaryReportController;
 use App\Http\Controllers\SettingsController;
@@ -94,6 +95,7 @@ Route::middleware(['member', 'auth'])->group(function() {
     Route::resource('rents', RentController::class);
     Route::resource('role-assignment', RoleAssignmentController::class);
     Route::resource('rule-change', RuleChangeController::class);
+    Route::resource('rule-delete', RuleDeleteController::class);
     Route::resource('settings', SettingsController::class)->parameters([
         'settings' => 'settings:name'
     ]);

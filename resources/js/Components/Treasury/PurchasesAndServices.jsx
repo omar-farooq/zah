@@ -1,4 +1,5 @@
 import { Fragment, useState, useEffect, useReducer } from 'react'
+import { Link } from '@inertiajs/inertia-react'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
 export default function PurchasesAndServices({unreported, itemReducer, reducerFunction, calculatedHook}) {
@@ -23,6 +24,7 @@ export default function PurchasesAndServices({unreported, itemReducer, reducerFu
         }
         mapItems()
     },[])
+    console.log(unreported)
 
     return (
         <>
@@ -53,7 +55,9 @@ export default function PurchasesAndServices({unreported, itemReducer, reducerFu
                                         : <a href={`/receipts/${x.receipt[0].id}`}>View Receipt</a>
                                     }
                                 </TD>
-                                <LastTD>view link goes here</LastTD>
+                                <LastTD>
+                                    <a target="_blank" href={x.model == 'App\\Models\\Maintenance' ? '/maintenance/'+x.modelId : '/purchases/'+x.modelId}>View Item</a>
+                                </LastTD>
                             </tr>
                         </Fragment>
                     ))}

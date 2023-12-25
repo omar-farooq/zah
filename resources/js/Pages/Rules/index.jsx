@@ -18,9 +18,14 @@ export default function Rules({ruleSections}) {
                     }
                     return a
                 }, [])
-                //return [...reactiveRules.filter(x => x.number != ruleToEdit.rule_section_id), {...reactiveRules.find(x => x.number === ruleToEdit.rule_section_id), rules: [...reactiveRules.find(x => x.number === ruleToEdit.rule_section_id).rules.filter(y => y.id != ruleToEdit.id), {...reactiveRules.find(x => x.number === ruleToEdit.rule_section_id).rules.find(y => y.id == ruleToEdit.id), rule: action.rule}] }]
             case 'delete':
-                return reactiveRules
+                return reactiveRules.reduce((a, section) => {
+                    if(section.number === action.sectionId) {
+                        return [...a, {...section, rules: [...section.rules.filter(y => y.id != action.ruleId)]}]
+                    } else {
+                        return [...a, section]
+                    }
+                }, [])
             default:
                 throw new Error();
         }
@@ -43,6 +48,19 @@ export default function Rules({ruleSections}) {
         }
     }
 
+    const deleteRule = async () => {
+        try {
+            let res = await axios.post('/rule-delete', {
+                rule_id: ruleToEdit.id
+            })
+            SuccessNotification('Success', res.data.message)
+            await dispatch({type: 'delete', ruleId: ruleToEdit.id, sectionId: ruleToEdit.rule_section_id})
+            setRuleToEdit('')
+        } catch (error) {
+            ErrorNotification('Error', error)
+        }
+    }
+
     return (
         <>
             <Link href={route('rules.create')} className="rounded my-4 text-sky-600 text-2xl">Click here to add and review new rules</Link>
@@ -55,8 +73,11 @@ export default function Rules({ruleSections}) {
                         <div className="text-xl">Section {section.number} - {section.title}</div>
                             {section.rules.map(x => (
                                 <Fragment key={x.id}>
-                                    <li onClick={() => editorMode && setRuleToEdit(x)}>
-                                        {section.number}.{x.number}: {ruleToEdit.id == x.id && !ruleToEdit.rule_changes.length > 0 ? 
+                                    <li 
+                                        onClick={() => editorMode && setRuleToEdit(x)}
+                                        className={`${editorMode && x.rule_deletes.length > 0 ? 'text-red-600 line-through' : ''}`}
+                                    >
+                                        {section.number}.{x.number}: {ruleToEdit.id == x.id && !(ruleToEdit.rule_changes.length > 0 || ruleToEdit.rule_deletes.length > 0) ? 
                                             <>
                                                 <br />
                                                 <textarea defaultValue={x.rule} onChange={(e) => setRuleToEdit({...ruleToEdit, rule: e.target.value})} />
@@ -64,8 +85,9 @@ export default function Rules({ruleSections}) {
                                             : x.rule}
                                         {editorMode && x.rule_changes.length > 0 ? <span className="text-orange-600 ml-2">under review</span> : ''}
                                     </li>
-                                    <div className={`flex space-x-1.5 ${(ruleToEdit.id != x.id) || x.rule_changes.length > 0 ? 'hidden' : 'visible'}`}>
+                                    <div className={`flex space-x-1.5 ${(ruleToEdit.id != x.id) || x.rule_changes.length > 0 || x.rule_deletes.length > 0 ? 'hidden' : 'visible'}`}>
                                         <button onClick={() => saveChanges()}>save</button> 
+                                        <button onClick={() => deleteRule()}>delete</button> 
                                         <button onClick={() => setRuleToEdit('')}>cancel</button>
                                     </div>
                                 </Fragment>
