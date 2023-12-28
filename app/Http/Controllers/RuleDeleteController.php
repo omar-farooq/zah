@@ -80,9 +80,26 @@ class RuleDeleteController extends Controller
      */
     public function destroy($id)
     {
+        //find which rule to delete
         $rule_delete = RuleDelete::where('id', $id)->first();
-        $rule = Rule::find($rule_delete->rule_id);
+        $rule = Rule::findOrFail($rule_delete->rule_id);
 
+        //get the section and number of the rule before deleting
+        $deleted_rule_number = $rule->number;
+        $deleted_rule_section = $rule->rule_section_id;
+
+        //delete the rule
         $rule->delete();
+
+        //decrease the rule number of all rules in the same section with a higher rule number
+        $newer_rules = Rule::where('rule_section_id', $deleted_rule_section)
+                            ->where('number', '>', $deleted_rule_number)
+                            ->get();
+
+        foreach($newer_rules as $newer_rule) {
+            $newer_rule_number_new_number = $newer_rule->number - 1;
+            $newer_rule->number = $newer_rule_number_new_number;
+            $newer_rule->save();
+        }
     }
 }

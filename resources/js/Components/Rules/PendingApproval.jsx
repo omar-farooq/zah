@@ -12,6 +12,10 @@ export default function PendingApproval({auth, rule, type='add'}) {
             if(rule.approvals.filter(x => x.user_id === auth.user.id).length > 0) {
                 authUserApprovalObject = rule.approvals.filter(x => x.user_id === auth.user.id)[0]
             }
+        } else if(type == 'delete') {
+            if(rule.rule_deletes[0].approvals.filter(x => x.user_id === auth.user.id).length > 0) {
+                authUserApprovalObject = rule.rule_deletes[0].approvals.filter(x => x.user_id === auth.user.id)[0]
+            }
         } else {
             if(rule.rule_changes[0].approvals.filter(x => x.user_id === auth.user.id).length > 0) {
                 authUserApprovalObject = rule.rule_changes[0].approvals.filter(x => x.user_id === auth.user.id)[0]
@@ -19,12 +23,14 @@ export default function PendingApproval({auth, rule, type='add'}) {
         }
     }
 
-    const [approvalStatus, setApprovalStatus] = useState(type == 'change' ? rule.rule_changes[0].approval_status : rule.approval_status)
+    const [approvalStatus, setApprovalStatus] = useState(type == 'change' ? rule.rule_changes[0].approval_status : type == 'delete' ? rule.rule_deletes[0].approval_status : rule.approval_status)
     const [authUserApproval, setAuthUserApproval] = useState(authUserApprovalObject)
 
     let model
     if(type == 'change') {
         model = {name: "App\\Models\\RuleChange", id: rule.rule_changes[0].id}
+    } else if(type == 'delete') {
+        model = {name: "App\\Models\\RuleDelete", id: rule.rule_deletes[0].id}
     } else {
         model = {name: "App\\Models\\Rule", id: rule.id}
     }
