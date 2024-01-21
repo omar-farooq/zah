@@ -165,37 +165,28 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
         })
 
         //Add receipts for Purchases and Services
-        const addReceiptToPurchasesAndServices = () => {
-            unreportedItems.forEach(item => (
-                item.receipt instanceof File ?
-                    axios.post('/treasury-reports?treasurable=unreported', item, config)
-                : ''
-            ))
-        }
+        await Promise.all(unreportedItems.map(async (item) => (
+            item.receipt instanceof File ?
+                await axios.post('/treasury-reports?treasurable=unreported', item, config)
+            : ''
+        )))
 
         //Create each recurring payment as a treasurable
-        const addRecurringToReport = () => {
-            recurringPaymentsToBeMade.forEach(recurring => (
-                axios.post('/treasury-reports?treasurable=recurring', {
-                    ...recurring,
-                    treasuryReportID: reportID.data
-            },config)))
-        }
+        await Promise.all(recurringPaymentsToBeMade.map(async (recurring) => (
+            await axios.post('/treasury-reports?treasurable=recurring', {
+                ...recurring,
+                treasuryReportID: reportID.data
+        },config))))
 
         //Create each Payment
-        const addPaymentsToReport = () => {
-            payables.forEach(payable => (
-                axios.post('/payments', {
-                    ...payable,
-                    incoming: payable.incoming == false ? 0 : 1,
-                    treasuryReportID: reportID.data
-                },
-                config
-            )))
-        }
-        await addReceiptToPurchasesAndServices()
-        await addRecurringToReport()
-        await addPaymentsToReport()
+        await Promise.all(payables.map(async (payable) => (
+            await axios.post('/payments', {
+                ...payable,
+                incoming: payable.incoming == false ? 0 : 1,
+                treasuryReportID: reportID.data
+            },
+            config
+        ))))
         window.location = "/treasury-reports/"+reportID.data
     }
 
