@@ -28,8 +28,7 @@ class ScheduleController extends Controller
 	{
         return Inertia::render('Meetings/Schedule', [
             'title' => 'Meeting Schedule',
-            'upcomingDate' => $scheduleService->upcoming()['upcomingDate'],
-            'upcomingID' => $scheduleService->upcoming()['upcomingID'],
+            'upcoming' => $scheduleService->upcoming(),
             'members' => $users->currentMember()->with('scheduleSuggestions')->get(),
             'schedule' => $schedule->current(),
 			'currentUser' => Auth::user()

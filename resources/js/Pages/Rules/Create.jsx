@@ -5,7 +5,7 @@ import Select from 'react-select'
 import TextArea from '@/Components/TextArea'
 import Input from '@/Components/Input'
 
-export default function CreateRule({pending, auth, sections, changeRequests}) {
+export default function CreateRule({pending, auth, sections, changeRequests, deletions}) {
 
     const [newRule, setNewRule] = useState('')
     const [createdRules, setCreatedRules] = useState([])
@@ -37,6 +37,7 @@ export default function CreateRule({pending, auth, sections, changeRequests}) {
                     <Select
                         name="section"
                         options={sectionOptions}
+                        value={selectedSection}
                         onChange={(e) => selectedSection.value == 'newSection' && e.value == 'newSection' ? '' : setSelectedSection(e)}
                     />
                         
@@ -90,6 +91,19 @@ export default function CreateRule({pending, auth, sections, changeRequests}) {
                                 auth={auth}
                                 rule={x}
                                 type={'change'}
+                            />
+                        </li>
+                    ))}
+                </ul>
+                {deletions.length > 0 && <div className="text-xl mt-4">Rule deletions pending approval</div>}
+                <ul>
+                    {deletions.map(x => (
+                        <li key={x.id} className="w-full bg-white flex flex-col mt-4 w-full shadow">
+                            <div className="ml-2">Section {x.rule_section.number}: {x.rule_section.title}</div>
+                            <PendingApproval
+                                auth={auth}
+                                rule={x}
+                                type={'delete'}
                             />
                         </li>
                     ))}

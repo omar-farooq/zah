@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class TreasuryReport extends Model
 {
@@ -28,5 +29,13 @@ class TreasuryReport extends Model
     public function treasuryItems() 
     {
         return $this->hasMany(TreasuryItem::class);
+    }
+
+    /*
+     * Relationship with accounts
+     */
+    public function accounts(): BelongsToMany
+    {
+        return $this->belongsToMany(Account::class)->withPivot('account_balance');
     }
 }

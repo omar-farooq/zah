@@ -21,6 +21,9 @@ class RuleController extends Controller
                 $q->where('approval_status', '=', 'approved')
                   ->with(['ruleChanges' => function($q2) {
                     $q2->where('approval_status', 'in voting');
+                  }])
+                  ->with(['ruleDeletes' => function($q3) {
+                    $q3->where('approval_status', 'in voting');
                   }]);
             }])->get()
         ]);
@@ -35,6 +38,7 @@ class RuleController extends Controller
             'title' => 'Create & approve rules',
             'pending' => Rule::with(['ruleSection'])->where('approval_status', 'in voting')->get(),
             'changeRequests' => Rule::with(['ruleSection','ruleChanges'])->whereRelation('ruleChanges', 'approval_status', '=', 'in voting')->get(),
+            'deletions' => Rule::with(['ruleSection','ruleDeletes'])->whereRelation('ruleDeletes', 'approval_status', '=', 'in voting')->get(),
             'sections' => RuleSection::all()
         ]);
     }

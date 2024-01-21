@@ -1,22 +1,11 @@
 import { Button } from '@mantine/core'
-import { CalculateRecurringPayments, PurchasesAndServices } from '@/Components/Treasury'
-import { FirstDayOfTheMonth, LastDayOfTheMonth } from '@/Shared/Functions'
+import { CalculateAccountBalance, CalculateRecurringPayments, PurchasesAndServices } from '@/Components/Treasury'
+import { FirstDayOfTheMonth, LastDayOfTheMonth, NumberOfMonths } from '@/Shared/Functions'
 import { Fragment, useEffect, useReducer, useState } from 'react'
-import { DatePicker } from '@mantine/dates'
+import { MonthPicker } from '@mantine/dates'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
-export default function CreateReport({rents, arrears, previousReport, recurringPayments, unreported}) {
-
-    function calculatePayableRent(rentPerWeek) {
-        if((dates[0] && dates[1]) && dates[0] <= dates[1]) {
-            let diffinMs = new Date(dates[1]) - new Date(dates[0])
-            let numberOfDays = Math.round(diffinMs / (1000 * 60 * 60 * 24)) + 1
-            let payableRent = (rentPerWeek / 7) * numberOfDays
-            return payableRent.toFixed(2)
-        } else {
-            return "Select Dates"
-        }
-    }
+export default function CreateReport({rents, arrears, accounts, defaultAccounts, previousReport, recurringPayments, unreported}) {
 
     //Get when the previous report ended and make the start date of the report the previous day +1 by default
     let previousReportEnd = new Date(previousReport.end_date)
@@ -26,16 +15,22 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
     const [updatedArrears, setUpdatedArrears] = useState(arrears);
     const [paidRent, setPaidRent] = useState(rents.map(rent => ({
         user_id: rent.user.id,
-        amount_paid: ''
+        amount_paid: calculatePayableRent(rent.amount)
     })))
 
     const [payables, setPayables] = useState([])
+    const [payableTotal, setPayableTotal] = useState(0)
     const [recurringPaymentsToBeMade, setRecurringPaymentsToBeMade] = useState([])
     const [calculatedRecurring, setCalculatedRecurring] = useState('')
 
-    const [adjustedBalance, setAdjustedBalance] = useState('')
-    const [calculatedBalanceCheckbox, setCalculatedBalanceCheckbox] = useState(true)
-    const [manualBalance, setManualBalance] = useState(null)
+    const [accountBalances, setAccountBalances] = useState(accounts.map(x => ({
+        id: x.id,
+        calculated: 0,
+        final: null,
+        changeReason: '',
+    })))
+    const [calculatedTotalBalance, setCalculatedTotalBalance] = useState(0)
+    const [calculatedFinalBalance, setCalculatedFinalBalance] = useState(0)
 
     //For displaying purchases and services and adding receipts
     function unreportedReducer(unreportedItems, action) {
@@ -57,22 +52,29 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
 
     //Update arrears when the dates change
     useEffect(() => {
-        let arrearsArr = updatedArrears
-        dates[1] && (dates[1] > dates[0]) ?
-        setUpdatedArrears(
-            arrearsArr.map(x => (
-                {
-                    ...x,
-                    amount: Number(Number(calculatePayableRent(rents.find(y => y.user_id === x.user_id).amount)) - Number(paidRent.find(y => y.user_id === x.user_id).amount_paid) + Number(arrears.find(y => y.user_id === x.user_id).amount)).toFixed(2)
-                }
-            ))
-        )
-        : setUpdatedArrears(arrears)
+        setUpdatedArrears(arrears)
     },[dates])
 
     const [unreportedItems, dispatch] = useReducer(unreportedReducer, [])
+   
+    function calculatePayableRent(rentPerMonth) {
+        if (NumberOfMonths(dates[0],dates[1]) > 0) {
+            return (NumberOfMonths(dates[0],dates[1]) * rentPerMonth)
+        } else {
+            return "Select Months"
+        }
+    }
 
-    const updatePaidRent = (userId, amount, payable) => {
+    useEffect(() => {
+        setPaidRent(
+            rents.map(rent => ({
+                user_id: rent.user.id,
+                amount_paid: calculatePayableRent(rent.amount)
+            }))
+        )
+    },[dates])
+
+    const updateSinglePaidRent = (userId, amount, payable) => {
         setPaidRent([...paidRent.filter(x => x.user_id !== userId), {...paidRent.find(x => x.user_id === userId), amount_paid: Number(amount)}])
 
         updatedArrears.find(x => x.user_id === userId) ?
@@ -104,70 +106,116 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
         setPayables(payables.filter(x => x.key !== id))
     }
 
-    function calculateBalance() {
-        const payableTotal = payables.reduce((a,b) => {
+    //Calculate each model's total separately
+    useEffect(() => {
+        setPayableTotal(payables.reduce((a,b) => {
             if (b.incoming) {
                 return a + Number(b.amount)
             } else {
                 return a - Number(b.amount)
             }
+        },[]))
+    },[payables])
+
+    const rentTotal = paidRent.reduce((a,b) => {
+        return Number(a) + Number(b.amount_paid)
+    },[])
+
+    let purchasesTotal = 0
+    let servicesTotal = 0
+    if(unreported.length > 0) {
+        const purchasesTotal = unreported.reduce((a,b) => {
+            if(b.treasurable_type == 'App\\Models\\Purchase') {
+                return Number(a) + Number(b.amount)
+            } else {
+                return Number(a)
+            }
         },[])
 
-        const rentTotal = paidRent.reduce((a,b) => {
-            return Number(a) + Number(b.amount_paid)
+        const servicesTotal = unreported.reduce((a,b) => {
+            if(b.treasurable_type == 'App\\Models\\Maintenance') {
+                return Number(a) + Number(b.amount)
+            } else {
+                return Number(a)
+            }
         },[])
-
-        const purchasesAndServicesTotal = unreported.reduce((a,b) => {
-            return Number(a) + Number(b.amount)
-        },[])
-
-        return (Number(payableTotal) + Number(rentTotal) + Number(previousReport.remaining_budget) - Number(calculatedRecurring) - Number(purchasesAndServicesTotal)).toFixed(2)
     }
+
+    //return the TOTAL balance for all accounts
+    useEffect(() => {
+        setCalculatedTotalBalance(
+            accountBalances.reduce((a,b) => Number(a) + Number(b.calculated),0).toFixed(2)
+        )
+        setCalculatedFinalBalance(
+            accountBalances.reduce((a,b) => Number(a) + Number(b.final ?? b.calculated),0).toFixed(2)
+        )
+    },[accountBalances])
 
     const submitReport = async (e) => {
         let config = { headers: { 'content-type': 'multipart/form-data' }}
         let reportID = await axios.post('/treasury-reports', {
             start_date: dates[0],
-            end_date: dates[1],
-            calculated_remaining_budget: calculateBalance(),
-            remaining_budget: manualBalance ?? calculateBalance(),
+            end_date: dates[1] ? LastDayOfTheMonth(dates[1]) : LastDayOfTheMonth(dates[0]),
+            calculated_remaining_budget: calculatedTotalBalance,
+            remaining_budget: calculatedFinalBalance,
             paid_rents: paidRent,
+            accounts_balances: accountBalances,
             recurring: recurringPaymentsToBeMade,
             unreported: unreportedItems
         })
 
         //Add receipts for Purchases and Services
-        unreportedItems.forEach(item => (
+        await Promise.all(unreportedItems.map(async (item) => (
             item.receipt instanceof File ?
-                axios.post('/treasury-reports?treasurable=unreported', item, config)
+                await axios.post('/treasury-reports?treasurable=unreported', item, config)
             : ''
-        ))
+        )))
 
         //Create each recurring payment as a treasurable
-        recurringPaymentsToBeMade.forEach(recurring => (
-            axios.post('/treasury-reports?treasurable=recurring', {
+        await Promise.all(recurringPaymentsToBeMade.map(async (recurring) => (
+            await axios.post('/treasury-reports?treasurable=recurring', {
                 ...recurring,
                 treasuryReportID: reportID.data
-        },config)))
+        },config))))
 
         //Create each Payment
-        payables.forEach(payable => (
-            axios.post('/payments', {
+        await Promise.all(payables.map(async (payable) => (
+            await axios.post('/payments', {
                 ...payable,
                 incoming: payable.incoming == false ? 0 : 1,
                 treasuryReportID: reportID.data
             },
             config
-        )))
+        ))))
+        window.location = "/treasury-reports/"+reportID.data
     }
 
     return (
         <>
-        <DatePicker
+        <MonthPicker
             type="range"
+            allowSingleDateInRange
             value={dates} 
             onChange={setDates} 
             minDate={newReportDefaultStart}
+            styles={{ 
+                calendar: { width: '600px', backgroundColor: 'white', marginTop: '20px' },
+                calendarHeader: { width: '600px' },
+                calendarHeaderControl: { minWidth: '200px' },
+                calendarHeaderControlIcon: { minWidth: '200px' },
+                calendarHeaderLevel: { minWidth: '200px' },
+                decadeLevelGroup: { width: '600px' },
+                decadeLevel: { width: '600px' },
+                monthsList: { width: '600px' },
+                monthsListCell: { width: '600px' },
+                monthsListRow: { width: '600px' },
+                pickerControl: { width: '200px' },
+                yearLevel: { minWidth: '200px' },
+                yearLevelGroup: { minWidth: '200px' },
+                yearsList: { minWidth: '200px' },
+                yearsListRow: { minWidth: '200px' },
+                yearsListCell: { minWidth: '200px' },
+            }}
         />
 
         <div className="text-xl mt-4 mb-4 font-bold">Rents Paid</div>
@@ -191,7 +239,8 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
                             <td>
                                 <input 
                                     className="w-40"
-                                    onChange={(e) => updatePaidRent(rent.user.id, e.target.value, rent.amount)}
+                                    value={paidRent.find(x => x.user_id === rent.user.id).amount_paid}
+                                    onChange={(e) => updateSinglePaidRent(rent.user.id, e.target.value, rent.amount)}
                                 />
                             </td>
                             <td>
@@ -218,7 +267,34 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
             />
 
             <div className="text-xl mt-12 font-bold">Additional incomings/outgoings</div>
-                <form className="grid grid-cols-2" onSubmit={(e) => addInOut(e)}>
+                {payables.length > 0 &&
+                    <SmallTable>
+                        <THead>
+                            <FirstTH heading="Payable" />
+                            <TH heading="Description" />
+                            <TH heading="Amount" />
+                            <TH heading="Incoming or Outgoing" />
+                            <TH heading="Date" />
+                            <LastTH />
+                        </THead>
+                        <TBody>
+                            {payables.map(payable => (
+                                <Fragment key={payable.key}>
+                                    <tr>
+                                        <FirstTD data={payable.name} />
+                                        <TD data={payable.description} />
+                                        <TD data={payable.amount} />
+                                        <TD data={payable.incoming ? 'incoming' : 'outgoing'} />
+                                        <TD data={payable.payment_date} />
+                                        <LastTD><button onClick={() => removePayable(payable.key)}>Delete</button></LastTD>
+                                    </tr>
+                                </Fragment>
+                            ))}
+                        </TBody>
+                    </SmallTable>
+                }
+
+                <form className={`grid grid-cols-2 ${payables.length > 0 ? 'mt-8' : 'mt-4'} bg-white p-4 md:w-2/3`} onSubmit={(e) => addInOut(e)}>
                 <div className="flex flex-col w-11/12 place-self-center">
                     <label htmlFor="name">Payable Item</label>
                     <input type="text" id="name" required="required" />
@@ -246,7 +322,7 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
                     <input type="number" step="0.01" id="amount" required="required" />
                 </div>
 
-                <div className="flex flex-col col-start-1 col-end-3 w-11/12 ml-2">
+                <div className="flex flex-col col-start-1 col-end-3 w-11/12 md:ml-6">
                     <label htmlFor="description">Description</label>
                     <input type="text" id="description" />
                 </div>
@@ -259,62 +335,58 @@ export default function CreateReport({rents, arrears, previousReport, recurringP
                 <button type="submit" className="bg-sky-600 hover:bg-sky-700 text-white col-start-1 col-end-3 mt-2 h-8 w-1/2 place-self-center">add</button>
             </form>
 
-        <SmallTable>
-            <THead>
-                <FirstTH heading="Payable" />
-                <TH heading="Description" />
-                <TH heading="Amount" />
-                <TH heading="Incoming or Outgoing" />
-                <TH heading="Date" />
-                <LastTH />
-            </THead>
-            <TBody>
-                {payables.map(payable => (
-                    <Fragment key={payable.key}>
-                        <tr>
-                            <FirstTD data={payable.name} />
-                            <TD data={payable.description} />
-                            <TD data={payable.amount} />
-                            <TD data={payable.incoming ? 'incoming' : 'outgoing'} />
-                            <TD data={payable.payment_date} />
-                            <LastTD><button onClick={() => removePayable(payable.key)}>Delete</button></LastTD>
-                        </tr>
-                    </Fragment>
-                ))}
-            </TBody>
-        </SmallTable>
 
-        <div className="mt-10">
-            Starting balance: £{previousReport.remaining_budget}<br />
-            Calculated remaining balance: £{calculateBalance()}
-
-            <div>
-                <input 
-                    type="checkbox" 
-                    id="calculated-balance-checkbox"
-                    checked={calculatedBalanceCheckbox} 
-                    onChange={() => setCalculatedBalanceCheckbox(!calculatedBalanceCheckbox)} 
-                /> 
-                <label htmlFor="calculated-balance-checkbox" className="ml-1">Use Calculated Balance</label>
-            </div>
-
-            {!calculatedBalanceCheckbox && 
-                <>
-                    <div className="flex flex-col mt-2">
-                        <label htmlFor="set-balance">Set a new balance manually:</label>
-                        <input 
-                            type="number" 
-                            step="0.01" 
-                            id="set-balance" 
-                            onChange={(e) => setManualBalance(e.target.value)} 
+        <div className="mt-10 w-full flex flex-col items-center">
+            <div className="text-xl font-bold">Balance</div>
+            <SmallTable>
+                <THead>
+                    <FirstTH heading="Account" />
+                    <TH heading="Starting" />
+                    <TH heading="Calculated" />
+                    <TH heading="Use Calculated" />
+                    <TH heading="Final" />
+                </THead>
+                <TBody>
+                    {accounts.map(x => ( 
+                        <CalculateAccountBalance 
+                            key={x.id} 
+                            account={x}
+                            rentTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\PaidRent') ? rentTotal : 0}
+                            purchasesTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Purchase') ? purchasesTotal : 0}
+                            servicesTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Maintenance') ? servicesTotal : 0}
+                            recurringTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\RecurringPayment') ? calculatedRecurring : 0}
+                            payableTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Payment') ? payableTotal : 0}
+                            balanceHook={[accountBalances, setAccountBalances]}
                         />
-                    </div>
-                </>
-            }
+                    ))}
+                    <tr>
+                        <FirstTD>
+                            <span className="font-bold">Total</span>
+                        </FirstTD>
+                        <TD>
+                            £{accounts.reduce((a,b) => 
+                                Number(a) + Number(b.treasury_reports[0]?.pivot.account_balance ?? b.starting_balance),0
+                            ).toFixed(2)}
+                        </TD>
+                        <TD 
+                            data={'£' + calculatedTotalBalance} 
+                        />
+                        <TD 
+                            data={''} 
+                        />
+                        <TD>
+                            <span className="font-bold">{'£' + calculatedFinalBalance}</span>
+                        </TD>
+                    </tr>
+            
+                </TBody>
+            </SmallTable>
+
+
         </div>
 
         <Button 
-            className="bg-white border-blue-400 text-blue-400 hover:text-white hover:bg-sky-600 mt-4"
+            className="bg-white border-blue-400 text-blue-400 hover:text-white hover:bg-sky-600 mt-12 mb-8"
             onClick={(e) => submitReport(e)}
         >
             Submit Report

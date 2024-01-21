@@ -69,25 +69,25 @@ export default function Rents({auth}) {
             <table className="table-fixed border-collapse bg-white text-lg">
                 <thead>
                     <tr>
-                        <th className="border-b border-black">Tenants</th>
-                        <th className="border-b border-black">Rent</th>
-                        <th className="border-b border-black">Remove Tenancy</th>
+                        <th className="border-b border-black p-2">Tenants</th>
+                        <th className="border-b border-black p-2">Rent</th>
+                        <th className="border-b border-black p-2">Tenancy End</th>
                     </tr>
                 </thead>
                 <tbody>
                     {tenants.map(tenant =>
                         <tr key={tenant.id}>
-                            <td className="border-b border-slate-300">
+                            <td className="border-b border-slate-300 px-2">
                                 {tenant.name}
                             </td>
                             <td className="border-b border-slate-300">
                                 <input 
-                                    defaultValue={tenant.rent?.amount}
+                                    defaultValue={"£"+tenant.rent?.amount}
                                     className="text-center w-28 sm:w-auto"
                                     onChange={(e) => updateRent(tenant.rent.id, e.target.value)}
                                 />
                             </td>
-                            <td className="border-b border-slate-300">
+                            <td className="border-b border-slate-300 px-2">
                                 <TrashIcon 
                                     className="h-5 w-5 cursor-pointer m-auto" 
                                     onClick={() => {modalHandlers.open(); setSelectedTenantToDestroy({...selectedTenantToDestroy, id: tenant.id, name: tenant.name, rentID: tenant.rent.id})}}

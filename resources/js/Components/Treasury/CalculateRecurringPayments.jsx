@@ -1,10 +1,16 @@
 import { Fragment, useEffect, useState } from 'react'
+import { DateToUKLocale } from '@/Shared/Functions'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
 export default function CalculateRecurringPayments({recurringPayments, recurringPaymentsToBeMadeHook, calculatedRecurringHook, dates}) {
 
     const [recurringPaymentsToBeMade, setRecurringPaymentsToBeMade] = recurringPaymentsToBeMadeHook
-	const [calculatedRecurring, setCalculatedRecurring] = calculatedRecurringHook
+    const [calculatedRecurring, setCalculatedRecurring] = calculatedRecurringHook
+    const [lastDate, setLastDate] = useState(dates[1] ? new Date(dates[1].getFullYear(), dates[1].getMonth()+1,0) : new Date(dates[0].getFullYear(), dates[0].getMonth()+1,0))
+
+    useEffect(() => {
+        setLastDate(dates[1] ? new Date(dates[1].getFullYear(), dates[1].getMonth()+1,0) : new Date(dates[0].getFullYear(), dates[0].getMonth()+1,0))
+    },[dates])
 
     function FrequencyOfWeekDay(day) {
         //Calculate the frequency of a given day
@@ -18,7 +24,7 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
         }
 
         //get the total number of days and the number of days from the first occurrence of our desired day
-        let diffinMs = new Date(dates[1]) - new Date(dates[0])
+        let diffinMs = new Date(lastDate) - new Date(dates[0])
         let numberOfDays = Math.round(diffinMs / (1000 * 60 * 60 * 24)) + 1
 
         let daysFromFirstOccurrence = numberOfDays - diff - 1
@@ -30,18 +36,18 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
     function FrequencyOfDayOfMonth(day) {
         //Calculate the number of years
         let firstYear = new Date(dates[0]).getFullYear()
-        let lastYear = new Date(dates[1]).getFullYear()
+        let lastYear = new Date(lastDate).getFullYear()
         let numberOfYears = lastYear > 2022 ? lastYear - firstYear + 1 : 1
 
         //calculate the number of months, whether partial or full
         let firstMonth = new Date(dates[0]).getMonth()
-        let lastMonth = new Date(dates[1]).getMonth()
+        let lastMonth = new Date(lastDate).getMonth()
 
         let numberOfMonths = lastMonth - firstMonth + 1 + ((numberOfYears - 1) * 12)
 
         //check if the first month contains the day
         let firstMonthContainsDay = day >= new Date(dates[0]).getDate() ? 0 : -1
-        let lastMonthContainsDay = day <= new Date(dates[1]).getDate() ? 0 : -1
+        let lastMonthContainsDay = day <= new Date(lastDate).getDate() ? 0 : -1
 
         let occurrences = numberOfMonths + firstMonthContainsDay + lastMonthContainsDay
 
@@ -50,18 +56,18 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
     function FrequencyOfAnnualPayments(day, month) {
         //Calculate the frequency of annual payments
         let firstYear = new Date(dates[0]).getFullYear()
-        let lastYear = new Date(dates[1]).getFullYear()
+        let lastYear = new Date(lastDate).getFullYear()
         let numberOfYears = lastYear > 2022 ? lastYear - firstYear + 1 : 1
 
         let firstMonth = new Date(dates[0]).getMonth()
-        let lastMonth = new Date(dates[1]).getMonth()
+        let lastMonth = new Date(lastDate).getMonth()
 
         let firstYearOccurrence
         if(month > firstMonth && month < lastMonth) {
             firstYearOccurrence = 1
         } else if(month == firstMonth && day >= new Date(dates[0]).getDate()) {
             firstYearOccurrence = 1
-        } else if(firstMonth != lastMonth && month == lastMonth && day <= new Date(dates[1]).getDate()) {
+        } else if(firstMonth != lastMonth && month == lastMonth && day <= new Date(lastDate).getDate()) {
             firstYearOccurrence = 1
         } else {
             firstYearOccurrence = 0
@@ -73,7 +79,7 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
 
     //Calculate the total amount paid to recurring payments as this should be added to the total
     const calculateRecurring = () => {
-        if(dates[1] < dates[0]) {
+        if(lastDate < dates[0]) {
             setCalculatedRecurring(0)
         } else {
             setCalculatedRecurring(
@@ -94,6 +100,20 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
             occurrences: payment.frequency == "weekly" ? FrequencyOfWeekDay(payment.day_of_week_due) : payment.frequency == "monthly" ? FrequencyOfDayOfMonth(payment.day_of_month_due) : FrequencyOfAnnualPayments(payment.day_of_month_due, payment.month_due)
     }))
 
+    const calculateDate = (payment, occurrence) => {
+        switch(payment.frequency) {
+            case 'weekly':
+                return new Date(dates[0].getFullYear(), dates[0].getMonth(), 1 + payment.day_of_week_due - dates[0].getDay() + (occurrence * 7) + (payment.day_of_week_due - dates[0].getDay() <  0 ? 7 : 0))
+                break;
+            case 'monthly':
+                return new Date(dates[0].getFullYear(), (dates[0].getMonth()+occurrence - 1), payment.day_of_month_due)
+                break;
+            case 'anually':
+                return new Date(dates[0].getFullYear()+occurrence - 1, payment.month_due, payment.day_of_month_due)
+                break;
+        }
+    }
+
     //get the number of times that a recurring payment is made in the given timeframe
     //Add the payment to the array for each time it occurs
     //this is added to the recurringPaymentsToBeMade state
@@ -104,15 +124,15 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
                 let i = 0;
                 while(i < x.occurrences) {
                     i++
-                    arr.push({...recurringPayments.find(y => y.id === x.id), occurrence: i, receipt: null})
+                    arr.push({...recurringPayments.find(y => y.id === x.id), occurrence: i, date: calculateDate(recurringPayments.find(y => y.id === x.id),i), receipt: null})
                 }
             })
             setRecurringPaymentsToBeMade(arr)
         }
 
         mapRecurringPaymentsToBeMade()
-		calculateRecurring()
-    },[dates])
+        calculateRecurring()
+    },[lastDate])
 
     const addReceiptToRecurringPayment = (e,originalIndex) => {
         setRecurringPaymentsToBeMade(
@@ -125,14 +145,14 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
             })
         )
     }
-
-	return (
-		<>
-	        <div className="text-xl mt-8 font-bold">Recurring Payments</div>
+    return (
+        <>
+            <div className="text-xl mt-8 font-bold">Recurring Payments</div>
             <SmallTable>
                 <THead>
                     <FirstTH heading="recipient" />
                     <TH heading="amount" />
+                    <TH heading="date" />
                     <TH heading="receipt" />
                 </THead>
                 <TBody>
@@ -141,20 +161,21 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
                             <tr>
                                 <FirstTD data={payment.recipient} />
                                 <TD data={payment.amount} />
+                                <TD data={DateToUKLocale(payment.date)} />
                                 <TD>
                                     <input 
-										type="file" 
-										id="receipt" 
-										name="receipt" 
-										accept="image/*, .pdf" 
-										onChange={(e) => addReceiptToRecurringPayment(e, i)} 
-									/>
+                                        type="file" 
+                                        id="receipt" 
+                                        name="receipt" 
+                                        accept="image/*, .pdf" 
+                                        onChange={(e) => addReceiptToRecurringPayment(e, i)} 
+                                    />
                                 </TD>
                             </tr>
                         </Fragment>
                     ))}
                 </TBody>
             </SmallTable>
-		</>
-	)
+        </>
+    )
 }
