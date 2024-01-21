@@ -24,7 +24,6 @@ export default function PurchasesAndServices({unreported, itemReducer, reducerFu
         }
         mapItems()
     },[])
-    console.log(unreported)
 
     return (
         <>

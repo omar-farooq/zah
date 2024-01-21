@@ -27,7 +27,6 @@ export default function CreateRule({pending, auth, sections, changeRequests, del
     }
 
     let sectionOptions = [...sections.map(x => ({label: x.title, value: x.id})), {label: '+ New Section', value: 'newSection'}]
-    console.log(deletions)
 
     return (
         <>

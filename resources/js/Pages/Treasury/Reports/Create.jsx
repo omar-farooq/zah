@@ -121,21 +121,25 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
         return Number(a) + Number(b.amount_paid)
     },[])
 
-    const purchasesTotal = unreported.reduce((a,b) => {
-        if(b.treasurable_type == 'App\\Models\\Purchase') {
-            return Number(a) + Number(b.amount)
-        } else {
-            return Number(a)
-        }
-    },[])
+    let purchasesTotal = 0
+    let servicesTotal = 0
+    if(unreported.length > 0) {
+        const purchasesTotal = unreported.reduce((a,b) => {
+            if(b.treasurable_type == 'App\\Models\\Purchase') {
+                return Number(a) + Number(b.amount)
+            } else {
+                return Number(a)
+            }
+        },[])
 
-    const servicesTotal = unreported.reduce((a,b) => {
-        if(b.treasurable_type == 'App\\Models\\Maintenance') {
-            return Number(a) + Number(b.amount)
-        } else {
-            return Number(a)
-        }
-    },[])
+        const servicesTotal = unreported.reduce((a,b) => {
+            if(b.treasurable_type == 'App\\Models\\Maintenance') {
+                return Number(a) + Number(b.amount)
+            } else {
+                return Number(a)
+            }
+        },[])
+    }
 
     //return the TOTAL balance for all accounts
     useEffect(() => {
@@ -151,37 +155,48 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
         let config = { headers: { 'content-type': 'multipart/form-data' }}
         let reportID = await axios.post('/treasury-reports', {
             start_date: dates[0],
-            end_date: dates[1],
+            end_date: dates[1] ? LastDayOfTheMonth(dates[1]) : LastDayOfTheMonth(dates[0]),
             calculated_remaining_budget: calculatedTotalBalance,
-            remaining_budget: manualBalance ?? calculatedTotalBalance,
+            remaining_budget: calculatedFinalBalance,
             paid_rents: paidRent,
+            accounts_balances: accountBalances,
             recurring: recurringPaymentsToBeMade,
             unreported: unreportedItems
         })
 
         //Add receipts for Purchases and Services
-        unreportedItems.forEach(item => (
-            item.receipt instanceof File ?
-                axios.post('/treasury-reports?treasurable=unreported', item, config)
-            : ''
-        ))
+        const addReceiptToPurchasesAndServices = () => {
+            unreportedItems.forEach(item => (
+                item.receipt instanceof File ?
+                    axios.post('/treasury-reports?treasurable=unreported', item, config)
+                : ''
+            ))
+        }
 
         //Create each recurring payment as a treasurable
-        recurringPaymentsToBeMade.forEach(recurring => (
-            axios.post('/treasury-reports?treasurable=recurring', {
-                ...recurring,
-                treasuryReportID: reportID.data
-        },config)))
+        const addRecurringToReport = () => {
+            recurringPaymentsToBeMade.forEach(recurring => (
+                axios.post('/treasury-reports?treasurable=recurring', {
+                    ...recurring,
+                    treasuryReportID: reportID.data
+            },config)))
+        }
 
         //Create each Payment
-        payables.forEach(payable => (
-            axios.post('/payments', {
-                ...payable,
-                incoming: payable.incoming == false ? 0 : 1,
-                treasuryReportID: reportID.data
-            },
-            config
-        )))
+        const addPaymentsToReport = () => {
+            payables.forEach(payable => (
+                axios.post('/payments', {
+                    ...payable,
+                    incoming: payable.incoming == false ? 0 : 1,
+                    treasuryReportID: reportID.data
+                },
+                config
+            )))
+        }
+        await addReceiptToPurchasesAndServices()
+        await addRecurringToReport()
+        await addPaymentsToReport()
+        window.location = "/treasury-reports/"+reportID.data
     }
 
     return (

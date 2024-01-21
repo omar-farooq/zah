@@ -26,9 +26,28 @@ class TreasuryService {
         $new_report = TreasuryReport::create($request->all());
         $new_report_id = $new_report->id;
         $this->payRent($new_report_id, $request->paid_rents);
+        $this->updateAccounts($new_report_id, $request->accounts_balances);
         $this->addReportIDToUnreported($new_report_id);
 
         return $new_report->id;
+    }
+
+    /**
+     * Update the accounts
+     *
+     * @param int $report_id
+     * @param array $accounts
+     * @return void
+     *
+     */
+    protected function updateAccounts($report_id, $accounts)
+    {
+        $report = TreasuryReport::find($report_id);
+
+        forEach($accounts as $account) {
+            $new_balance = $account['final'] ?? $account['calculated'];
+            $report->accounts()->attach($account['id'], ['account_balance' => $new_balance]);
+        }
     }
 
     /**

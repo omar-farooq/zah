@@ -79,9 +79,9 @@ export function FirstDayOfTheMonth() {
     return date
 }
 
-export function LastDayOfTheMonth() {
-    let today = new Date()
-    return new Date(today.getFullYear(), today.getMonth()+1, 0);
+export function LastDayOfTheMonth(date) {
+    let day = date ?? new Date()
+    return new Date(day.getFullYear(), day.getMonth()+1, 0);
 }
 
 /***

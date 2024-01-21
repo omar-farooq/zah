@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from 'react'
+import { DateToUKLocale } from '@/Shared/Functions'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
 export default function CalculateRecurringPayments({recurringPayments, recurringPaymentsToBeMadeHook, calculatedRecurringHook, dates}) {
@@ -99,6 +100,20 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
             occurrences: payment.frequency == "weekly" ? FrequencyOfWeekDay(payment.day_of_week_due) : payment.frequency == "monthly" ? FrequencyOfDayOfMonth(payment.day_of_month_due) : FrequencyOfAnnualPayments(payment.day_of_month_due, payment.month_due)
     }))
 
+    const calculateDate = (payment, occurrence) => {
+        switch(payment.frequency) {
+            case 'weekly':
+                return new Date(dates[0].getFullYear(), dates[0].getMonth(), 1 + payment.day_of_week_due - dates[0].getDay() + (occurrence * 7) + (payment.day_of_week_due - dates[0].getDay() <  0 ? 7 : 0))
+                break;
+            case 'monthly':
+                return new Date(dates[0].getFullYear(), (dates[0].getMonth()+occurrence - 1), payment.day_of_month_due)
+                break;
+            case 'anually':
+                return new Date(dates[0].getFullYear()+occurrence - 1, payment.month_due, payment.day_of_month_due)
+                break;
+        }
+    }
+
     //get the number of times that a recurring payment is made in the given timeframe
     //Add the payment to the array for each time it occurs
     //this is added to the recurringPaymentsToBeMade state
@@ -109,7 +124,7 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
                 let i = 0;
                 while(i < x.occurrences) {
                     i++
-                    arr.push({...recurringPayments.find(y => y.id === x.id), occurrence: i, receipt: null})
+                    arr.push({...recurringPayments.find(y => y.id === x.id), occurrence: i, date: calculateDate(recurringPayments.find(y => y.id === x.id),i), receipt: null})
                 }
             })
             setRecurringPaymentsToBeMade(arr)
@@ -130,7 +145,6 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
             })
         )
     }
-
     return (
         <>
             <div className="text-xl mt-8 font-bold">Recurring Payments</div>
@@ -147,7 +161,7 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
                             <tr>
                                 <FirstTD data={payment.recipient} />
                                 <TD data={payment.amount} />
-                                <TD data={"date goes here"} />
+                                <TD data={DateToUKLocale(payment.date)} />
                                 <TD>
                                     <input 
                                         type="file" 

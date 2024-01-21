@@ -180,9 +180,7 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
     }
 
     const getFriendlyName = (type) => {
-        return mappedTreasuryItems.map(x => x.type == type ? 
-            x.friendly_type
-         : '')
+        return mappedTreasuryItems.find(x => x.type == type).friendly_type
     }
 
     return (

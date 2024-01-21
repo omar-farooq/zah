@@ -25,7 +25,6 @@ export default function NewMeeting({meeting, tenants, auth}) {
     useEffect(() => {
         Echo.private(`meeting`)
             .listen('.MeetingUpdated', (e) => {
-                console.log(e.model.completed)
                 if(e.model.cancelled == 1) {
                     setCancelled(true)
                 }
