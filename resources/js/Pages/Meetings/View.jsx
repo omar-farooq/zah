@@ -1,6 +1,6 @@
 import { ComponentWrapper, ComponentTitle, DisplayPoll } from '@/Components/Meeting'
 export default function Historical ({meeting, auth}) {
-
+console.log(meeting)
     //need to add treasurer's reports
     return (
         <div className="w-full">
@@ -13,7 +13,8 @@ export default function Historical ({meeting, auth}) {
                     </ComponentTitle>
                     <ul> {meeting.attendees.map(x =>
                         <li key={x.id} className="text-xl">
-                            {x.user?.name}
+                            {x.name}
+                            {x.pivot.late ? <span className="text-red-500"> (L)</span> : ""}
                         </li>
                     )}
                     </ul>

@@ -6,7 +6,7 @@ export default function ViewPlan({treasuryPlan}) {
 
     return (
         <>
-            <div className="grid grid-cols-6 bg-white md:m-4 mt-4 shadow-md md:text-base text-sm">
+            <div className="grid grid-cols-6 bg-white md:m-4 mt-4 shadow-md text-sm md:text-base xl:text-xl">
                 <span className="m-2 font-bold col-span-2">Plan Created:</span><span className="mt-2 -ml-3 sm:ml-0">{DateToUKLocale(treasuryPlan.created_at)}</span>
                 <span className="m-2 font-bold col-span-2"></span><span className="mt-2 -ml-3 sm:ml-0"></span>
                 <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2 -ml-3 sm:ml-0">£{treasuryPlan.expected_incoming}</span>
@@ -15,8 +15,8 @@ export default function ViewPlan({treasuryPlan}) {
                 <span className="m-2 font-bold col-span-2">Expected balance (in 5 years):</span><span className="mt-2 -ml-3 sm:ml-0"> £{treasuryPlan.expected_balance}</span>
             </div>
 
-            <table>
-                <thead className="text-slate-700 font-bold text-left">
+            <table className="xl:w-2/3">
+                <thead className="text-slate-700 font-bold text-left xl:text-2xl">
                     <tr>
                         <th></th>
                         <th>Priority</th>
@@ -27,7 +27,7 @@ export default function ViewPlan({treasuryPlan}) {
                 <tbody>
                         {treasuryPlan.plan_components.map(component => (
                             <Fragment key={component.id}>
-                    <tr>
+                    <tr className="xl:text-xl">
                                 <td className="bg-white w-16"><EllipsisHorizontalIcon className="h-6 w-6 text-slate-400 mx-auto" /></td>
                                 <td className="bg-white w-20">{component.pivot.priority}</td>
                                 <td className="bg-white w-36">{component.component}</td>
@@ -38,19 +38,19 @@ export default function ViewPlan({treasuryPlan}) {
                 </tbody>
             </table>
 
-            <div className="m-6 text-xl">
+            <div className="m-6 md:text-xl xl:text-2xl">
                 Estimated Remaining Balance: £{treasuryPlan.estimated_remaining_balance} 
             </div>
 
             <Link 
                 href={route('treasury-plans.create')}
-                className="bg-pink-700 hover:bg-pink-800 text-white text-md border rounded-md w-52 h-9 text-center p-2 flex"
+                className="bg-pink-700 hover:bg-pink-800 text-white text-md border rounded-md w-52 h-9 text-center p-2 flex xl:h-12 xl:w-56 xl:text-lg"
             >
                 <span className="w-full self-center justify-center">Create Treasury Plan</span>
             </Link>
             <Link 
                 href={route('treasury-plans.index')}
-                className="bg-sky-600 hover:bg-sky-700 text-white text-md border rounded-md w-52 h-9 text-center mt-2 p-2 flex"
+                className="bg-sky-600 hover:bg-sky-700 text-white text-md border rounded-md w-52 h-9 text-center mt-2 p-2 flex xl:h-12 xl:w-56 xl:text-lg"
             >
                 <span className="w-full self-center">View all plans</span>
             </Link>

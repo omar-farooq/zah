@@ -50,7 +50,7 @@ class SecretaryReportController extends Controller
         $newReport = Auth::User()->secretaryReports()->create($request->all());
         if($request->file('attachment')) {
             $reportName = 'Secretary_Report_' . date('Ymd') . '.pdf';
-            Storage::disk('spaces')->putFileAs('documents/secretary_reports', $request->file('attachment'), $reportName);
+            Storage::disk('s3')->putFileAs('documents/secretary_reports', $request->file('attachment'), $reportName);
             $newReport['attachment'] = $reportName;
             $newReport->save();
         }
@@ -71,9 +71,9 @@ class SecretaryReportController extends Controller
     public function show(Request $request, SecretaryReport $secretaryReport)
     {
         if($request->query('type') == 'view') {
-            return Storage::disk('spaces')->get('documents/secretary_reports/' . $secretaryReport->attachment);
+            return Storage::disk('s3')->get('documents/secretary_reports/' . $secretaryReport->attachment);
         }else if($request->query('type') == 'download') {
-            return Storage::disk('spaces')->download('documents/secretary_reports/' . $secretaryReport->attachment);
+            return Storage::disk('s3')->download('documents/secretary_reports/' . $secretaryReport->attachment);
         } else {
             return;
         }
@@ -106,9 +106,9 @@ class SecretaryReportController extends Controller
             ],409);
         } else {
             if($request->file('attachment')) {
-                Storage::disk('spaces')->delete('documents/secretary_reports/' . $secretaryReport->attachment); 
+                Storage::disk('s3')->delete('documents/secretary_reports/' . $secretaryReport->attachment); 
                 $reportName = 'Secretary_Report_' . date('Ymd') . '_' . date('his') . '.pdf';
-                Storage::disk('spaces')->putFileAs('documents/secretary_reports', $request->file('attachment'), $reportName);
+                Storage::disk('s3')->putFileAs('documents/secretary_reports', $request->file('attachment'), $reportName);
                 $secretaryReport['attachment'] = $reportName;
                 $secretaryReport['written_report'] = '';
                 $secretaryReport->save();
@@ -117,7 +117,7 @@ class SecretaryReportController extends Controller
                     'message' => 'Secretary\'s Report has been updated'
                 ],200);
             } else if(isset($request->written_report)){
-                Storage::disk('spaces')->delete('documents/secretary_reports/' . $secretaryReport->attachment);
+                Storage::disk('s3')->delete('documents/secretary_reports/' . $secretaryReport->attachment);
                 $secretaryReport['attachment'] = '';
                 $secretaryReport['written_report'] = $request->written_report;
                 $secretaryReport->save();

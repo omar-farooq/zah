@@ -47,7 +47,7 @@ class ReceiptController extends Controller
 
         //Upload to storage
         try {
-            Storage::disk('spaces')->putFileAs('documents/receipts', $request->receiptFile, $receiptName);
+            Storage::disk('s3')->putFileAs('documents/receipts', $request->receiptFile, $receiptName);
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -78,7 +78,7 @@ class ReceiptController extends Controller
         //Storage::temporaryUrl($receipt->receipt, now()->addMinutes(2));
 
         //Local driver
-        return Storage::disk('spaces')->download('documents/receipts/'.$receipt->receipt);
+        return Storage::disk('s3')->download('documents/receipts/'.$receipt->receipt);
 
     }
 
@@ -113,7 +113,7 @@ class ReceiptController extends Controller
      */
     public function destroy(Receipt $receipt)
     {
-        Storage::disk('spaces')->delete('documents/receipts/'.$receipt->receipt);
+        Storage::disk('s3')->delete('documents/receipts/'.$receipt->receipt);
         Receipt::destroy($receipt->id);
     }
 }
