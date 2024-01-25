@@ -29,7 +29,17 @@ COPY . .
 RUN npm install && npm run build
 RUN rm -rf node_modules
 
-# Production Build
+# Single production image 
+FROM webserver AS production
+WORKDIR /var/www/html
+COPY --from=assets --chown=www-data:www-data /app/ .
+RUN composer install
+RUN php artisan optimize:clear
+USER www-data
+CMD ["sh", "-c", "/usr/local/sbin/php-fpm -D && nginx -g 'daemon off;'"]
+
+# Production Build Separated
+# These builds are better on k8s
 FROM webserver AS frontend
 WORKDIR /var/www/html
 COPY --from=assets --chown=www-data:www-data /app/ .

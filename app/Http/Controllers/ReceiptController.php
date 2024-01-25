@@ -49,7 +49,10 @@ class ReceiptController extends Controller
         try {
             Storage::disk('s3')->putFileAs('documents/receipts', $request->receiptFile, $receiptName);
         } catch (\Exception $e) {
-            return $e->getMessage();
+            return response()->json([
+                'success' => 'false',
+                'message' => 'could not upload'
+            ],500);
         }
 
         //Add to the database
