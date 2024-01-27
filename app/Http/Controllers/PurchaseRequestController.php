@@ -51,7 +51,8 @@ class PurchaseRequestController extends Controller
 
         } else {
             return Inertia::render('PurchaseRequests/Browse', [
-                'title' => 'All Purchase Requests'
+                'title' => 'All Purchase Requests',
+                'requestNumber' => PurchaseRequest::count()
             ]);    
         }
     }

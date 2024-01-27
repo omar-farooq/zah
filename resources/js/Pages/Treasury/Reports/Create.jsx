@@ -8,7 +8,7 @@ import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } fr
 export default function CreateReport({rents, arrears, accounts, defaultAccounts, previousReport, recurringPayments, unreported}) {
 
     //Get when the previous report ended and make the start date of the report the previous day +1 by default
-    let previousReportEnd = new Date(previousReport.end_date)
+    let previousReportEnd = previousReport ? new Date(previousReport.end_date) : new Date(new Date().getFullYear(), new Date().getMonth(),0)
     let newReportDefaultStart = new Date(previousReportEnd.getFullYear(), previousReportEnd.getMonth(), previousReportEnd.getDate()+1)
 
     const [dates, setDates] = useState([newReportDefaultStart, LastDayOfTheMonth()])

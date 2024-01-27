@@ -57,7 +57,8 @@ class TreasuryReportController extends Controller
     public function create()
     {
         $arrears = new RentArrear;
-        $latest_treasury_report = TreasuryReport::all()->last()->id;
+        TreasuryReport::count() > 0 ? $latest_treasury_report = TreasuryReport::all()->last()->id : $latest_treasury_report = null;
+        
         return Inertia::render('Treasury/Reports/Create', [
             'title' => 'Create Treasury Report',
             'rents' => Rent::with('user')->get(),
@@ -103,11 +104,7 @@ class TreasuryReportController extends Controller
         $rents = PaidRent::where('treasury_report_id', $treasuryReport->id)
                         ->with('user')
                         ->get();
-        if($treasuryReport->id > 1) {
-            $previousBudget = TreasuryReport::where('id', $treasuryReport->id - 1)->first()->remaining_budget;
-        } else {
-            $previousBudget = 0;
-        }
+        $previousBudget = TreasuryReport::where('id', $treasuryReport->id - 1)->first()->remaining_budget ?? 0;
 
         return Inertia::render('Treasury/Reports/View', [
             'title' => 'View Treasury Report',
@@ -169,8 +166,8 @@ class TreasuryReportController extends Controller
             'title' => 'Treasury Summary',
             'currentYearPurchaseCount' => $currentYearPurchaseCount,
             'previousYearPurchaseCount' => $previousYearPurchaseCount,
-            'currentBalance' => TreasuryReport::latest()->first()->remaining_budget,
-            'previousYearBalance' => TreasuryReport::where('start_date', '<', Carbon::now()->subYear())->first()->remaining_budget,
+            'currentBalance' => TreasuryReport::latest()->first()->remaining_budget ?? 0,
+            'previousYearBalance' => TreasuryReport::where('start_date', '<', Carbon::now()->subYear())->first()->remaining_budget ?? 0,
             'currentSpending' => $currentSpending,
             'previousYearSpending' => $previousYearSpending
         ]);

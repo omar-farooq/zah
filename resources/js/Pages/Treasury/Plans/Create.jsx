@@ -81,7 +81,7 @@ export default function CreatePlan({lastPlan, balance, rent, weeklyRecurringPaym
     }
 
     const calculateExpectedIncomings = () => {
-        return rent * 52 * 5
+        return rent * 12 * 5
     }
 
     const calculateRemainingBalance = () => Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings()) - fiveYearPlan.reduce((a,b) => {

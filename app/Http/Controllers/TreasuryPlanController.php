@@ -41,7 +41,7 @@ class TreasuryPlanController extends Controller
         return Inertia::render('Treasury/Plans/Create', [
             'title' => 'Treasury Planning',
             'lastPlan' => TreasuryPlan::latest()->first(),
-            'balance' => TreasuryReport::latest()->first()->remaining_budget,
+            'balance' => TreasuryReport::latest()->first()->remaining_budget ?? 0,
             'rent' => Rent::pluck('amount')->sum(),
             'weeklyRecurringPayments' => RecurringPayment::where('frequency', 'weekly')->pluck('amount')->sum(),
             'monthlyRecurringPayments' => RecurringPayment::where('frequency', 'monthly')->pluck('amount')->sum(),

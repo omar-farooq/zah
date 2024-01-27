@@ -20,7 +20,7 @@ class RuleSectionController extends Controller
      */
     public function store($title)
     {
-        $last_section_number = RuleSection::all()->sortBy('number')->last()->number;
+        $last_section_number = RuleSection::all()->sortBy('number')->last()->number ?? 0;
         $new_section_number = $last_section_number + 1;
 
         $ruleSection = new RuleSection;

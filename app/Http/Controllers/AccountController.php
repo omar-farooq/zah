@@ -15,11 +15,17 @@ class AccountController extends Controller
      */
     public function index()
     {
-        $latest_treasury_report = TreasuryReport::all()->last()->id;
-        return Inertia::render('Treasury/Accounts/index', [
-            'initialAccounts' => Account::with(["treasuryReports" => function($q) use($latest_treasury_report){
+        if(TreasuryReport::count() > 0) {
+            $latest_treasury_report = TreasuryReport::all()->last()->id;
+            $initialAccounts = Account::with(["treasuryReports" => function($q) use($latest_treasury_report){
                 $q->where('treasury_report_id', '=', $latest_treasury_report);
-            }])->get(),
+            }])->get();
+
+        } else {
+            $initialAccounts = Account::all();
+        }
+        return Inertia::render('Treasury/Accounts/index', [
+            'initialAccounts' => $initialAccounts,
             'defaultAccounts' => DefaultAccount::all()
         ]);
     }

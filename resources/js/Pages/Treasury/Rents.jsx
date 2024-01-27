@@ -70,7 +70,7 @@ export default function Rents({auth}) {
                 <thead>
                     <tr>
                         <th className="border-b border-black p-2">Tenants</th>
-                        <th className="border-b border-black p-2">Rent</th>
+                        <th className="border-b border-black p-2">Rent (£ monthly)</th>
                         <th className="border-b border-black p-2">Tenancy End</th>
                     </tr>
                 </thead>
@@ -82,7 +82,7 @@ export default function Rents({auth}) {
                             </td>
                             <td className="border-b border-slate-300">
                                 <input 
-                                    defaultValue={"£"+tenant.rent?.amount}
+                                    defaultValue={tenant.rent?.amount}
                                     className="text-center w-28 sm:w-auto"
                                     onChange={(e) => updateRent(tenant.rent.id, e.target.value)}
                                 />
