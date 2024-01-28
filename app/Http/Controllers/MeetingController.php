@@ -6,6 +6,7 @@ use App\Events\AttendanceUpdated;
 use App\Events\GuestListUpdated;
 use App\Http\Requests\StoreMeetingRequest;
 use App\Http\Requests\UpdateMeetingRequest;
+use App\Jobs\Notification;
 use App\Models\Meeting;
 use App\Models\MeetingAgenda;
 use App\Models\MeetingAttendance;
@@ -54,6 +55,8 @@ class MeetingController extends Controller
         $meeting = new Meeting;
 		$meeting->time_of_meeting = $request->time;
 		$meeting->save();
+        //Need to send to everyone separately
+        Notification::dispatch('meeting scheduled', 'meeting has been schedule', config('zah.email-address'));
 		return response()->json([
 			'id' => $meeting->id
 		]);

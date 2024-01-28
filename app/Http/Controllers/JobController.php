@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendEmail;
+use App\Jobs\Notification;
 use Illuminate\Http\Request;
 
 class JobController extends Controller
@@ -15,5 +16,9 @@ class JobController extends Controller
         ]);
 
         SendEmail::dispatch($request->name, $request->email, $request->comments);
+    }
+
+    public function notificationEmail(Request $request) {
+        Notification::dispatch($request->$message, $request->subject, config('zah.email-address'));
     }
 }
