@@ -5,7 +5,11 @@
         <title>Zah Notification</title>
     </head>
     <body>
-        Hello,<br><p>There is a new notification from zah:</p>
-        <div>{{ $messages }}</div>
+        <p>Hello {{ $name }},</p>
+        <div>{!! $messages !!}</div>
+        <div>
+            <p>Thank you,</p>
+            <p>Zah Co-Op</p>
+        </div>
     </body>
 </html>

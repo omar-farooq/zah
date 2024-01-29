@@ -20,10 +20,10 @@ class Notification implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct($message, $subject, $recipient)
+    public function __construct($subject, $message, $recipient)
     {
-        $this->message = $message;
         $this->subject = $subject;
+        $this->message = $message;
         $this->recipient = $recipient;
     }
 
@@ -32,6 +32,6 @@ class Notification implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to($this->recipient)->send(new NotificationMail($this->message,$this->subject));
+        Mail::to($this->recipient['email'])->send(new NotificationMail($this->message,$this->subject,$this->recipient['name']));
     }
 }

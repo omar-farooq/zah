@@ -1,6 +1,5 @@
-import { useState, Fragment, useReducer } from 'react'
+import { useEffect, useState, Fragment, useReducer } from 'react'
 import { Alert } from '@mantine/core'
-import { notifications } from '@mantine/notifications';
 import { DateTimeToUKLocale, LongDateFormat, LongDateTimeFormat } from '@/Shared/Functions'
 import { ErrorNotification } from '@/Components/Notifications'
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
@@ -8,7 +7,19 @@ import Modal from '@/Components/Modal'
 import ButtonColoured from '@/Components/ButtonColoured'
 
 export default function Schedule(props) {
-    
+   
+    //get upcoming scheduled meetings and put them in state
+    const [scheduled, setScheduled] = useState([])
+
+    const getScheduled = async () => {
+        let res = await axios.get('/meetings/scheduled')
+        setScheduled(res.data)
+    }
+
+    useEffect(() => {
+        getScheduled()
+    },[])
+
     //handle the modal open/close state
     const [modalOpenState, setModalOpenState] = useState('false')
 
@@ -112,11 +123,16 @@ export default function Schedule(props) {
     //function to create a meeting
     const createMeeting = async () => {
         let time = document.getElementById('suggest-or-schedule-time').value
-        await axios.post('/meetings', {time: new Date(schedule.selectedDay + " " + time)})
+        try {
+            await axios.post('/meetings', {time: new Date(schedule.selectedDay + " " + time)})
+        } catch (error) {
+            return ErrorNotification('Error', error)
+        }
         if (new Date(schedule.selectedDay + " " + time) < new Date(schedule.upcomingMeeting) || schedule.upcomingMeeting == 'null'){
             dispatch({type: 'setNewUpcomingMeeting', datetime: schedule.selectedDay + " " + time})
         }
         setModalOpenState('false')
+        getScheduled()
     }
 
     //axios request to update user availability
@@ -334,7 +350,7 @@ export default function Schedule(props) {
                 { suggesters.length > 0
                     ?
                         <>
-                            <div className="font-bold text-lg">Suggested dates</div>
+                            <div className="text-center text-2xl mt-4">Suggested dates</div>
                             <ul>
                                 {suggesters.map(suggester => {
                                     return(
@@ -362,14 +378,14 @@ export default function Schedule(props) {
                 { schedule.userSuggestions.length > 0 
                     ?
                         <>
-                            <div className="font-bold text-lg">Your Suggestions</div>
+                            <div className="text-center text-2xl mt-4">Your Suggestions</div>
                             <ul>
                                 {schedule.userSuggestions.map(suggested => {
                                     return(
                                         <li key={suggested.id}>
                                             {LongDateTimeFormat(suggested.suggested_date)}
                                             <button 
-                                                className="ml-2" 
+                                                className="ml-2 text-red-600" 
                                                 onClick={() => deleteSuggestion(suggested.id)}
                                             >
                                                 delete
@@ -383,6 +399,21 @@ export default function Schedule(props) {
                         null
                 }
             </div>
+
+            {/* All upcoming meetings if there are multiple */}
+            {
+                scheduled.length > 1 &&
+                    <div className="text-center">
+                        <div className="text-2xl mt-4">Scheduled meetings</div>
+                        <ul>
+                            {scheduled.map(x => (
+                                <li key={x.id}>
+                                    {x.time_of_meeting}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+            }
 
             {/*Modal Component for suggesting or scheduling a date*/}
             <Modal title='Suggest or Schedule date' 

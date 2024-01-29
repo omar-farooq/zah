@@ -38,7 +38,11 @@ class Meeting extends Model
 		return Carbon::parse($date)->timezone('Europe/London')->format('l F d Y H:i');
 	}
 
-	public function findUpcoming() {
+    public function allUpcoming() {
+		return $this->where('time_of_meeting', '>', Carbon::now('Europe/London'))->orderBy('time_of_meeting', 'asc')->get();
+    }
+
+	public function firstUpcoming() {
 		return $this->where('time_of_meeting', '>', Carbon::now('Europe/London'))->orderBy('time_of_meeting', 'asc')->first();		
     }
 

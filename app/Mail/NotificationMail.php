@@ -12,15 +12,16 @@ use Illuminate\Queue\SerializesModels;
 class NotificationMail extends Mailable
 {
     use Queueable, SerializesModels;
-    public $message, $subject;
+    public $message, $subject, $name;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($message,$subject)
+    public function __construct($message,$subject,$name)
     {
         $this->message = $message;
         $this->subject = $subject;
+        $this->name = $name;
     }
 
     /**
@@ -42,6 +43,7 @@ class NotificationMail extends Mailable
             view: 'emails.notification',
             with: [
                 'messages' => $this->message,
+                'name' => $this->name,
             ],
         );
     }

@@ -6,7 +6,6 @@ use App\Events\AttendanceUpdated;
 use App\Events\GuestListUpdated;
 use App\Http\Requests\StoreMeetingRequest;
 use App\Http\Requests\UpdateMeetingRequest;
-use App\Jobs\Notification;
 use App\Models\Meeting;
 use App\Models\MeetingAgenda;
 use App\Models\MeetingAttendance;
@@ -15,6 +14,7 @@ use App\Models\Minute;
 use App\Models\SecretaryReport;
 use App\Models\Poll;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -52,11 +52,27 @@ class MeetingController extends Controller
      */
     public function store(StoreMeetingRequest $request)
     {
+        //Check if the meeting has already been created
+        $count = Meeting::where('time_of_meeting', $request->time)->count();
+        if($count > 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'A meeting already exists for the requested time'
+            ],409);
+        }
+
+        //Create the meeting
         $meeting = new Meeting;
 		$meeting->time_of_meeting = $request->time;
-		$meeting->save();
-        //Need to send to everyone separately
-        Notification::dispatch('meeting scheduled', 'meeting has been schedule', config('zah.email-address'));
+        $meeting->save();
+
+        //Send email to everyone
+        $meeting_time = Carbon::parse($request->time)->locale('uk')->format('l jS \\of F Y h:i A');
+        $subject = "new meeting scheduled";
+        $messageBody = "<p>A new meeting has been scheduled for <b>" . $meeting_time . "</b></p><p> If you haven't already added your availability to the schedule then please do so so that we know if you are going to attend</p>";
+        app(JobController::class)->notificationEmail($subject, $messageBody);
+
+        //Return response back to the front end
 		return response()->json([
 			'id' => $meeting->id
 		]);
@@ -136,6 +152,12 @@ class MeetingController extends Controller
     public function destroy(Meeting $meeting)
     {
         $meeting->update(['cancelled' => 1]);
+
+        //Send email to everyone
+        $meeting_time = Carbon::parse($meeting->time_of_meeting)->locale('uk')->format('l jS \\of F Y \\a\\t h:i A');
+        $subject = "Meeting CANCELLED";
+        $messageBody = "<p>This email is to notify you that the meeting on <b>" . $meeting_time . "</b> has been cancelled. Please do not attend.</p>";
+        app(JobController::class)->notificationEmail($subject, $messageBody);
     }
 
     /**

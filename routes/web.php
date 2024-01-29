@@ -109,6 +109,7 @@ Route::middleware(['member', 'auth'])->group(function() {
         Route::post('/meetings/schedule/suggestions/add', 'addSuggestion');
         Route::post('/meetings/schedule/suggestions/delete', 'removeSuggestion');
         Route::put('/meetings/schedule/availability/update', 'updateAvailability');
+        Route::get('/meetings/scheduled', 'scheduled');	
     });
 });
 

@@ -29,15 +29,15 @@ class ScheduleService
 	*/
 	function upcoming() {
 		$meeting = new \App\Models\Meeting;
-		if($meeting->findUpcoming() == null)
+		if($meeting->firstUpcoming() == null)
 		{
 			$upcomingDate = 'null';
 			$upcomingID = -1;
             $upcomingStatus = 'unscheduled';
 		} else {
-			$upcomingDate = $meeting->findUpcoming()->time_of_meeting;
-            $upcomingID = $meeting->findUpcoming()->id;
-            $upcomingStatus = $meeting->findUpcoming()->cancelled;
+			$upcomingDate = $meeting->firstUpcoming()->time_of_meeting;
+            $upcomingID = $meeting->firstUpcoming()->id;
+            $upcomingStatus = $meeting->firstUpcoming()->cancelled;
 		}
 		return array('id' => $upcomingID, 'date' => $upcomingDate, 'status' => $upcomingStatus);
 	}
