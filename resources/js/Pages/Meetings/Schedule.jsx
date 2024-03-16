@@ -3,8 +3,10 @@ import { Alert } from '@mantine/core'
 import { DateTimeToUKLocale, LongDateFormat, LongDateTimeFormat } from '@/Shared/Functions'
 import { ErrorNotification } from '@/Components/Notifications'
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
+import { useDisclosure } from '@mantine/hooks'
 import Modal from '@/Components/Modal'
 import ButtonColoured from '@/Components/ButtonColoured'
+import ConfirmModal from '@/Components/ConfirmModal'
 
 export default function Schedule(props) {
    
@@ -22,6 +24,9 @@ export default function Schedule(props) {
 
     //handle the modal open/close state
     const [modalOpenState, setModalOpenState] = useState('false')
+
+    const [deleteMeetingModalOpened, modalHandlers] = useDisclosure(false)
+    const [meetingToCancel, setMeetingToCancel] = useState('')
 
     //reducer to handle schedule state
     const initialSchedule = {
@@ -163,6 +168,11 @@ export default function Schedule(props) {
     const deleteSuggestion = async (suggestionID) => {
         await axios.post('/meetings/schedule/suggestions/delete', {id: suggestionID})
         dispatch({type: 'deleteSuggestion', suggestionID: suggestionID})
+    }
+
+    const cancelMeeting = async (meetingId) => {
+        await axios.delete('/meetings/'+meetingId)
+        getScheduled()
     }
 
     return (
@@ -408,7 +418,9 @@ export default function Schedule(props) {
                         <ul>
                             {scheduled.map(x => (
                                 <li key={x.id}>
-                                    {x.time_of_meeting}
+                                    <div className={`${x.cancelled && 'line-through decoration-red-400 decoration-2'} flex flex-row space-x-2`}>
+                                        <div>{x.time_of_meeting}</div> {!x.cancelled && <button className="text-red-500 hover:text-red-600" onClick={() => {setMeetingToCancel(x.id); modalHandlers.open()}}>cancel</button>}
+                                    </div>
                                 </li>
                             ))}
                         </ul>
@@ -444,6 +456,14 @@ export default function Schedule(props) {
             >
                 {schedule.selectedDay} <input type="time" className="ml-3" defaultValue="18:30" id="suggest-or-schedule-time"></input> ?
             </Modal>
+
+            <ConfirmModal
+                title="Confirm Meeting Cancellation"
+                text=<p>Are you sure you want to cancel this meeting?</p>
+                confirmFunction={() => {cancelMeeting(meetingToCancel); modalHandlers.close()}}
+                cancelFunction={() => modalHandlers.close()}
+                modalOpened={deleteMeetingModalOpened}
+            />
         </Fragment>
     )
 }

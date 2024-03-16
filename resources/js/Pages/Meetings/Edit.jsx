@@ -20,6 +20,7 @@ export default function NewMeeting({meeting, tenants, auth}) {
         await axios.delete('/meetings/'+meeting.id)
         setCancelled(true)
     }
+    const timeOfMeetingEpoch = new Date(meeting.time_of_meeting).getTime()
 
     //Join the channel via a websocket
     useEffect(() => {
@@ -43,6 +44,15 @@ export default function NewMeeting({meeting, tenants, auth}) {
             {
                 cancelled ?
                     <div>Meeting Cancelled</div>
+                : Date.now() < (timeOfMeetingEpoch - 600000) ?
+                    <>
+                        <div className="text-lg my-6">The meeting has not started yet. You can join 10 minutes before the start of the meeting.</div>
+                        <div className="w-full lg:w-1/2 mt-4 mb-4">
+                            <Agenda
+                                auth={auth}
+                            />
+                        </div>
+                    </>
                 :
                     <>
                         <div className="lg:w-2/3 w-full flex lg:justify-end relative lg:-top-10">
