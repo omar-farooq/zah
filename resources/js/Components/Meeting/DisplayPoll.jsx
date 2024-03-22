@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react'
+import { useDisclosure } from '@mantine/hooks'
 import { BarController, BarElement, CategoryScale, Chart, LinearScale, Title } from 'chart.js'
-import { CheckCircleIcon } from '@heroicons/react/24/solid'
+import { CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/solid'
 import { draw, generate } from 'patternomaly'
+import ConfirmModal from '@/Components/ConfirmModal'
 
 export default function DisplayPoll({auth, poll}) {
+    //Modal state for confirming poll deletion
+    const [modalOpened, modalHandlers] = useDisclosure(false)
+
     Chart.register(
         BarController,
         BarElement,
@@ -97,10 +102,20 @@ export default function DisplayPoll({auth, poll}) {
             })
     }
 
+    const deletePoll = () => {
+        axios.delete('/poll/'+poll.id)
+    }
+
     return (
         <>
-            <div className="flex flex-row">
+            <div className="flex flex-row my-4">
                 <div className="w-full"><canvas id={`poll-${poll.id}-results`} className="w-full"></canvas></div>
+                <XMarkIcon 
+                    className="h-10 w-10 text-red-600 cursor-pointer"
+                    onClick={() => modalHandlers.open()}
+                >
+                    X
+                </XMarkIcon>
                 {!poll.meeting_id ?
 
                 <div className="flex flex-col justify-center ml-4">
@@ -124,6 +139,12 @@ export default function DisplayPoll({auth, poll}) {
                 }
 
             </div>
+  				<ConfirmModal
+                	text=<p>Are you sure you want to delete this poll?</p>
+                	confirmFunction={() => {deletePoll(); modalHandlers.close()}}
+                	cancelFunction={() => {modalHandlers.close()}}
+                	modalOpened={modalOpened}
+				/>
         </>
 	)
 }
