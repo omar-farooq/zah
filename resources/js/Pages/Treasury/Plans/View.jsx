@@ -6,13 +6,13 @@ export default function ViewPlan({treasuryPlan}) {
 
     return (
         <>
-            <div className="grid grid-cols-6 bg-white md:m-4 mt-4 shadow-md text-sm md:text-base xl:text-xl">
-                <span className="m-2 font-bold col-span-2">Plan Created:</span><span className="mt-2 -ml-3 sm:ml-0">{DateToUKLocale(treasuryPlan.created_at)}</span>
-                <span className="m-2 font-bold col-span-2"></span><span className="mt-2 -ml-3 sm:ml-0"></span>
-                <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2 -ml-3 sm:ml-0">£{treasuryPlan.expected_incoming}</span>
-                <span className="m-2 font-bold col-span-2">Expected outgoing (5 years):</span> <span className="mt-2 -ml-3 sm:ml-0">£{treasuryPlan.expected_outgoing}</span>
-                <span className="m-2 font-bold col-span-2">Available balance:</span> <span className="mt-2 -ml-3 sm:ml-0">£{treasuryPlan.available_balance}</span>
-                <span className="m-2 font-bold col-span-2">Expected balance (in 5 years):</span><span className="mt-2 -ml-3 sm:ml-0"> £{treasuryPlan.expected_balance}</span>
+            <div className="grid grid-cols-4 md:grid-cols-6 bg-white md:m-4 mt-4 shadow-md text-sm md:text-base xl:text-xl justify-items-end md:justify-items-center">
+                <span className="m-2 font-bold col-span-2">Plan Created:</span><span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">{DateToUKLocale(treasuryPlan.created_at)}</span>
+                <span className="m-2 font-bold col-span-2">By:</span><span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">{treasuryPlan.user.name}</span>
+                <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">£{treasuryPlan.expected_incoming}</span>
+                <span className="m-2 font-bold col-span-2">Expected outgoing (5 years):</span> <span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">£{treasuryPlan.expected_outgoing}</span>
+                <span className="m-2 font-bold col-span-2">Available balance:</span> <span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">£{treasuryPlan.available_balance}</span>
+                <span className="m-2 font-bold col-span-2">Expected balance (5 years):</span><span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center"> £{treasuryPlan.expected_balance}</span>
             </div>
 
             <table className="xl:w-2/3">

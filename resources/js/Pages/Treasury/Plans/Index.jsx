@@ -21,6 +21,7 @@ export default function TreasuryPlanIndex({treasuryPlansPageOne}) {
                         <TH heading="Balance at the time (£)" />
                         <TH heading="Balance without plan (£)" />
                         <TH heading="Balance with plan (£)" />
+                        <TH heading="Created by" />
                         <LastTH />
                     </THead>
                     <TBody>
@@ -31,6 +32,7 @@ export default function TreasuryPlanIndex({treasuryPlansPageOne}) {
                                     <TD data={x.available_balance} />
                                     <TD data={x.expected_balance} />
                                     <TD data={x.estimated_remaining_balance} />
+                                    <TD data={x.user.name} />
                                     <LastTD
                                         href={"treasury-plans"}
                                         itemID={x.id}

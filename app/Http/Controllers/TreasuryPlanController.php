@@ -7,6 +7,7 @@ use App\Models\RecurringPayment;
 use App\Models\Rent;
 use App\Models\TreasuryPlan;
 use App\Models\TreasuryReport;
+use Auth;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -57,12 +58,13 @@ class TreasuryPlanController extends Controller
      */
     public function store(Request $request)
     {
-        $plan = TreasuryPlan::Create($request->except('components'));
+//        $plan = TreasuryPlan::Create($request->except('components'));
+        $plan = Auth::User()->treasuryPlans()->create($request->except('components'));
         foreach($request->input('components') as $component) {
             $newComponent = PlanComponent::create($component);
             $plan->planComponents()->attach([$newComponent->id => ['priority' => $component['priority']]]);
         }
-
+        return response()->json($plan->id);
     }
 
     /**

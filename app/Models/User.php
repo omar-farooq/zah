@@ -153,6 +153,13 @@ class User extends Authenticatable
         return $this->hasMany(SecretaryReport::class);
      } 
 
+    /**
+     * Relationship with Treasury Plans
+     */
+     public function treasuryPlans() {
+        return $this->hasMany(TreasuryPlan::class);
+     } 
+
      /**
       * Relationship with Rent
       */

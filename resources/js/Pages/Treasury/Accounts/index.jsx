@@ -1,4 +1,4 @@
-import { Fragment, useState, useReducer } from 'react'
+import { Fragment, useState, useReducer, useRef } from 'react'
 import { ErrorNotification, SuccessNotification } from '@/Components/Notifications'
 import { InertiaLink } from '@inertiajs/inertia-react'
 import { Modal } from '@mantine/core'
@@ -35,6 +35,10 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
     const [defaultPaymentType, setDefaultPaymentType] = useState('')
     const [defaultAccount, setDefaultAccount] = useState('')
 
+    // Select menu references
+    const acclistRef = useRef()
+    const accRef = useRef()
+
     const SubmitNewAccount = async (e) => {
         e.preventDefault()
         try {
@@ -54,10 +58,12 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
             await SuccessNotification('Made Default', 'Successfully added a default account for '+defaultPaymentType)
             setDefaultPaymentType('')
             setDefaultAccount('')
-            setDefaultAccountList(res.data)
+            setDefaultAccountsList(res.data)
         } catch (error) {
             ErrorNotification('Error', error)
         }
+            acclistRef.current.clearValue()
+            accRef.current.clearValue()
     }
 
     const ModelToName = (model) => {
@@ -101,7 +107,7 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
                             <tr>
                                 <FirstTD data={x.account_name} />
                                 <TD data={x.bank} />
-                                <TD data={x.treasury_reports ? "£" + (x.treasury_reports[0]?.pivot.account_balance) : "£" + x.starting_balance} />
+                                <TD data={x.treasury_reports.length > 0 ? "£" + (x.treasury_reports[0]?.pivot.account_balance) : "£" + x.starting_balance} />
                                 <TD data={x.description} />
                                 <LastTD>
                                     <TrashIcon
@@ -119,7 +125,7 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
             {/* Form to add a new account to the accounts table */}
             <div className="text-xl mt-10">Add an account</div>
             <form className="w-full grid grid-cols-6 gap-y-3 gap-x-5">
-                <div className="col-start-2 col-end-4">
+                <div className="sm:col-start-2 sm:col-end-4 col-start-2 col-end-6">
                     <Label>Account name</Label>
                     <Input 
                         className="w-full"
@@ -127,7 +133,7 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
                         handleChange={(e) => setNewAccount({...newAccount, account_name: e.target.value})}
                     />
                 </div>
-                <div className="col-start-4 col-end-6">
+                <div className="sm:col-start-4 sm:col-end-6 col-start-2 col-end-6">
                     <Label>Bank</Label>
                     <Input 
                         className="w-full"
@@ -135,7 +141,7 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
                         handleChange={(e) => setNewAccount({...newAccount, bank:e.target.value})}
                     />
                 </div>
-                <div className="col-start-2 col-end-4">
+                <div className="sm:col-start-2 sm:col-end-4 col-start-2 col-end-6">
                     <Label>Description</Label>
                     <Input 
                         className="w-full"
@@ -143,12 +149,12 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
                         handleChange={(e) => setNewAccount({...newAccount, description:e.target.value})}
                     />
                 </div>
-                <div className="col-start-4 col-end-6">
+                <div className="sm:col-start-4 sm:col-end-6 col-start-2 col-end-6">
                     <Label>Initial amount (£)</Label>
                     <Input
                         type="number"
                         className="w-full"
-                        value={newAccount.starting_amount}
+                        value={newAccount.starting_balance}
                         handleChange={(e) => setNewAccount({...newAccount, starting_balance: e.target.value})}
                     />
                 </div>
@@ -165,7 +171,11 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
                 <InertiaLink
                     href={route('accounts.destroy', selectedAccountToDestroy.id)}
                     method="delete" as="button"
-                    onClick={() => {dispatch({type: 'delete', id: selectedAccountToDestroy.id}); modalHandlers.close()}}
+                    onClick={() => {
+                        setDefaultAccountsList(defaultAccountsList.filter(x => x.account_id !== selectedAccountToDestroy.id)); 
+                        dispatch({type: 'delete', id: selectedAccountToDestroy.id}); 
+                        modalHandlers.close()
+                    }}
                     className="bg-red-600 hover:bg-red-700 text-white h-9 w-20 border rounded-md mr-0.5"
                 >
                     Confirm
@@ -177,7 +187,7 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
             {
                 defaultAccountsList.length > 0 ?
                     <>
-                    <div className="text-xl mt-10">Default account set</div>
+                    <div className="text-xl mt-10">Default account for each payment type</div>
                     <Table>
                         <THead>
                             <FirstTH heading="Payment Type" />
@@ -202,8 +212,10 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
 
             {/* Set the default account for each payable model */}
             <div className="text-xl mt-10">Set the default account for each payment type</div>
-            <div className="w-full flex flex-row items-center justify-center gap-x-4 mb-4">
+            <div className="w-full sm:flex sm:flex-row items-center justify-center gap-x-4 mb-4">
                 <Select 
+                    menuPlacement="auto"
+                    ref={acclistRef}
                     options={[
                         {value: 'App\\Models\\Purchase', label: 'Purchases'},
                         {value: 'App\\Models\\Maintenance', label: 'Maintenance'},
@@ -212,17 +224,19 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
                         {value: 'App\\Models\\Payment', label: 'General Payments'},
                     ]}
                     placeholder={"Payment type"}
-                    className="w-1/4"
-                    onChange={(e) => setDefaultPaymentType(e.value)}
+                    className="sm:w-1/4 w-full"
+                    onChange={(e) => e && setDefaultPaymentType(e.value)}
                 />
                 <Select 
+                    menuPlacement="auto"
+                    ref={accRef}
                     options={accounts.map(x => ({
                         value: x.id,
                         label: x.account_name
                     }))}
                     placeholder={"Select Account"}
-                    className="w-1/4"
-                    onChange={(e) => setDefaultAccount(e.value)}
+                    className="sm:w-1/4 w-full"
+                    onChange={(e) => e && setDefaultAccount(e.value)}
                 />
             </div>
             <ButtonColoured

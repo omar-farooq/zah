@@ -88,8 +88,8 @@ export default function CreatePlan({lastPlan, balance, rent, weeklyRecurringPaym
        return Number(b.cost) + Number(a) 
     },[])
 
-    const savePlan = () => {
-        axios.post('/treasury-plans', {
+    const savePlan = async () => {
+        let planID = await axios.post('/treasury-plans', {
             expected_incoming: calculateExpectedIncomings(),
             expected_outgoing: calculateExpectedOutgoings(),
             available_balance: balance,
@@ -98,6 +98,7 @@ export default function CreatePlan({lastPlan, balance, rent, weeklyRecurringPaym
             plan_length: '5y',
             components: state
         })
+        window.location = "/treasury-plans/"+planID.data
     }
 
     return (

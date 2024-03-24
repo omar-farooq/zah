@@ -87,10 +87,15 @@ class AccountController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete the associated default payments linked to the account
+     * Delete the account
      */
     public function destroy(Account $account)
     {
+        $accountDefaults = DefaultAccount::where('account_id', $account->id)->get();
+        foreach($accountDefaults as $accountDefault) {
+            $accountDefault->delete();
+        }
         $account->delete();
     }
 }

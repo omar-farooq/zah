@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('available_balance', $precision = 8, $scale = 2);
             $table->decimal('expected_balance', $precision = 8, $scale = 2);
             $table->decimal('estimated_remaining_balance', $precision = 8, $scale = 2);
+            $table->foreignId('user_id');
             $table->string('plan_length');
         });
     }

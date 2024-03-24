@@ -59,7 +59,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
    
     function calculatePayableRent(rentPerMonth) {
         if (NumberOfMonths(dates[0],dates[1]) > 0) {
-            return (NumberOfMonths(dates[0],dates[1]) * rentPerMonth)
+            return (NumberOfMonths(dates[0],dates[1]) * rentPerMonth).toFixed(2)
         } else {
             return "Select Months"
         }
@@ -93,7 +93,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
                 key: payables.length > 0 ? payables[payables.length-1].key + 1 : 0, 
                 name: e.target.name.value, 
                 description: e.target.description.value, 
-                amount: e.target.amount.value, 
+                amount: Number(e.target.amount.value).toFixed(2), 
                 incoming: e.target.incoming.checked, 
                 payment_date: e.target.payment_date.value,
                 receipt: e.target.receipt.files[0]
@@ -161,7 +161,8 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
             paid_rents: paidRent,
             accounts_balances: accountBalances,
             recurring: recurringPaymentsToBeMade,
-            unreported: unreportedItems
+            unreported: unreportedItems,
+            payables: payables
         })
 
         //Add receipts for Purchases and Services
@@ -178,7 +179,8 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
                 treasuryReportID: reportID.data
         },config))))
 
-        //Create each Payment
+        //Create each additional incoming/outcoming
+        //separated to add receipts as well. Validation done on the initial report post.
         await Promise.all(payables.map(async (payable) => (
             await axios.post('/payments', {
                 ...payable,
@@ -314,7 +316,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
 
                 <div className="flex flex-col w-11/12 place-self-center">
                     <label htmlFor="payment_date">Payment Date</label>
-                    <input type="date" id="payment_date" name="payment_date" />
+                    <input type="date" id="payment_date" name="payment_date" required="required" />
                 </div>
 
                 <div className="flex flex-col w-11/12 place-self-center">

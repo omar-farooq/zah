@@ -25,6 +25,7 @@ export default function MobileNavMenu({navHook}) {
                     <Link endpoint='treasury.summary' name='Summary' />
                     <Link endpoint='treasury-reports.index' name='Reports' />
                     <Link endpoint='treasury-plans.latest' name='Plans' />
+                    <Link endpoint='accounts.index' name='Accounts' />
                     <Link endpoint='rents.index' name='Rents' />
                 </Accordion.Panel>
             </Accordion.Item>
@@ -53,7 +54,7 @@ export default function MobileNavMenu({navHook}) {
                 <Accordion.Panel>
                     <Link endpoint='roles.index' name='Member Roles' />
                     <Link endpoint='users.index' name='Manage' />
-                    <Link endpoint='dashboard' name='Rules' />
+                    <Link endpoint='rules.index' name='Rules' />
                 </Accordion.Panel>
             </Accordion.Item>
 
