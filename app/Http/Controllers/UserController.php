@@ -78,7 +78,7 @@ class UserController extends Controller
     {
         if($request->query('view') && $request->query('view') == 'avatar') {
             $avatar = User::where('id', $id)->first()->avatar;
-            return Storage::disk('local')->get('avatars/'.$avatar);
+            return Storage::disk('s3')->get('avatars/'.$avatar);
         } else {
             return Inertia::render('Users/Profile', [
                 'title' => 'User Profile',
@@ -128,7 +128,7 @@ class UserController extends Controller
 
         if($request->file('avatar')) {
             $avatarName = str_replace('@', '_', $user->email) . '_avatar.' . $request->file('avatar')->extension();
-            Storage::disk('local')->putFileAs('avatars', $request->file('avatar'), $avatarName);
+            Storage::disk('s3')->putFileAs('avatars', $request->file('avatar'), $avatarName);
             $user->update(['avatar' => $avatarName]);
         }
 

@@ -6,9 +6,9 @@ export default function ViewPlan({treasuryPlan}) {
 
     return (
         <>
-            <div className="grid grid-cols-4 md:grid-cols-6 bg-white md:m-4 mt-4 shadow-md text-sm md:text-base xl:text-xl justify-items-end md:justify-items-center">
+            <div className="grid grid-cols-4 md:grid-cols-6 bg-white md:m-4 mt-4 shadow-md text-sm md:text-base justify-items-end md:justify-items-center">
                 <span className="m-2 font-bold col-span-2">Plan Created:</span><span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">{DateToUKLocale(treasuryPlan.created_at)}</span>
-                <span className="m-2 font-bold col-span-2">By:</span><span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">{treasuryPlan.user.name}</span>
+                <span className="m-2 font-bold col-span-2">Created by:</span><span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">{treasuryPlan.user.name}</span>
                 <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">£{treasuryPlan.expected_incoming}</span>
                 <span className="m-2 font-bold col-span-2">Expected outgoing (5 years):</span> <span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">£{treasuryPlan.expected_outgoing}</span>
                 <span className="m-2 font-bold col-span-2">Available balance:</span> <span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">£{treasuryPlan.available_balance}</span>
@@ -16,7 +16,7 @@ export default function ViewPlan({treasuryPlan}) {
             </div>
 
             <table className="xl:w-2/3">
-                <thead className="text-slate-700 font-bold text-left xl:text-2xl">
+                <thead className="text-slate-700 font-bold text-left">
                     <tr>
                         <th></th>
                         <th>Priority</th>
@@ -38,19 +38,19 @@ export default function ViewPlan({treasuryPlan}) {
                 </tbody>
             </table>
 
-            <div className="m-6 md:text-xl xl:text-2xl">
+            <div className="m-6 md:text-xl">
                 Estimated Remaining Balance: £{treasuryPlan.estimated_remaining_balance} 
             </div>
 
             <Link 
                 href={route('treasury-plans.create')}
-                className="bg-pink-700 hover:bg-pink-800 text-white text-md border rounded-md w-52 h-9 text-center p-2 flex xl:h-12 xl:w-56 xl:text-lg"
+                className="bg-pink-700 hover:bg-pink-800 text-white text-md border rounded-md w-52 h-9 text-center p-2 flex"
             >
                 <span className="w-full self-center justify-center">Create Treasury Plan</span>
             </Link>
             <Link 
                 href={route('treasury-plans.index')}
-                className="bg-sky-600 hover:bg-sky-700 text-white text-md border rounded-md w-52 h-9 text-center mt-2 p-2 flex xl:h-12 xl:w-56 xl:text-lg"
+                className="bg-sky-600 hover:bg-sky-700 text-white text-md border rounded-md w-52 h-9 text-center mt-2 p-2 flex"
             >
                 <span className="w-full self-center">View all plans</span>
             </Link>

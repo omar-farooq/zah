@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useForm } from '@inertiajs/inertia-react'
 import { HiddenCurrencyInput, ShowErrors, InputContainer, FormLabel, RequestLayout, Title, TileContainer, PreviewTile, FormTile } from '@/Layouts/RequestLayout'
+import PreviewImage from '@/Components/PreviewImage'
 import RequestFormButton from '@/Components/RequestFormButton'
 import Input from '@/Components/RequestFormInput'
 
@@ -48,7 +49,9 @@ export default function PurchaseRequestForm() {
                         </div>
                         <div className="mt-6 sm:mt-0 xl:my-10 xl:px-20 w-52 sm:w-96 xl:w-auto">
                             <label htmlFor="file-input">
-                                <img src={image} />
+                                <PreviewImage 
+                                    src={image} 
+                                />
                             </label>
                             <Input 
                                 id="file-input" 

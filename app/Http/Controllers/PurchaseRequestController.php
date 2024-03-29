@@ -8,6 +8,7 @@ use App\Models\PurchaseRequest;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Redirect;
 
@@ -71,6 +72,7 @@ class PurchaseRequestController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * upload to s3 before adding to the database
      *
      * @param  \App\Http\Requests\StorePurchaseRequestRequest  $request
      * @return \Illuminate\Http\Response
@@ -81,7 +83,15 @@ class PurchaseRequestController extends Controller
 
         if($request->file('image')) {
             $imageName = time() . '.' .$request->image->getClientOriginalName();
-            $request->image->move(public_path('images'), $imageName);
+//            $request->image->move(public_path('images'), $imageName);
+            try{
+                Storage::disk('s3')->putFileAs('images', $request->image, $imageName);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => 'false',
+                    'message' => 'Failed to upload image'
+                ],500);
+            }
             $new_purchase_request['image'] = $imageName;
             $new_purchase_request->save();
         }
@@ -100,7 +110,8 @@ class PurchaseRequestController extends Controller
     {
         return Inertia::render('Purchases/ViewPurchaseRequest', [
             'purchaseRequest' => $purchaseRequest,
-            'title' => 'Request to purchase ' .$purchaseRequest->name
+            'title' => 'Request to purchase ' .$purchaseRequest->name,
+            'requestImage' => Storage::disk('s3')->temporaryUrl('images/'.$purchaseRequest->image, now()->addMinutes(5)),
         ]);
     }
 

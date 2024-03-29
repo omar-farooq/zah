@@ -77,10 +77,6 @@ class ReceiptController extends Controller
      */
     public function show(Receipt $receipt)
     {
-        //S3 specific
-        //Storage::temporaryUrl($receipt->receipt, now()->addMinutes(2));
-
-        //Local driver
         return Storage::disk('s3')->download('documents/receipts/'.$receipt->receipt);
 
     }

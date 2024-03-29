@@ -37,6 +37,7 @@ use App\Http\Controllers\VoteController;
 use App\Models\PurchaseRequest;
 use App\Models\MaintenanceRequest;
 use App\Models\Meeting;
+use App\Services\ImageService;
 use Inertia\Inertia;
 
 /*
@@ -136,6 +137,7 @@ Route::middleware(['auth'])->group(function() {
     Route::resource('tenants', TenancyController::class);
     Route::resource('vote', VoteController::class);
 
+    Route::get('/getImage', [ImageService::class, 'getTemporaryUrl']);
 });
 
 require __DIR__.'/auth.php';

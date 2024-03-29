@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { FormTile, FlexAlignLeft, PreviewImageContainer, PreviewTile, RequestLayout, RequestName, Source, TileContainer, Title } from '@/Layouts/RequestLayout'
+import PreviewImage from '@/Components/PreviewImage'
 import Approval from '@/Components/Approval'
 import Comments from '@/Components/Comments'
 
@@ -7,6 +8,7 @@ export default function PurchaseRequest(props) {
 
     //variables
     const requestItem = props.purchaseRequest
+    const requestImageUrl = props.requestImage
     const model = {name: "App\\Models\\PurchaseRequest", id: requestItem.id}
     let verified = false
     let requesterIsViewing = false
@@ -52,7 +54,9 @@ export default function PurchaseRequest(props) {
                     <PreviewImageContainer>
                         {
                             requestItem.image ?
-                                <img src={"/images/" + requestItem.image} />
+                                <PreviewImage
+                                    src={requestImageUrl} 
+                                />
                             :
                                 <img src="/images/No_Image_Available.jpg" />
                         }
