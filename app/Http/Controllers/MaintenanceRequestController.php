@@ -47,6 +47,13 @@ class MaintenanceRequestController extends Controller
     {
         $new_maintenance_request = Auth::User()->maintenanceRequests()->create($request->all());
 
+        if($request->emergency === true) {
+            $subject = "Emergency Maintenance requested";
+            $messageBody = "<p>" . $request->required_maintenance . " has been requested for the following reason:</p><p>" . $request->reason . "</p><p> please <a href=\"" . env('APP_URL') . "/maintenance-requests/" . $new_maintenance_request->id . "\">click here</a> and review the request as soon as possible.</p>";
+
+            app(JobController::class)->notificationEmail($subject, $messageBody);
+        }
+
         return Redirect::route('maintenance-requests.show', $new_maintenance_request);
     }
 
