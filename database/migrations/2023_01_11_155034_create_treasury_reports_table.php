@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('comments')->nullable();
             $table->decimal('calculated_remaining_budget', $precision = 10, $scale = 2);
             $table->decimal('remaining_budget', $precision = 10, $scale = 2);
+            $table->boolean('submitted')->default(false);
         });
     }
 

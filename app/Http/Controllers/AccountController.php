@@ -12,8 +12,10 @@ class AccountController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * model parameter is passed from TreasuryReport Controller
+     * parameter is used to display a warning when not null
      */
-    public function index()
+    public function index($model = null)
     {
         if(TreasuryReport::count() > 0) {
             $latest_treasury_report = TreasuryReport::all()->last()->id;
@@ -26,7 +28,8 @@ class AccountController extends Controller
         }
         return Inertia::render('Treasury/Accounts/index', [
             'initialAccounts' => $initialAccounts,
-            'defaultAccounts' => DefaultAccount::all()
+            'defaultAccounts' => DefaultAccount::all(),
+            'warning' => $model
         ]);
     }
 

@@ -56,6 +56,15 @@ class TreasuryReportController extends Controller
      */
     public function create()
     {
+        //check the default accounts have been set first
+        $models = ["Purchase", "Maintenance", "PaidRent", "RecurringPayment", "Payment"];
+        foreach($models as $model) {
+            $default = DefaultAccount::where("model", "App\\Models\\".$model)->first();
+            if($default === null) {
+                return app(AccountController::class)->index($model);
+            }
+        }
+
         $arrears = new RentArrear;
         TreasuryReport::count() > 0 ? $latest_treasury_report = TreasuryReport::all()->last()->id : $latest_treasury_report = null;
         

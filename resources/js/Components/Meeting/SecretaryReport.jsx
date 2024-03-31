@@ -117,9 +117,13 @@ export default function SecretaryReport() {
   //            messages.current.show({severity: 'error', summary: 'Error!'})
             }
         } else {
-            let config = { headers: { 'content-type': 'multipart/form-data' }}
-            let res = await axios.post('/secretary-reports', report, config)
-            showNotification(SuccessNotificationSettings(res.data.status, res.data.message, theme))
+            try {
+                let config = { headers: { 'content-type': 'multipart/form-data' }}
+                let res = await axios.post('/secretary-reports', report, config)
+                showNotification(SuccessNotificationSettings(res.data.status, res.data.message, theme))
+            } catch (error) {
+                showNotification({title: 'Error', message: 'Missing content', autoClose: 2000, color: 'red'})
+            }
         }
     }
 
@@ -129,7 +133,7 @@ export default function SecretaryReport() {
                 <Notifications />
                     <form onSubmit={handleSubmit} className="w-full col-start-1 col-end-9 flex flex-col justify-center">
                         <div className="md:w-1/2">
-                        <ComponentTitle bg="bg-sky-700">Secretary's Report</ComponentTitle>
+                        <ComponentTitle bg="bg-sky-600">Secretary's Report</ComponentTitle>
                         </div>
                         <div>
                             <label htmlFor="write">Write Report</label>

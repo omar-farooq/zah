@@ -1,6 +1,6 @@
 import { Button } from '@mantine/core'
 import { useState, useEffect } from 'react'
-import { Agenda, ComponentWrapper, ComponentWrapperWhite, Minutes, SecretaryReport, Polls, Register, Tasks } from '@/Components/Meeting'
+import { Agenda, ComponentWrapper, ComponentWrapperWhite, Documents, Minutes, SecretaryReport, Polls, Register, Tasks } from '@/Components/Meeting'
 import { useDisclosure } from '@mantine/hooks'
 import ConfirmModal from '@/Components/ConfirmModal'
 
@@ -74,6 +74,10 @@ export default function NewMeeting({meeting, tenants, auth}) {
 
                         <ComponentWrapperWhite>
                             <Agenda auth={auth} />
+                        </ComponentWrapperWhite>
+
+                        <ComponentWrapperWhite>
+                            <Documents auth={auth} />
                         </ComponentWrapperWhite>
 
                         <ComponentWrapperWhite>

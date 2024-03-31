@@ -200,6 +200,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
             value={dates} 
             onChange={setDates} 
             minDate={newReportDefaultStart}
+            maxDate={LastDayOfTheMonth()}
             styles={{ 
                 calendar: { width: '600px', backgroundColor: 'white', marginTop: '20px' },
                 calendarHeader: { width: '600px' },
@@ -388,7 +389,13 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
         </div>
 
         <Button 
-            className="bg-white border-blue-400 text-blue-400 hover:text-white hover:bg-sky-600 mt-12 mb-8"
+            className="bg-white border-blue-400 text-blue-400 hover:text-white hover:bg-sky-600 mt-12"
+            onClick={(e) => saveReport(e)}
+        >
+            Save Report
+        </Button>
+        <Button 
+            className="bg-white border-blue-400 text-blue-400 hover:text-white hover:bg-sky-600 mt-4 mb-8"
             onClick={(e) => submitReport(e)}
         >
             Submit Report

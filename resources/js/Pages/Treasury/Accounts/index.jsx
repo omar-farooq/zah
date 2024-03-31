@@ -1,8 +1,8 @@
 import { Fragment, useState, useReducer, useRef } from 'react'
+import { Alert, Modal } from '@mantine/core'
 import { ErrorNotification, SuccessNotification } from '@/Components/Notifications'
+import { ExclamationCircleIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { InertiaLink } from '@inertiajs/inertia-react'
-import { Modal } from '@mantine/core'
-import { TrashIcon } from '@heroicons/react/24/outline'
 import { useDisclosure } from '@mantine/hooks'
 import ButtonColoured from '@/Components/ButtonColoured'
 import Input from '@/Components/Input'
@@ -22,7 +22,7 @@ function reducer(accounts, action) {
         throw Error('Unknown action: ' + action.type);
 }
 
-export default function AccountsIndex({initialAccounts, defaultAccounts}) {
+export default function AccountsIndex({initialAccounts, defaultAccounts, warning}) {
 
     //State for Accounts
     const [newAccount, setNewAccount] = useState({account_name: '', bank: '', description: '', starting_balance: ''})
@@ -91,6 +91,18 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
     return (
         <>
             {/*Table of accounts*/}
+            {warning != null ?
+                    <Alert
+                        color="red"
+                        icon={<ExclamationCircleIcon className="h-6 w-6" />}
+                        title="Missing default account"
+                        className="mt-4"
+                    >
+                        Please set the all of the default accounts. This is used to determine which account money is transferred to and from for these types of payments.
+                    </Alert>
+                :
+                    ''
+            }
             <div className="text-2xl">
                 Accounts
             </div>
@@ -107,7 +119,7 @@ export default function AccountsIndex({initialAccounts, defaultAccounts}) {
                             <tr>
                                 <FirstTD data={x.account_name} />
                                 <TD data={x.bank} />
-                                <TD data={x.treasury_reports.length > 0 ? "£" + (x.treasury_reports[0]?.pivot.account_balance) : "£" + x.starting_balance} />
+                                <TD data={x.treasury_reports?.length > 0 ? "£" + (x.treasury_reports[0]?.pivot.account_balance) : "£" + x.starting_balance} />
                                 <TD data={x.description} />
                                 <LastTD>
                                     <TrashIcon

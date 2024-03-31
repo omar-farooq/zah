@@ -4,6 +4,7 @@ import ComponentTitle from './ComponentTitle'
 import ComponentWrapper from './ComponentWrapper'
 import ComponentWrapperWhite from './ComponentWrapperWhite'
 import CreatePoll from './CreatePoll'
+import Documents from './Documents'
 import DisplayPoll from './DisplayPoll'
 import Form from './Form'
 import Minutes from './Minutes'
@@ -12,4 +13,4 @@ import SecretaryReport from './SecretaryReport'
 import Register from './Register'
 import Tasks from './Tasks'
 
-export { Agenda, Button, ComponentTitle, ComponentWrapper, ComponentWrapperWhite, CreatePoll, DisplayPoll, Form, Minutes, Polls, SecretaryReport, Register, Tasks }
+export { Agenda, Button, ComponentTitle, ComponentWrapper, ComponentWrapperWhite, CreatePoll, DisplayPoll, Documents, Form, Minutes, Polls, SecretaryReport, Register, Tasks }

@@ -6,6 +6,7 @@ use App\Events\AttendanceUpdated;
 use App\Events\GuestListUpdated;
 use App\Http\Requests\StoreMeetingRequest;
 use App\Http\Requests\UpdateMeetingRequest;
+use App\Models\Document;
 use App\Models\Meeting;
 use App\Models\MeetingAgenda;
 use App\Models\MeetingAttendance;
@@ -135,10 +136,11 @@ class MeetingController extends Controller
      */
     public function update(UpdateMeetingRequest $request, Meeting $meeting)
     {
+        Document::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
         MeetingAgenda::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
-        SecretaryReport::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
         Minute::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
         Poll::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
+        SecretaryReport::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
 
         $meeting->update(['completed' => 1]);
     }

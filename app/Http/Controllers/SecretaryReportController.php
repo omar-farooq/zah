@@ -47,6 +47,13 @@ class SecretaryReportController extends Controller
      */
     public function store(Request $request)
     {
+        if(($request->composeType === 'upload' && $request->attachment === null) || ($request->composeType === 'write' && !(isset($request->written_report )))) {
+            return response()->json([
+                'status' => 'failure',
+                'message' => 'missing report'
+            ], 400);
+        }
+
         $newReport = Auth::User()->secretaryReports()->create($request->all());
         if($request->file('attachment')) {
             $reportName = 'Secretary_Report_' . date('Ymd') . '.pdf';

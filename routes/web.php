@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MaintenanceRequestController;
@@ -121,6 +122,7 @@ Route::get('/maintenance/upcoming', [MaintenanceController::class, 'upcoming'])-
 Route::middleware(['auth'])->group(function() {
     Route::resource('agenda', MeetingAgendaController::class);
     Route::resource('comments', CommentController::class);
+    Route::resource('documents', DocumentController::class);
     Route::resource('maintenance', MaintenanceController::class);
     Route::resource('maintenance-requests', MaintenanceRequestController::class);
     Route::resource('meetings', MeetingController::class);
