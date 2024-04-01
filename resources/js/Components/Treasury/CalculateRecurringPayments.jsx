@@ -146,6 +146,7 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
         )
     }
     return (
+        recurringPaymentsToBeMade.length > 0 &&
         <>
             <div className="text-xl mt-8 font-bold">Recurring Payments</div>
             <SmallTable>

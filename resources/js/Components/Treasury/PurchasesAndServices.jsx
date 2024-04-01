@@ -26,6 +26,7 @@ export default function PurchasesAndServices({unreported, itemReducer, reducerFu
     },[])
 
     return (
+        items.length > 0 &&
         <>
             <div className="text-xl mt-12 font-bold">Purchases and Services</div>
             <SmallTable>

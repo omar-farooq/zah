@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('name');
             $table->tinyText('description')->nullable();
             $table->date('payment_date');
+            $table->foreignId('treasury_report_id')->nullable();
         });
     }
 

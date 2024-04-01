@@ -92,16 +92,12 @@ class TreasuryReportController extends Controller
     {
         $request->validate([
             'start_date' => 'required|date',
-            'end_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date|before_or_equal:now',
             'calculated_remaining_budget' => 'decimal:2',
             'remaining_budget' => 'decimal:2',
             'paid_rents.*.amount_paid' => 'decimal:2',
             'accounts_balances.*.calculated' => 'decimal:2',
             'accounts_balances.*.final' => 'nullable|decimal:2',
-            'payables.*.name' => 'alpha_num',
-            'payables.*.payment_date' => 'date',
-            'payables.*.amount' => 'decimal:2',
-            'payables.*.description' => 'nullable|alpha_num'
         ]);
 
         if(isset($request->treasurable) && $request->treasurable == 'recurring') {

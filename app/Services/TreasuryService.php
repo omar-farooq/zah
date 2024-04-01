@@ -28,6 +28,7 @@ class TreasuryService {
         $this->payRent($new_report_id, $request->paid_rents);
         $this->updateAccounts($new_report_id, $request->accounts_balances);
         $this->addReportIDToUnreported($new_report_id);
+        $this->linkAdditionalPaymentsToReport($new_report_id);
 
         return $new_report->id;
     }
@@ -106,7 +107,7 @@ class TreasuryService {
     {
         $receipt = new Receipt;
         $receiptName = date('Ymdhis') . $file->getClientOriginalName();
-        Storage::disk('public')->putFileAs('documents/receipts', $file, $receiptName);
+        Storage::disk('s3')->putFileAs('documents/receipts', $file, $receiptName);
         $receipt['receipt'] = $receiptName;
         $receipt['payable_type'] = $payable_type;
         $receipt['payable_id'] = $payable_id;
@@ -144,6 +145,23 @@ class TreasuryService {
     {
         TreasuryItem::where('treasury_report_id', NULL)
                     ->update(['treasury_report_id' => $treasury_report_id]);
+    }
+
+    /*
+     * Add the report ID to additional payments
+     *
+     */
+    protected function linkAdditionalPaymentsToReport($treasury_report_id)
+    {
+        $payments = Payment::where('treasury_report_id', NULL)->get();
+
+        foreach($payments as $payment) {
+            $this->createTreasurable($treasury_report_id, 'App\\Models\\Payment', $payment->id, $payment->incoming, $payment->amount);
+        }
+
+        Payment::where('treasury_report_id', NULL)
+                ->update(['treasury_report_id' => $treasury_report_id]);
+        
     }
 
     /*
