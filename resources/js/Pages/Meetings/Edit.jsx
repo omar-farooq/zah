@@ -77,7 +77,10 @@ export default function NewMeeting({meeting, tenants, auth}) {
                         </ComponentWrapperWhite>
 
                         <ComponentWrapperWhite>
-                            <Documents auth={auth} />
+                            <Documents 
+                                auth={auth} 
+                                meetingId={meeting.id}
+                            />
                         </ComponentWrapperWhite>
 
                         <ComponentWrapperWhite>

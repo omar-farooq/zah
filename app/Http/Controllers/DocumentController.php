@@ -6,15 +6,29 @@ use App\Models\Document;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class DocumentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Document $document, Request $request)
     {
-        return response()->json(Document::where('meeting_id', NULL)->get());
+        if($request->has('meeting_id')) {
+            return response()->json(Document::where('meeting_id', $request->query('meeting_id'))->get());
+        } elseif ($request->has('all')) {
+            $searchTerm = $request->query('search');            
+            return response()->json(
+                $document->where('description', 'like', '%'.$searchTerm.'%')
+                ->orderBy('created_at', 'desc')
+                ->paginate(50)
+            );
+        } else {
+            return Inertia::render('Documents/Browse', [
+                'title' => 'Download Documents',
+            ]);
+        }
     }
 
     /**
@@ -22,7 +36,9 @@ class DocumentController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Documents/Upload', [
+            'title' => 'Upload Documents',
+        ]);
     }
 
     /**
@@ -37,11 +53,11 @@ class DocumentController extends Controller
 
         $original_name = $request->file('attachment')->getClientOriginalName();
         $ext = $request->file('attachment')->extension();
-        $storage_name = 'Meeting_Document_' . date('Ymd') . "." . $ext;
+        $storage_name = 'Zah_Document_' . date('Ymd') . "." . $ext;
 
         //upload
         try {
-            Storage::disk('s3')->putFileAs('/documents/meetings', $request->file('attachment'), $storage_name);
+            Storage::disk('s3')->putFileAs('/documents/general', $request->file('attachment'), $storage_name);
         } 
         catch(\Throwable $e) {
             return response()->json([
@@ -56,6 +72,7 @@ class DocumentController extends Controller
         $document->original_name = $original_name;
         $document->upload_name = $storage_name;
         $document->user_id = Auth::id();
+        $document->meeting_id = $request->meeting_id ?? NULL;
         $document->save();
 
         return response()->json([
@@ -94,7 +111,7 @@ class DocumentController extends Controller
     public function destroy(Document $document)
     {
         if($document->user_id === Auth::id()) {
-            Storage::disk('s3')->delete('/documents/meetings/'.$document->upload_name);
+            Storage::disk('s3')->delete('/documents/general/'.$document->upload_name);
             $document->delete();
         }
     }

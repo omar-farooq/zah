@@ -1,10 +1,11 @@
 import {
-    HomeIcon,
-    WrenchIcon,
-    ShoppingBagIcon,
     ClipboardDocumentListIcon,
     CurrencyPoundIcon,
-    UserGroupIcon
+    FolderIcon,
+    HomeIcon,
+    ShoppingBagIcon,
+    UserGroupIcon,
+    WrenchIcon
 } from '@heroicons/react/24/outline'
 
 const NavMenu = [
@@ -42,7 +43,14 @@ const NavMenu = [
             {id: 4, label: 'Pending Approval', link: '/maintenance-requests'}
         ]
     },
-    {id: 5, label: 'Users', icon: UserGroupIcon,
+    {id: 5, label: 'Documents', icon: FolderIcon,
+        links: [
+            {id: 1, label: 'Browse', link: '/documents'},
+            {id: 2, label: 'Upload', link: '/documents/create'},
+            {id: 3, label: 'Documentation', link: '/documentation'},
+        ]
+    },
+    {id: 6, label: 'Users', icon: UserGroupIcon,
         links: [
             {id: 1, label: 'Member Roles', link: '/roles'},
             {id: 2, label: 'Manage', link: '/users'},

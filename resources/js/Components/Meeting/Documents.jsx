@@ -27,17 +27,17 @@ const useStyles = createStyles((theme) => ({
             },
 }));
 
-export default function Documents({auth}) {
+export default function Documents({auth, meetingId}) {
 
     const { classes, theme } = useStyles()
     const openRef = useRef(null)
 
     //States
-    const [newDoc, setNewDoc] = useState({attachment: '', description: ''})
+    const [newDoc, setNewDoc] = useState({attachment: '', description: '', meeting_id: meetingId})
     const [docs, setDocs] = useState([])
 
     const getDocs = async () => {
-        let res = await axios.get('/documents')
+        let res = await axios.get('/documents?meeting_id='+meetingId)
         setDocs(res.data)
     }
 
@@ -63,7 +63,7 @@ export default function Documents({auth}) {
             let config = { headers: { 'content-type': 'multipart/form-data' }}
             let res = await axios.post('/documents', newDoc, config)
             showNotification(SuccessNotificationSettings(res.data.status, res.data.message, theme))
-            setNewDoc({attachment: '', description: ''})
+            setNewDoc({attachment: '', description: '', meeting_id: meetingId})
         } catch (error) {
             showNotification({title: 'Error', message: 'Missing content', autoClose: 2000, color: 'red'})
         }

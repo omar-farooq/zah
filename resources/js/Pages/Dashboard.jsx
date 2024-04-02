@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Authenticated from '@/Layouts/Authenticated';
 import { CheckIcon } from '@heroicons/react/24/solid';
 import { Head } from '@inertiajs/inertia-react';
+import { ComponentWrapperWhite, SecretaryReport } from '@/Components/Meeting';
 
 export default function Dashboard(props) {
 
@@ -57,6 +58,14 @@ export default function Dashboard(props) {
                 </>
                 :
                 <div className="text-xl w-full text-center">You have no assigned tasks</div>
+            }
+            {
+                props.auth.user.role.name == "Secretary" ?
+                    <ComponentWrapperWhite>
+                        <SecretaryReport />
+                    </ComponentWrapperWhite>
+                    
+                : ''
             }
         </>
     );
