@@ -35,9 +35,10 @@ use App\Http\Controllers\TreasuryReportController;
 use App\Http\Controllers\TreasuryPlanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
-use App\Models\PurchaseRequest;
+use App\Models\Document;
 use App\Models\MaintenanceRequest;
 use App\Models\Meeting;
+use App\Models\PurchaseRequest;
 use App\Services\ImageService;
 use Inertia\Inertia;
 
@@ -73,6 +74,10 @@ Route::get('/purchase-requests/{purchaseRequest}/comments', function (PurchaseRe
 
 Route::get('/maintenance-requests/{maintenanceRequest}/comments', function (MaintenanceRequest $maintenanceRequest) {
     return $maintenanceRequest->comments()->paginate(5);
+});
+
+Route::get('/documents/{document}/comments', function (Document $document) {
+    return $document->comments()->paginate(5);
 });
 
 //Members Only

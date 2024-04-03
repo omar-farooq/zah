@@ -53,7 +53,7 @@ class DocumentController extends Controller
 
         $original_name = $request->file('attachment')->getClientOriginalName();
         $ext = $request->file('attachment')->extension();
-        $storage_name = 'Zah_Document_' . date('Ymd') . "." . $ext;
+        $storage_name = 'Zah_Document_' . date('YmdHis') . "." . $ext;
 
         //upload
         try {
@@ -86,7 +86,7 @@ class DocumentController extends Controller
      */
     public function show(Document $document)
     {
-        return Storage::disk('s3')->download('documents/meetings/' . $document->upload_name);
+        return Storage::disk('s3')->download('documents/general/' . $document->upload_name);
     }
 
     /**

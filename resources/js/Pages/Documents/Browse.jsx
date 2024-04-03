@@ -1,12 +1,13 @@
 import { Fragment, useEffect, useState } from 'react'
 import { Input, Pagination } from '@mantine/core'
-import { MagnifyingGlassIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
+import { DateToUKLocale } from '@/Shared/Functions'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/Table'
+
 export default function Browse({auth}) {
 
     //Array of maintenance objects
     const [documents, setDocuments] = useState([])
-
 
     //Pagination
     const [activeDocumentsPage, setActiveDocumentsPage] = useState(1)
@@ -38,7 +39,7 @@ export default function Browse({auth}) {
                         <Table>
                             <THead>
                                 <FirstTH heading="Description" />
-                                <TH heading="Download" />
+                                <TH heading="Upload Date" />
                                 <LastTH />
                             </THead>
                             <TBody>
@@ -46,10 +47,13 @@ export default function Browse({auth}) {
                                     <Fragment key={x.id}>
                                         <tr>
                                             <FirstTD data={x.description} />
-                                            <TD data={x.download} />
+                                            <TD data={DateToUKLocale(x.created_at)} />
                                             <LastTD
-                                                href={"maintenance"}
+                                                file
+                                                href={"documents"}
                                                 itemID={x.id}
+                                                commentRoute={`/documents/${x.id}/comments`}
+                                                model={{name: "App\\Models\\Document", id: x.id}}
                                             />
                                         </tr>
                                     </Fragment>
