@@ -9,8 +9,9 @@ import DisplayPoll from './DisplayPoll'
 import Form from './Form'
 import Minutes from './Minutes'
 import Polls from './Polls'
+import PreviousMinutes from './PreviousMinutes'
 import SecretaryReport from './SecretaryReport'
 import Register from './Register'
 import Tasks from './Tasks'
 
-export { Agenda, Button, ComponentTitle, ComponentWrapper, ComponentWrapperWhite, CreatePoll, DisplayPoll, Documents, Form, Minutes, Polls, SecretaryReport, Register, Tasks }
+export { Agenda, Button, ComponentTitle, ComponentWrapper, ComponentWrapperWhite, CreatePoll, DisplayPoll, Documents, Form, Minutes, Polls, PreviousMinutes, SecretaryReport, Register, Tasks }
