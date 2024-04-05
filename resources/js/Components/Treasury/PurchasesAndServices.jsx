@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect, useReducer } from 'react'
-import { Link } from '@inertiajs/inertia-react'
+import { Link } from '@inertiajs/react'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
 export default function PurchasesAndServices({unreported, itemReducer, reducerFunction, calculatedHook}) {

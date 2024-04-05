@@ -459,7 +459,7 @@ export default function Schedule(props) {
 
             <ConfirmModal
                 title="Confirm Meeting Cancellation"
-                text=<p>Are you sure you want to cancel this meeting?</p>
+                text={<p>Are you sure you want to cancel this meeting?</p>}
                 confirmFunction={() => {cancelMeeting(meetingToCancel); modalHandlers.close()}}
                 cancelFunction={() => modalHandlers.close()}
                 modalOpened={deleteMeetingModalOpened}

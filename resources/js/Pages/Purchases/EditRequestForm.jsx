@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useForm } from '@inertiajs/inertia-react'
+import { useForm } from '@inertiajs/react'
 import { HiddenCurrencyInput, ShowErrors, InputContainer, FormLabel, RequestLayout, Title, TileContainer, PreviewTile, FormTile } from '@/Layouts/RequestLayout'
 import RequestFormButton from '@/Components/RequestFormButton'
 import Input from '@/Components/RequestFormInput'

@@ -1,6 +1,6 @@
 import { Fragment, useReducer, useState } from 'react'
 import { ErrorNotification, SuccessNotification } from '@/Components/Notifications'
-import { Link } from '@inertiajs/inertia-react'
+import { Link } from '@inertiajs/react'
 export default function Rules({ruleSections}) {
     const [editorMode, setEditorMode] = useState(false)
     const [ruleToEdit, setRuleToEdit] = useState('')

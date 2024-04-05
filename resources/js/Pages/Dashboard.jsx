@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Authenticated from '@/Layouts/Authenticated';
 import { CheckIcon } from '@heroicons/react/24/solid';
-import { Head } from '@inertiajs/inertia-react';
+import { Head } from '@inertiajs/react';
 import { ComponentWrapperWhite, SecretaryReport } from '@/Components/Meeting';
 
 export default function Dashboard(props) {

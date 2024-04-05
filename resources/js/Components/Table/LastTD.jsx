@@ -1,7 +1,7 @@
 import { ChatBubbleBottomCenterTextIcon, PencilSquareIcon, EyeIcon, FolderArrowDownIcon } from '@heroicons/react/24/outline'
 import { useDisclosure } from '@mantine/hooks'
 import CommentDrawer from '@/Components/Comments/CommentDrawer'
-import { InertiaLink } from '@inertiajs/inertia-react'
+import { Link } from '@inertiajs/react'
 
 export default function LastTD({href, authUserID, author, itemID, children, model, commentRoute, file=false}) {
     
@@ -15,15 +15,15 @@ export default function LastTD({href, authUserID, author, itemID, children, mode
                     file ?
                         <a href={`/documents/${itemID}`}><FolderArrowDownIcon className="w-6 h-6 text-yellow-800 hover:text-yellow-950" /></a>
                     :
-                        <InertiaLink href={route(href + '.show', itemID)}>
+                        <Link href={route(href + '.show', itemID)}>
                             <EyeIcon className="w-6 h-6 text-cyan-600 hover:text-cyan-700" />
-                        </InertiaLink>
+                        </Link>
                 }
 
             {author && authUserID == author && 
-                <InertiaLink href={route(href + '.edit', itemID)}>
+                <Link href={route(href + '.edit', itemID)}>
                     <PencilSquareIcon className="w-6 h-6 mr-2 text-teal-600 hover:text-teal-700 ml-1" />
-                </InertiaLink>
+                </Link>
             }
 
             {commentRoute &&

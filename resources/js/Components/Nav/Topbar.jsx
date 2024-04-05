@@ -4,7 +4,7 @@ import Dropdown from '@/Components/Dropdown';
 import MobileNavMenu from '@/Components/Nav/MobileNavMenu';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link } from '@inertiajs/inertia-react';
+import { Link } from '@inertiajs/react';
 
 export default function Topbar({ auth, header, title }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);

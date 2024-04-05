@@ -170,7 +170,7 @@ export default function DisplayPoll({auth, poll}) {
 
             </div>
   				<ConfirmModal
-                	text=<p>Are you sure you want to delete this poll?</p>
+                	text={<p>Are you sure you want to delete this poll?</p>}
                 	confirmFunction={() => {deletePoll(); modalHandlers.close()}}
                 	cancelFunction={() => {modalHandlers.close()}}
                 	modalOpened={modalOpened}

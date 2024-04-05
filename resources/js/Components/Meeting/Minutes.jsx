@@ -1,7 +1,7 @@
 import { ComponentTitle, Form } from '@/Components/Meeting'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { useState, useEffect, useReducer } from 'react'
-import { useForm } from '@inertiajs/inertia-react'
+import { useForm } from '@inertiajs/react'
 import { useDisclosure } from '@mantine/hooks'
 import { Button, Textarea } from '@mantine/core'
 import ConfirmModal from '@/Components/ConfirmModal'
@@ -165,7 +165,7 @@ export default function Minutes({meetingID}) {
                     </form>
             }
             <ConfirmModal 
-                text=<p>Are you sure you want to delete this minute?<br /> "{selectedMinute.minute_text}"</p>
+                text={<p>Are you sure you want to delete this minute?<br /> "{selectedMinute.minute_text}"</p>}
                 confirmFunction={() => {deleteMinute(selectedMinute.id); modalHandlers.close()}}
                 cancelFunction={() => {setSelectedMinute(''); modalHandlers.close()}}
                 modalOpened={modalOpened}

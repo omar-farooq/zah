@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from '@inertiajs/inertia-react'
+import { Link } from '@inertiajs/react'
 export default function ProductCards({cards,model}) {
 
     const getImage = async (imageName) => {

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Alert, Button, MantineProvider } from '@mantine/core'
 import { Notifications } from '@mantine/notifications';
 import { ErrorNotification } from '@/Components/Notifications'
-import { Link } from '@inertiajs/inertia-react';
+import { Link } from '@inertiajs/react';
 import Input from '@/Components/Input'
 import TextArea from '@/Components/TextArea'
 

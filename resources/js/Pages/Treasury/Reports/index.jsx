@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from '@inertiajs/inertia-react'
+import { Link } from '@inertiajs/react'
 import { Pagination } from '@mantine/core'
 import { DateTimeToUKDate } from '@/Shared/Functions'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/Table'

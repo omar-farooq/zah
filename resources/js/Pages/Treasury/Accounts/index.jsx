@@ -2,7 +2,7 @@ import { Fragment, useState, useReducer, useRef } from 'react'
 import { Alert, Modal } from '@mantine/core'
 import { ErrorNotification, SuccessNotification } from '@/Components/Notifications'
 import { ExclamationCircleIcon, TrashIcon } from '@heroicons/react/24/outline'
-import { InertiaLink } from '@inertiajs/inertia-react'
+import { Link } from '@inertiajs/react'
 import { useDisclosure } from '@mantine/hooks'
 import ButtonColoured from '@/Components/ButtonColoured'
 import Input from '@/Components/Input'
@@ -180,7 +180,7 @@ export default function AccountsIndex({initialAccounts, defaultAccounts, warning
             </form>
             <Modal opened={modalOpened} onClose={modalHandlers.close} title="Confirm Delete" centered>
                 <div className="mb-4">Are you sure you want to delete the Account {selectedAccountToDestroy.name}?</div>
-                <InertiaLink
+                <Link
                     href={route('accounts.destroy', selectedAccountToDestroy.id)}
                     method="delete" as="button"
                     onClick={() => {
@@ -191,7 +191,7 @@ export default function AccountsIndex({initialAccounts, defaultAccounts, warning
                     className="bg-red-600 hover:bg-red-700 text-white h-9 w-20 border rounded-md mr-0.5"
                 >
                     Confirm
-                </InertiaLink>
+                </Link>
                 <button className="bg-zinc-800 text-white h-9 w-20 border rounded-md" onClick={modalHandlers.close}>Cancel</button>
             </Modal>
 

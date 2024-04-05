@@ -1,4 +1,4 @@
-import { InertiaLink } from '@inertiajs/inertia-react'
+import { Link } from '@inertiajs/react'
 import { useDisclosure } from '@mantine/hooks'
 import { Modal } from '@mantine/core'
 

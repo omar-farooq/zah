@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Group, Box, Collapse, ThemeIcon, UnstyledButton, createStyles, rem } from '@mantine/core';
 import { ChevronRightIcon, ChevronLeftIcon, CalendarDaysIcon } from '@heroicons/react/24/outline'
 import NavLink from '@/Components/Nav/NavLink' 
-import { Link } from '@inertiajs/inertia-react'
+import { Link } from '@inertiajs/react'
 
 const useStyles = createStyles((theme) => ({
   control: {

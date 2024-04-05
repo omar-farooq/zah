@@ -1,5 +1,5 @@
 import { Button, Loader } from '@mantine/core'
-import { InertiaLink } from '@inertiajs/inertia-react'
+import { Link } from '@inertiajs/react'
 import { useEffect, useRef, useState } from 'react'
 import { useDisclosure } from '@mantine/hooks'
 import { TrashIcon, UserIcon, UserMinusIcon } from '@heroicons/react/24/outline'
@@ -90,11 +90,11 @@ export default function Manage({auth}) {
                                 {member.name}
                             </td>
                             <td className="border border-slate-200 text-center">
-                                <InertiaLink href={route('users.show', member.id)}>
+                                <Link href={route('users.show', member.id)}>
                                     <UserIcon
                                         className="h-6 w-6 cursor-pointer text-cyan-600 m-auto"
                                     />
-                                </InertiaLink>
+                                </Link>
                             </td>
                             <td className="border border-slate-200 text-center">
                                 {membershipApproval.delete.find(approval => approval.approvable_id == member.id) ?
@@ -177,7 +177,7 @@ export default function Manage({auth}) {
                 />
             </div>
             <ConfirmModal
-                text=<p>Are you want to delete {selectedUserToDelete.label}?</p>
+                text={<p>Are you want to delete {selectedUserToDelete.label}?</p>}
                 confirmFunction={() => {deleteUser(selectedUserToDelete.value); modalHandlers.close()}}
                 cancelFunction={() => {setSelectedUserToDelete(''); modalHandlers.close()}}
                 modalOpened={modalOpened}

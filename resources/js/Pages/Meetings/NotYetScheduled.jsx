@@ -1,5 +1,5 @@
 import Agenda from '@/Components/Meeting/Agenda'
-import { InertiaLink } from '@inertiajs/inertia-react'
+import { Link } from '@inertiajs/react'
 
 export default function NotYetScheduled({auth}) {
     return (
@@ -14,12 +14,12 @@ export default function NotYetScheduled({auth}) {
                     auth={auth}
                 />
             </div>
-                <InertiaLink 
+                <Link 
                     href={route("schedule")}
                     className="text-xl text-sky-600"
                 >
                     Click here to schedule a meeting
-                </InertiaLink>
+                </Link>
         </>
     )
 }

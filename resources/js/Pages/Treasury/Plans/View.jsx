@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { Link } from '@inertiajs/inertia-react';
+import { Link } from '@inertiajs/react';
 import { DateToUKLocale } from '@/Shared/Functions'
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/solid'
 export default function ViewPlan({treasuryPlan}) {

@@ -1,5 +1,5 @@
 import { PencilSquareIcon, EyeIcon } from '@heroicons/react/24/outline'
-import { InertiaLink } from '@inertiajs/inertia-react'
+import { Link } from '@inertiajs/react'
 
 export default function LastTD({children}) {
     return (
