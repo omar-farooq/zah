@@ -69,7 +69,8 @@ export default function Agenda({auth}) {
             .listen('.MeetingAgendaDeleted', (e) => {
                 dispatch({type: 'delete', itemId: e.model.id})
             })
-        return function cleanup() {
+        return () => {
+            Echo.private(`meeting`).stopListening('.MeetingAgendaCreated').stopListening('.MeetingAgendaDeleted')
             Echo.leaveChannel('meeting')
         }
     },[])

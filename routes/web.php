@@ -125,6 +125,11 @@ Route::get('/maintenance/upcoming', [MaintenanceController::class, 'upcoming'])-
 
 //Requires user to be signed in
 Route::middleware(['auth'])->group(function() {
+    Route::get('/documentation', function () {
+        return Inertia::render('Documents/Documentation', [
+            'title' => 'Documentation'
+        ]);
+    })->name('documentation');
     Route::resource('agenda', MeetingAgendaController::class);
     Route::resource('comments', CommentController::class);
     Route::resource('documents', DocumentController::class);

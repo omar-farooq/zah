@@ -62,7 +62,7 @@ export default function Dashboard(props) {
             {
                 props.auth.user.role.name == "Secretary" ?
                     <ComponentWrapperWhite>
-                        <SecretaryReport />
+                        <SecretaryReport auth={props.auth} />
                     </ComponentWrapperWhite>
                     
                 : ''

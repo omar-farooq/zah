@@ -95,7 +95,8 @@ export default function Minutes({meetingID}) {
             .listen('.MinuteDeleted', (e) => {
                 dispatch({type: 'delete', itemId: e.model.id})
             })
-        return function cleanup() {
+        return () => {
+            Echo.private(`meeting`).stopListening('.MinuteCreated').stopListening('.MinuteUpdated').stopListening('.MinuteDeleted')
             Echo.leaveChannel('meeting')
         }
     }, [])

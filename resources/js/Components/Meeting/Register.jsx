@@ -62,7 +62,8 @@ export default function Register({tenants, meeting}) {
                     label: x.name
                 })))
             })
-        return function cleanup() {
+        return () => {
+            Echo.private(`meeting`).stopListening('AttendanceUpdated').stopListening('GuestListUpdated')
             Echo.leaveChannel('meeting-register')
         }
     }, [])

@@ -31,6 +31,11 @@ export default function Polls({auth}) {
         .listen('.VoteUpdated', (e) => {
             getPolls()
         })
+
+        return () => {
+            Echo.private(`meeting`).stopListening('.PollCreated').stopListening('.PollDeleted').stopListening('.VoteCreated').stopListening('.VoteUpdated')
+            Echo.leaveChannel('meeting')
+        }
     },[])
 
     return (

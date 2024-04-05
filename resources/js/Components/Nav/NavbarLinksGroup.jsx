@@ -50,8 +50,10 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }) {
   const ChevronIcon = theme.dir === 'ltr' ? ChevronRightIcon : ChevronLeftIcon;
   const items = (hasLinks ? links : []).map((link) => (
 
-      //Joining a meeting isn't an inertia link as we're joining a channel, otherwise the broadcasting events bubble
-      link.label == 'Join' ?
+      //Joining a meeting wasn't an inertia link for a period of time as, when joining a channel, the broadcasting events would bubble.
+      //This seems to have been resolved by doing the proper cleanup on the mounted components.
+      //Keeping in for now in case a link is needed for a route in the future
+      link.label == 'NotNeededAnymore' ?
         <a
             className={`${classes.link} text-slate-300`}
             href={link.link}

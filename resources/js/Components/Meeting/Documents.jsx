@@ -22,7 +22,8 @@ export default function Documents({auth, meetingId}) {
             .listen('.DocumentDeleted', (e) => {
                 getDocs()
             })
-        return function cleanup() {
+        return () => {
+            Echo.private(`meeting`).stopListening('.DocumentCreated').stopListening('.DocumentDeleted')
             Echo.leaveChannel('meeting')
         }
     }, [])

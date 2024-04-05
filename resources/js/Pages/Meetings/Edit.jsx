@@ -88,7 +88,7 @@ export default function NewMeeting({meeting, tenants, auth}) {
                         </ComponentWrapperWhite>
 
                         <ComponentWrapperWhite>
-                            <SecretaryReport />
+                            <SecretaryReport auth={auth} />
                         </ComponentWrapperWhite>
 
                         <ComponentWrapperWhite>

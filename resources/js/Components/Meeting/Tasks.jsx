@@ -117,7 +117,8 @@ export default function Tasks() {
 					dispatch({type: 'complete', itemId: e.model.id})
 				}
 			})
-        return function cleanup() {
+        return () => {
+            Echo.private(`meeting`).stopListening('.TaskCreated').stopListening('.TaskUpdated').stopListening('.TaskDeleted')
             Echo.leaveChannel('meeting')
         }
     }, [])
