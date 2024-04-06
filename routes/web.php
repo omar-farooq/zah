@@ -96,7 +96,10 @@ Route::middleware(['member', 'auth'])->group(function() {
 
     Route::resource('accounts', AccountController::class);
     Route::resource('approval', ApprovalController::class);
+    Route::resource('documents', DocumentController::class);
+    Route::resource('maintenance-requests', MaintenanceRequestController::class);
     Route::resource('memberships', MembershipController::class);
+    Route::resource('purchase-requests', PurchaseRequestController::class);
     Route::resource('receipts', ReceiptController::class);
     Route::resource('recurring-payments', RecurringPaymentController::class);
     Route::resource('rents', RentController::class);
@@ -132,16 +135,13 @@ Route::middleware(['auth'])->group(function() {
     })->name('documentation');
     Route::resource('agenda', MeetingAgendaController::class);
     Route::resource('comments', CommentController::class);
-    Route::resource('documents', DocumentController::class);
     Route::resource('maintenance', MaintenanceController::class);
-    Route::resource('maintenance-requests', MaintenanceRequestController::class);
     Route::resource('meetings', MeetingController::class);
     Route::resource('minutes', MinuteController::class);
     Route::resource('nextOfKin', NextOfKinController::class);
     Route::resource('payments', PaymentController::class);
     Route::resource('poll', PollController::class);
     Route::resource('purchases', PurchaseController::class);
-    Route::resource('purchase-requests', PurchaseRequestController::class);
     Route::resource('roles', RoleController::class);
     Route::resource('rules', RuleController::class);
     Route::resource('secretary-reports', SecretaryReportController::class);

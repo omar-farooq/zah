@@ -60,7 +60,7 @@ export default function Dashboard(props) {
                 <div className="text-xl w-full text-center">You have no assigned tasks</div>
             }
             {
-                props.auth.user.role.name == "Secretary" ?
+                props.auth.user.role?.name == "Secretary" ?
                     <ComponentWrapperWhite>
                         <SecretaryReport auth={props.auth} />
                     </ComponentWrapperWhite>
