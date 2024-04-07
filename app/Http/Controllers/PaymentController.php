@@ -113,7 +113,7 @@ class PaymentController extends Controller
         $receipt = new Receipt;
         $found_receipt = $receipt->where('payable_type', 'App\\Models\\Payment')->where('payable_id', $payment->id)->first();
         if($found_receipt !== NULL) {
-            Storage::disk('s3')->delete('documents/receipts/'.$found_receipt->receipt);
+            Storage::delete('documents/receipts/'.$found_receipt->receipt);
             $found_receipt->delete();
         }
         $payment->delete();

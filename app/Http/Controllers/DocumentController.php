@@ -57,7 +57,7 @@ class DocumentController extends Controller
 
         //upload
         try {
-            Storage::disk('s3')->putFileAs('/documents/general', $request->file('attachment'), $storage_name);
+            Storage::putFileAs('/documents/general', $request->file('attachment'), $storage_name);
         } 
         catch(\Throwable $e) {
             return response()->json([
@@ -86,7 +86,7 @@ class DocumentController extends Controller
      */
     public function show(Document $document)
     {
-        return Storage::disk('s3')->download('documents/general/' . $document->upload_name);
+        return Storage::download('documents/general/' . $document->upload_name);
     }
 
     /**
@@ -111,7 +111,7 @@ class DocumentController extends Controller
     public function destroy(Document $document)
     {
         if($document->user_id === Auth::id()) {
-            Storage::disk('s3')->delete('/documents/general/'.$document->upload_name);
+            Storage::delete('/documents/general/'.$document->upload_name);
             $document->delete();
         }
     }

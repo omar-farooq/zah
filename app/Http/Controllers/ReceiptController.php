@@ -47,7 +47,7 @@ class ReceiptController extends Controller
 
         //Upload to storage
         try {
-            Storage::disk('s3')->putFileAs('documents/receipts', $request->receiptFile, $receiptName);
+            Storage::putFileAs('documents/receipts', $request->receiptFile, $receiptName);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => 'false',
@@ -77,7 +77,7 @@ class ReceiptController extends Controller
      */
     public function show(Receipt $receipt)
     {
-        return Storage::disk('s3')->download('documents/receipts/'.$receipt->receipt);
+        return Storage::download('documents/receipts/'.$receipt->receipt);
 
     }
 
@@ -112,7 +112,7 @@ class ReceiptController extends Controller
      */
     public function destroy(Receipt $receipt)
     {
-        Storage::disk('s3')->delete('documents/receipts/'.$receipt->receipt);
+        Storage::delete('documents/receipts/'.$receipt->receipt);
         Receipt::destroy($receipt->id);
     }
 }

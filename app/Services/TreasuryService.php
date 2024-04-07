@@ -107,7 +107,7 @@ class TreasuryService {
     {
         $receipt = new Receipt;
         $receiptName = date('Ymdhis') . $file->getClientOriginalName();
-        Storage::disk('s3')->putFileAs('documents/receipts', $file, $receiptName);
+        Storage::putFileAs('documents/receipts', $file, $receiptName);
         $receipt['receipt'] = $receiptName;
         $receipt['payable_type'] = $payable_type;
         $receipt['payable_id'] = $payable_id;
