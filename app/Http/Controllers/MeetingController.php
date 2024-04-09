@@ -30,7 +30,7 @@ class MeetingController extends Controller
     {
         if(isset($request->getMeetings) && $request->getMeetings === 'true') {
             return response()->json(
-                $meeting->where('cancelled',1)->orWhere('completed',1)->paginate(10)
+                $meeting->where('cancelled',1)->orWhere('completed',1)->orderBy('time_of_meeting', 'desc')->paginate(10)
             );
         } else if (isset($request->search)) {
             $result = Meeting::with('minutes', 'polls')->whereRelation('minutes', 'minute_text', 'like', '%'.$request->search.'%')
@@ -40,7 +40,7 @@ class MeetingController extends Controller
         } else {
             return Inertia::render('Meetings/Index', [
                 'title' => 'Previous Minutes',
-                'meetingsPageOne' => $meeting->where('cancelled',1)->orWhere('completed',1)->paginate(10)
+                'meetingsPageOne' => $meeting->where('cancelled',1)->orWhere('completed',1)->orderBy('time_of_meeting', 'desc')->paginate(10)
             ]);
         }
     }
@@ -112,7 +112,7 @@ class MeetingController extends Controller
     {
         return Inertia::render('Meetings/View', [
             'title' => 'Historical Meeting',
-            'meeting' => $meeting->load(['meetingAgenda','minutes', 'attendees', 'secretaryReport', 'polls'])
+            'meeting' => $meeting->load(['meetingAgenda','minutes', 'attendees', 'secretaryReport', 'polls', 'guests'])
         ]);
     }
 

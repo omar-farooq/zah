@@ -6,7 +6,7 @@ import { draw, generate } from 'patternomaly'
 import { Modal } from '@mantine/core'
 import ConfirmModal from '@/Components/ConfirmModal'
 
-export default function DisplayPoll({auth, poll}) {
+export default function DisplayPoll({auth, poll, allowDelete=false}) {
 
     const [members, setMembers] = useState([])
 
@@ -135,12 +135,15 @@ export default function DisplayPoll({auth, poll}) {
         <>
             <div className="flex flex-row my-4">
                 <div className="w-full"><canvas id={`poll-${poll.id}-results`} className="w-full"></canvas></div>
-                <XMarkIcon 
-                    className="h-10 w-10 text-red-600 cursor-pointer"
-                    onClick={() => modalHandlers.open()}
-                >
-                    X
-                </XMarkIcon>
+                {allowDelete ?
+                    <XMarkIcon 
+                        className="h-10 w-10 text-red-600 cursor-pointer"
+                        onClick={() => modalHandlers.open()}
+                    >
+                        X
+                    </XMarkIcon>
+                    : ''
+                }
                 {!poll.meeting_id ?
 
                     <div className="flex flex-col justify-center ml-4">

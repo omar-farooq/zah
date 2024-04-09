@@ -1,6 +1,5 @@
 import { ComponentWrapper, ComponentTitle, DisplayPoll } from '@/Components/Meeting'
 export default function Historical ({meeting, auth}) {
-console.log(meeting)
     //need to add treasurer's reports
     return (
         <div className="w-full">
@@ -19,7 +18,7 @@ console.log(meeting)
                     )}
                     </ul>
                     <ul> {meeting.guests?.map(x =>
-                        <li key={x.id} className="text-xl">
+                        <li key={x.id} className="text-xl text-green-700">
                             {x.name}
                         </li>
                     )}

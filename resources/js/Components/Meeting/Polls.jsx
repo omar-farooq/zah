@@ -50,7 +50,7 @@ export default function Polls({auth}) {
                         <div className="text-2xl mb-4">There are no polls</div>
                     :
                         polls.map(poll => ( 
-                            <DisplayPoll auth={auth} poll={poll} key={poll.id} />
+                            <DisplayPoll auth={auth} poll={poll} key={poll.id} allowDelete={true} />
                         ))
                 }
             </div>
