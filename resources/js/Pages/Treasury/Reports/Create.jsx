@@ -158,7 +158,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
                     allowSingleDateInRange
                     value={dates} 
                     onChange={setDates} 
-                    minDate={newReportDefaultStart}
+                    minDate={previousReport ? newReportDefaultStart : ''}
                     maxDate={LastDayOfTheMonth()}
                     styles={{ 
                         calendar: { width: '300px', backgroundColor: 'white', marginTop: '20px' },
@@ -187,7 +187,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
                     allowSingleDateInRange
                     value={dates} 
                     onChange={setDates} 
-                    minDate={newReportDefaultStart}
+                    minDate={previousReport ? newReportDefaultStart : ''}
                     maxDate={LastDayOfTheMonth()}
                     styles={{ 
                         calendar: { width: '600px', backgroundColor: 'white', marginTop: '20px' },
