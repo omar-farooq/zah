@@ -75,7 +75,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
     },[dates])
 
     const updateSinglePaidRent = (userId, amount, payable) => {
-        setPaidRent([...paidRent.filter(x => x.user_id !== userId), {...paidRent.find(x => x.user_id === userId), amount_paid: Number(amount)}])
+        setPaidRent([...paidRent.filter(x => x.user_id !== userId), {...paidRent.find(x => x.user_id === userId), amount_paid: Number(amount).toFixed(2)}])
 
         updatedArrears.find(x => x.user_id === userId) ?
             setUpdatedArrears([...updatedArrears.filter(x => x.user_id !== userId), {...updatedArrears.find(x => x.user_id === userId), amount: (Number(calculatePayableRent(payable) - amount) + Number(arrears.find(x => x.user_id === userId).amount)).toFixed(2)}])
@@ -214,14 +214,14 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
             <table className="table-fixed bg-white border border-collapse border-slate-300">
                 <thead>
                     <tr className="border border-slate-300 bg-slate-100">
-                        <th>Tenant</th>
-                        <th>Rent Payable</th>
-                        <th>Rent Paid</th>
-                        <th>Arrears</th>
+                        <th className="sm:w-32">Tenant</th>
+                        <th className="sm:w-32">Rent Payable</th>
+                        <th className="sm:w-32">Rent Paid</th>
+                        <th className="sm:w-32">Arrears</th>
                     </tr>
                     {rents.map(rent => {
                         return (
-                            <tr key = {rent.user.id}>
+                            <tr key = {rent.user.id} className="text-center">
                                 <td>
                                     {rent.user.name}
                                 </td>
@@ -230,7 +230,9 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
                                 </td>
                                 <td>
                                     <input 
-                                        className="w-40"
+                                        className="w-40 border-0 text-center"
+                                        type="number"
+                                        step="0.01"
                                         value={paidRent.find(x => x.user_id === rent.user.id).amount_paid}
                                         onChange={(e) => updateSinglePaidRent(rent.user.id, e.target.value, rent.amount)}
                                     />

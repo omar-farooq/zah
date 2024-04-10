@@ -91,8 +91,8 @@ class TreasuryReportController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date|before_or_equal:now',
+            'start_date' => 'date',
+            'end_date' => 'date|after_or_equal:start_date|before_or_equal:now',
             'calculated_remaining_budget' => 'decimal:2',
             'remaining_budget' => 'decimal:2',
             'paid_rents.*.amount_paid' => 'decimal:2',
