@@ -130,7 +130,8 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
             accounts_balances: accountBalances,
             recurring: recurringPaymentsToBeMade,
             unreported: unreportedItems,
-            payables: additionalPayments
+            payables: additionalPayments,
+            arrears: updatedArrears,
         })
 
         //Add receipts for Purchases and Services

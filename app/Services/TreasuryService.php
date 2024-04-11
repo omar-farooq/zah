@@ -6,12 +6,17 @@ use App\Models\PaidRent;
 use App\Models\PaidRecurringPayment;
 use App\Models\Payment;
 use App\Models\Receipt;
+use App\Models\RentArrear;
 use App\Models\RecurringPayment;
 use App\Models\TreasuryItem;
 use App\Models\TreasuryReport;
 use Illuminate\Support\Facades\Storage;
 
 class TreasuryService {
+
+    public function __construct() {
+        $this->arrears = new RentArrear;
+    }
     
     /**
      * Create a new report from the request
@@ -26,6 +31,7 @@ class TreasuryService {
         $new_report = TreasuryReport::create($request->all());
         $new_report_id = $new_report->id;
         $this->payRent($new_report_id, $request->paid_rents);
+        $this->updateArrears($request->arrears);
         $this->updateAccounts($new_report_id, $request->accounts_balances);
         $this->addReportIDToUnreported($new_report_id);
         $this->linkAdditionalPaymentsToReport($new_report_id);
@@ -66,6 +72,15 @@ class TreasuryService {
             $paid_rent = PaidRent::create($rent);
             
             $this->createTreasurable($report_id, "App\\Models\\PaidRent", $paid_rent->id, true, $paid_rent->amount_paid);
+        }
+    }
+
+    protected function updateArrears($newArrears)
+    {
+        foreach($newArrears as $newArrear) {
+            $arrear = $this->arrears->find($newArrear['id']);
+            $arrear->amount = $newArrear['amount'];
+            $arrear->save();
         }
     }
 
