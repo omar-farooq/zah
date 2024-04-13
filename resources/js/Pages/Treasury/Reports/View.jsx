@@ -56,7 +56,7 @@ export function ReceiptModal({modalDisclosure, model}) {
 }
 
 //The main page to view reports
-export default function ViewTreasuryReport({report, rents, treasuryItems, previousBudget}) {
+export default function ViewTreasuryReport({reports, rents, treasuryItems, previousBudget, remainingBudget, calculatedRemainingBudget, start, end}) {
 
     function init(treasuryItems) {
         return treasuryItems
@@ -189,9 +189,9 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
             :
         <>
             <div className="flex flex-row mt-4">
-                <div className="bg-white text-sm md:text-xl mr-4">Report Start: {DateTimeToUKDate(report.start_date)}</div>
+                <div className="bg-white text-sm md:text-xl mr-4">Report Start: {DateTimeToUKDate(start)}</div>
                 <ArrowLongRightIcon className="h-6 w-6" />
-                <div className="bg-white text-sm md:text-xl ml-4">Report End: {DateTimeToUKDate(report.end_date)}</div>
+                <div className="bg-white text-sm md:text-xl ml-4">Report End: {DateTimeToUKDate(end)}</div>
             </div>
             <div>Starting Balance: £{previousBudget}</div>
             <div className="w-full flex flex-col items-center">
@@ -236,8 +236,8 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
                 </Table>
             </div>
 
-            <div className="mt-5 text-2xl">Calculated remaining budget: £{report.calculated_remaining_budget}</div>
-            {report.remaining_budget != report.calculated_remaining_budget && <div>Adjusted budget: £{report.remaining_budget}</div>}
+            {remainingBudget !== calculatedRemainingBudget && <div className="mt-5 text-2xl">Adjusted budget: £{remainingBudget}</div>}
+            <div className={`${remainingBudget === calculatedRemainingBudget ? 'mt-5 text-2xl' : ''}`}>Calculated remaining budget: £{calculatedRemainingBudget}</div>
             <ReceiptModal modalDisclosure={[modalOpened, modalHandlers]} model={selectedModel} />
         </>
     )

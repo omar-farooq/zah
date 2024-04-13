@@ -11,6 +11,7 @@ use App\Models\Rent;
 use App\Models\RentArrear;
 use App\Models\TreasuryItem;
 use App\Models\TreasuryReport;
+use App\Services\TreasuryReportService;
 use App\Services\TreasuryService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -28,25 +29,40 @@ class TreasuryReportController extends Controller
 
     /**
      * Display a listing of the resource.
+     * If the user wants to generate a report from the start date and end date then it goes through the first if
+     * the paginated results from the main reports page are in the second if
+     * the determination of the direction of payment is in the third if
+     * finally, if there are no query params, then it returns the report page
      *
      * @return \Illuminate\Http\Response
      */
     public function index(TreasuryReport $treasuryReport, Request $request)
     {
-        if(isset($request->getReports) && $request->getReports === 'true') {
+        if($request->has('start_date') && $request->has('end_date')) {
+
+            $this->treasuryReportService = new TreasuryReportService($request->start_date, $request->end_date);
+            return Inertia::render('Treasury/Reports/View', [
+                'title' => 'View Treasury Report',
+                'rents' => $this->treasuryReportService->rents,
+                'treasuryItems' => $this->treasuryReportService->treasury_items,
+                'previousBudget' => $this->treasuryReportService->previous_budget,
+                'start' => $this->treasuryReportService->first_report_start,
+                'end' => $this->treasuryReportService->last_report_end,
+                'remainingBudget' => $this->treasuryReportService->remaining_budget,
+                'calculatedRemainingBudget' => $this->treasuryReportService->calculated_remaining_budget
+            ]);
+        } elseif(isset($request->getReports) && $request->getReports === 'true') {
             return response()->json(
                 $treasuryReport->orderBy('created_at', 'desc')->paginate(10)
             );
-        }
-
-        if(isset($request->find) && $request->find == 'sourceOrRecipient') {
+        } elseif(isset($request->find) && $request->find == 'sourceOrRecipient') {
             return $this->treasuryService->getSourceOrRecipient($request);
-        }
-
-        return Inertia::render('Treasury/Reports/index', [
+        } else {
+           return Inertia::render('Treasury/Reports/index', [
             'title' => 'Treasury Report',
             'reportPage1' => TreasuryReport::orderBy('created_at', 'desc')->paginate(10)
-        ]);
+           ]);
+        }
     }
 
     /**
@@ -127,10 +143,13 @@ class TreasuryReportController extends Controller
 
         return Inertia::render('Treasury/Reports/View', [
             'title' => 'View Treasury Report',
-            'report' => $treasuryReport,
             'rents' => $rents,
             'treasuryItems' => $treasuryItems,
-            'previousBudget' => $previousBudget
+            'previousBudget' => $previousBudget,
+            'start' => $treasuryReport->start_date,
+            'end' => $treasuryReport->end_date,
+            'remainingBudget' => $treasuryReport->remaining_budget,
+            'calculatedRemainingBudget' => $treasuryReport->calculated_remaining_budget
         ]);
     }
 
