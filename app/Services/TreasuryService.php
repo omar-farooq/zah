@@ -97,7 +97,7 @@ class TreasuryService {
             $paid_recurring = new PaidRecurringPayment;
             $paid_recurring->treasury_report_id = $recurring->treasuryReportID;
             $paid_recurring->recurring_payment_id = $recurring->id;
-            $paid_recurring->amount_paid = $recurring->amount;
+            $paid_recurring->amount_paid = $recurring->amount ?? $recurring->uniqueAmount;
             $paid_recurring->save();
 
             //Upload receipt
@@ -106,7 +106,7 @@ class TreasuryService {
             }
         
             //Create treasurable
-            $this->createTreasurable($recurring->treasuryReportID, "App\\Models\\PaidRecurringPayment", $paid_recurring->id, false, $recurring->amount);
+            $this->createTreasurable($recurring->treasuryReportID, "App\\Models\\PaidRecurringPayment", $paid_recurring->id, false, $recurring->amount ?? $recurring->uniqueAmount);
     }
 
     /**

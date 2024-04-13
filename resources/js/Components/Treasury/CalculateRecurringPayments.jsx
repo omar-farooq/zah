@@ -83,13 +83,13 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
             setCalculatedRecurring(0)
         } else {
             setCalculatedRecurring(
-                    recurringPayments.reduce((a,b) => {
+                    recurringPaymentsToBeMade.reduce((a,b) => {
                     if(b.frequency === 'weekly') {
-                        return Number(b.amount) * Number(FrequencyOfWeekDay(b.day_of_week_due)) + Number(a)
+                        return (Number(b.amount) * Number(FrequencyOfWeekDay(b.day_of_week_due))) + Number(b.uniqueAmount ?? 0) + Number(a)
                     } else if (b.frequency === 'monthly') {
-                        return Number(b.amount) * Number(FrequencyOfDayOfMonth(b.day_of_month_due)) + Number(a)
+                        return (Number(b.amount) * Number(FrequencyOfDayOfMonth(b.day_of_month_due))) + Number(b.uniqueAmount ?? 0) + Number(a)
                     } else {
-                        return Number(b.amount) * Number(FrequencyOfAnnualPayments(b.day_of_month_due, b.month_due)) + Number(a)
+                        return Number(b.amount) * Number(FrequencyOfAnnualPayments(b.day_of_month_due, b.month_due)) + Number(b.uniqueAmount ?? 0) + Number(a)
                     }
                 },[])
             )
@@ -131,20 +131,29 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
         }
 
         mapRecurringPaymentsToBeMade()
-        calculateRecurring()
     },[lastDate])
 
-    const addReceiptToRecurringPayment = (e,originalIndex) => {
+    useEffect(() => {
+        calculateRecurring()
+    },[recurringPaymentsToBeMade])
+
+    const addAttributeToRecurringPayment = (k, e, originalIndex) => {
         setRecurringPaymentsToBeMade(
             recurringPaymentsToBeMade.map((x,i) => {
                 if(i == originalIndex) {
-                    return {...x, receipt: e.target.files[0]}
+                    if(k === 'receipt') {
+                        return {...x, receipt: e.target.files[0]}
+                    } 
+                    if(k === 'amount') {
+                        return {...x, uniqueAmount: Number(e.target.value).toFixed(2)}
+                    }
                 } else {
                     return x
                 }
             })
         )
     }
+
     return (
         recurringPaymentsToBeMade.length > 0 &&
         <>
@@ -161,7 +170,18 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
                         <Fragment key={payment.id + '.' + payment.occurrence}>
                             <tr>
                                 <FirstTD data={payment.recipient} />
-                                <TD data={payment.amount} />
+                                <TD> 
+                                    {
+                                        payment.amount ?? 
+                                        <input 
+                                            type="number" 
+                                            step="0.01"
+                                            defaultValue="0.00"
+                                            onChange={(e) => addAttributeToRecurringPayment('amount', e, i)}
+                                        />
+
+                                    }
+                                </TD>
                                 <TD data={DateToUKLocale(payment.date)} />
                                 <TD>
                                     <input 
@@ -169,7 +189,7 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
                                         id="receipt" 
                                         name="receipt" 
                                         accept="image/*, .pdf" 
-                                        onChange={(e) => addReceiptToRecurringPayment(e, i)} 
+                                        onChange={(e) => addAttributeToRecurringPayment('receipt', e, i)} 
                                     />
                                 </TD>
                             </tr>

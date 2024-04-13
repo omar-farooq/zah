@@ -109,7 +109,7 @@ export default function NewMeeting({meeting, tenants, auth}) {
 
                         <ConfirmModal
                             title="Confirm Meeting Submission"
-                            text=<p>Are you sure you want to submit this meeting?</p>
+                            text={<p>Are you sure you want to submit this meeting?</p>}
                             confirmFunction={() => {submitMeeting(); submitModalHandlers.close()}}
                             cancelFunction={() => submitModalHandlers.close()}
                             modalOpened={submitModalOpened}

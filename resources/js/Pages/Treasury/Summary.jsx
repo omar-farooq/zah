@@ -229,7 +229,6 @@ export default function TreasurySummary({currentYearPurchaseCount, previousYearP
                 <Input
                     type={"number"}
                     placeholder={"Amount"}
-                    required={true}
                     className="h-10 w-full"
                     value={newPayment.amount}
                     handleChange={(e) => setNewPayment({...newPayment, amount: e.target.value})}

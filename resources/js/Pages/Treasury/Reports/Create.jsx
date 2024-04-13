@@ -118,7 +118,6 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
             accountBalances.reduce((a,b) => Number(a) + Number(b.final ?? b.calculated),0).toFixed(2)
         )
     },[accountBalances])
-
     const submitReport = async (e) => {
         let config = { headers: { 'content-type': 'multipart/form-data' }}
         let reportID = await axios.post('/treasury-reports', {

@@ -114,6 +114,8 @@ class TreasuryReportController extends Controller
             'paid_rents.*.amount_paid' => 'decimal:2',
             'accounts_balances.*.calculated' => 'decimal:2',
             'accounts_balances.*.final' => 'nullable|decimal:2',
+            'recurring.*.amount' => 'nullable|decimal:2',
+            'recurring.*.uniqueAmount' => 'required_without:recurring.*.amount|decimal:2'
         ]);
 
         if(isset($request->treasurable) && $request->treasurable == 'recurring') {
