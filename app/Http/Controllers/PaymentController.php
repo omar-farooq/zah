@@ -73,9 +73,13 @@ class PaymentController extends Controller
      * @param  \App\Models\Payment  $payment
      * @return \Illuminate\Http\Response
      */
-    public function show(Payment $payment)
+    public function show(Payment $payment, Request $request)
     {
-        //
+        if($request->has('description')) {
+            return response()->json($payment['description']);
+        } else {
+            return response()->json($payment);
+        }
     }
 
     /**

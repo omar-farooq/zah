@@ -3,7 +3,7 @@ import { ArrowLongRightIcon } from '@heroicons/react/24/solid'
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline'
 import { DateTimeToUKDate } from '@/Shared/Functions'
 import { ErrorNotification, SuccessNotification } from '@/Components/Notifications'
-import { Button, Loader, Modal, FileInput } from '@mantine/core';
+import { Button, Group, HoverCard, Loader, Modal, Text, FileInput } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks'
 import Select from 'react-select'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
@@ -148,11 +148,15 @@ export default function ViewTreasuryReport({reports, rents, treasuryItems, previ
         const mapTreasuryItems = async () => {
             let arr = []
             for (let item of treasuryItems) {
+                let description
+                item.treasurable_type == 'App\\Models\\Payment' ? description = await axios.get('/payments/'+item.treasurable_id+'?description') : description = ''
+
                 let sourceOrRecipient = await axios.get('/treasury-reports?find=sourceOrRecipient&type='+item.treasurable_type+'&id='+item.treasurable_id)
                 arr.push({
                 id: item.id,
                 type: item.treasurable_type,
                 sourceOrRecipient: sourceOrRecipient.data,
+                description: description.data,
                 friendly_type: item.treasurable_type == 'App\\Models\\PaidRent' ? 'Rent'
                 : item.treasurable_type == 'App\\Models\\Payment' ? 'Payment'
                 : item.treasurable_type == 'App\\Models\\PaidRecurringPayment' ? 'Recurring Payment'
@@ -181,6 +185,10 @@ export default function ViewTreasuryReport({reports, rents, treasuryItems, previ
 
     const getFriendlyName = (type) => {
         return mappedTreasuryItems.find(x => x.type == type).friendly_type
+    }
+
+    const getDescription = (id) => {
+        return mappedTreasuryItems.find(x => x.id === id).description
     }
 
     return (
@@ -217,9 +225,26 @@ export default function ViewTreasuryReport({reports, rents, treasuryItems, previ
                         <tr key={item.id} className={`${item.is_incoming ? 'bg-white' : 'bg-white'}`}>
                             <FirstTD>£{item.amount}</FirstTD>
                             <TD>
+                                <div className="flex flex-row gap-x-1">
                                     {
                                         getFriendlyName(item.treasurable_type)
                                     }
+                                    { 
+                                        item.treasurable_type === 'App\\Models\\Payment' &&
+                                            <Group position="center">
+                                                <HoverCard width={280} shadow="md">
+                                                    <HoverCard.Target>
+                                                        <button className="bg-blue-400 w-4 h-4 text-white border rounded-full">i</button>
+                                                    </HoverCard.Target>
+                                                    <HoverCard.Dropdown>
+                                                        <Text size="sm">
+                                                            {getDescription(item.id)}
+                                                        </Text>
+                                                    </HoverCard.Dropdown>
+                                                </HoverCard>
+                                            </Group>
+                                    }
+                                </div>
                             </TD>
                             <TD>{item.is_incoming ? 'incoming' : 'outgoing'}</TD>
                             <TD>
