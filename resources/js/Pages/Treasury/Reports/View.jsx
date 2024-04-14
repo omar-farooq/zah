@@ -156,7 +156,7 @@ export default function ViewTreasuryReport({reports, rents, treasuryItems, previ
                 id: item.id,
                 type: item.treasurable_type,
                 sourceOrRecipient: sourceOrRecipient.data,
-                description: description.data,
+                description: typeof description.data == "object" ? 'There is no description' : description.data,
                 friendly_type: item.treasurable_type == 'App\\Models\\PaidRent' ? 'Rent'
                 : item.treasurable_type == 'App\\Models\\Payment' ? 'Payment'
                 : item.treasurable_type == 'App\\Models\\PaidRecurringPayment' ? 'Recurring Payment'

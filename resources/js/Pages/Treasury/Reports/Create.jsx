@@ -11,7 +11,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
     let previousReportEnd = previousReport ? new Date(previousReport.end_date) : new Date(new Date().getFullYear(), new Date().getMonth()-1,0)
     let newReportDefaultStart = new Date(previousReportEnd.getFullYear(), previousReportEnd.getMonth(), previousReportEnd.getDate()+1)
 
-    const [dates, setDates] = useState([newReportDefaultStart, LastDayOfTheMonth()])
+    const [dates, setDates] = useState([newReportDefaultStart, LastDayOfTheMonth(newReportDefaultStart)])
     const [updatedArrears, setUpdatedArrears] = useState(arrears);
     const [paidRent, setPaidRent] = useState(rents.map(rent => ({
         user_id: rent.user.id,
