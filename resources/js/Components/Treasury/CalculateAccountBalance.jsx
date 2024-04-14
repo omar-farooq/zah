@@ -5,13 +5,24 @@ export default function CalculateAccountBalance({account,rentTotal,purchasesTota
 
     const [balance, setBalance] = balanceHook
     const [calculatedBalanceCheckbox, setCalculatedBalanceCheckbox] = useState(true)
+    const [additionalPaymentsAccountTotal, setAdditionalPaymentsAccountTotal] = useState(0)
+
+    const fetchAccountAdditionalPaymentsTotal = async () => {
+        let additionalPaymentsAccountFetch = await axios.get('/payments?account='+account.id)
+        setAdditionalPaymentsAccountTotal(additionalPaymentsAccountFetch.data)
+    }
+
+    const balanceCalculator = () => {
+        setBalance([...balance.filter(x => x.id != account.id), {...balance.find(x => x.id === account.id), calculated: (Number(additionalPaymentsAccountTotal) + Number(rentTotal) + Number(account.treasury_reports[0]?.pivot.account_balance ?? account.starting_balance) - Number(recurringTotal) - Number(purchasesTotal) - Number(servicesTotal)).toFixed(2)}])
+    }
 
     useEffect(() => {
-        const balanceCalculator = () => {
-            setBalance([...balance.filter(x => x.id != account.id), {...balance.find(x => x.id === account.id), calculated: (Number(additionalPaymentsTotal) + Number(rentTotal) + Number(account.treasury_reports[0]?.pivot.account_balance ?? account.starting_balance) - Number(recurringTotal) - Number(purchasesTotal) - Number(servicesTotal)).toFixed(2)}])
-        }
         balanceCalculator()
-    },[rentTotal,purchasesTotal,servicesTotal,recurringTotal,additionalPaymentsTotal])
+    },[rentTotal,purchasesTotal,servicesTotal,recurringTotal,additionalPaymentsAccountTotal])
+
+    useEffect(() => {
+        fetchAccountAdditionalPaymentsTotal()
+    },[additionalPaymentsTotal])
 
 	const toggleCheckbox = () => {
 		if(!calculatedBalanceCheckbox) {

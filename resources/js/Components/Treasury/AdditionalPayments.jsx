@@ -1,11 +1,14 @@
 import { Fragment, useEffect, useState } from 'react'
 import { ErrorNotification, SuccessNotification } from '@/Components/Notifications'
+import Select from 'react-select'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
-export default function AdditionalPayments({paymentHook, totalHook}) {
+export default function AdditionalPayments({paymentHook, totalHook, accounts, defaultAccount}) {
 
     const [payables, setPayables] = paymentHook
 	const [total, setTotal] = totalHook
+
+    const [selectedAccount, setSelectedAccount] = useState(defaultAccount.id)
 
 	const getPayments = async () => {
 		let res = await axios.get('/payments')
@@ -23,6 +26,7 @@ export default function AdditionalPayments({paymentHook, totalHook}) {
 					amount: Number(e.target.amount.value).toFixed(2),
 					incoming: e.target.incoming.checked == false ? 0 : 1,
 					payment_date: e.target.payment_date.value,
+                    account_id: selectedAccount,
 					receipt: e.target.receipt.files[0]
 				},config)
 			e.target.reset()
@@ -52,6 +56,7 @@ export default function AdditionalPayments({paymentHook, totalHook}) {
             }
         },[]))
     },[payables])
+
 
     return (
 		<>
@@ -84,44 +89,60 @@ export default function AdditionalPayments({paymentHook, totalHook}) {
             }
 
             <form className={`grid grid-cols-2 ${payables.length > 0 ? 'mt-8' : 'mt-4'} bg-white p-4 md:w-2/3`} onSubmit={(e) => submitHandler(e)}>
-            <div className="flex flex-col w-11/12 place-self-center">
-                <label htmlFor="name">Payable Item</label>
-                <input type="text" id="name" required="required" />
-            </div>
-
-            <div className="flex flex-row mt-8 ml-6">
-                <div className="flex flex-row mr-2">
-                    <input type="radio" id="outgoing" name="direction" value="outgoing" defaultChecked />
-                    <label htmlFor="outgoing">outgoing</label>
+                <div className="flex flex-col w-11/12 place-self-center">
+                    <label htmlFor="name">Payable Item</label>
+                    <input type="text" id="name" required="required" />
                 </div>
 
-                <div className="flex flex-row">
-                    <input type="radio" id="incoming" name="direction" value="incoming" />
-                    <label htmlFor="incoming">incoming</label>
+                <div className="flex flex-row mt-8 ml-6">
+                    <div className="flex flex-row mr-2">
+                        <input type="radio" id="outgoing" name="direction" value="outgoing" defaultChecked />
+                        <label htmlFor="outgoing">outgoing</label>
+                    </div>
+
+                    <div className="flex flex-row">
+                        <input type="radio" id="incoming" name="direction" value="incoming" />
+                        <label htmlFor="incoming">incoming</label>
+                    </div>
                 </div>
-            </div>
 
-            <div className="flex flex-col w-11/12 place-self-center">
-                <label htmlFor="payment_date">Payment Date</label>
-                <input type="date" id="payment_date" name="payment_date" required="required" />
-            </div>
+                <div className="flex flex-col w-11/12 place-self-center">
+                    <label htmlFor="payment_date">Payment Date</label>
+                    <input type="date" id="payment_date" name="payment_date" required="required" />
+                </div>
 
-            <div className="flex flex-col w-11/12 place-self-center">
-                <label htmlFor="amount">Amount</label>
-                <input type="number" step="0.01" id="amount" required="required" />
-            </div>
+                <div className="flex flex-col w-11/12 place-self-center">
+                    <label htmlFor="amount">Amount</label>
+                    <input type="number" step="0.01" id="amount" required="required" />
+                </div>
 
-            <div className="flex flex-col col-start-1 col-end-3 w-11/12 md:ml-6">
-                <label htmlFor="description">Description</label>
-                <input type="text" id="description" />
-            </div>
+                <div className="flex flex-col w-11/12 place-self-center">
+                    <label htmlFor="description">Description</label>
+                    <input type="text" id="description" />
+                </div>
 
-            <div className="flex flex-col col-start-1 col-end-3 w-11/12 place-self-center">
-                <label htmlFor="receipt">Receipt (optional)</label>
-                <input type="file" id="receipt" name="receipt" accept="image/*, .pdf" />
-            </div>
+                <div className="flex flex-col w-11/12 place-self-center">
+                    <label htmlFor="account">Account</label>
+                    <Select
+                        options={accounts.map(account => ({
+                            value: account.id,
+                            label: account.account_name
+                        }))}
+                        defaultValue={{
+                            value: defaultAccount.id,
+                            label: defaultAccount.account_name
+                        }}
 
-            <button type="submit" className="bg-sky-600 hover:bg-sky-700 text-white col-start-1 col-end-3 mt-2 h-8 w-1/2 place-self-center">add</button>
+                        onChange={(e) => setSelectedAccount(e.value)}
+                    />
+                </div>
+
+                <div className="flex flex-col col-start-1 col-end-3 w-11/12 place-self-center">
+                    <label htmlFor="receipt">Receipt (optional)</label>
+                    <input type="file" id="receipt" name="receipt" accept="image/*, .pdf" />
+                </div>
+
+                <button type="submit" className="bg-sky-600 hover:bg-sky-700 text-white col-start-1 col-end-3 mt-2 h-8 w-1/2 place-self-center">add</button>
             </form>
 		</>
     )

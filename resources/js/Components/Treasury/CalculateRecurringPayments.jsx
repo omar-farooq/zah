@@ -84,13 +84,7 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
         } else {
             setCalculatedRecurring(
                     recurringPaymentsToBeMade.reduce((a,b) => {
-                    if(b.frequency === 'weekly') {
-                        return (Number(b.amount) * Number(FrequencyOfWeekDay(b.day_of_week_due))) + Number(b.uniqueAmount ?? 0) + Number(a)
-                    } else if (b.frequency === 'monthly') {
-                        return (Number(b.amount) * Number(FrequencyOfDayOfMonth(b.day_of_month_due))) + Number(b.uniqueAmount ?? 0) + Number(a)
-                    } else {
-                        return Number(b.amount) * Number(FrequencyOfAnnualPayments(b.day_of_month_due, b.month_due)) + Number(b.uniqueAmount ?? 0) + Number(a)
-                    }
+                        return Number(b.amount) + Number(b.uniqueAmount ?? 0) + Number(a)
                 },[])
             )
         }
@@ -108,7 +102,7 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
             case 'monthly':
                 return new Date(dates[0].getFullYear(), (dates[0].getMonth()+occurrence - 1), payment.day_of_month_due)
                 break;
-            case 'anually':
+            case 'annually':
                 return new Date(dates[0].getFullYear()+occurrence - 1, payment.month_due, payment.day_of_month_due)
                 break;
         }

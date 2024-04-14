@@ -24,9 +24,22 @@ class PaymentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Payment::where('treasury_report_id', NULL)->get());
+        if($request->has('account')) {
+            $incomingTotal = Payment::where('treasury_report_id', NULL)
+                                    ->where('account_id', $request->account)
+                                    ->where('incoming', 1)
+                                    ->sum('amount');
+            $outgoingTotal = Payment::where('treasury_report_id', NULL)
+                                    ->where('account_id', $request->account)
+                                    ->where('incoming', 0)
+                                    ->sum('amount');
+            $accountTotal = $incomingTotal - $outgoingTotal;
+            return response()->json($accountTotal);
+        } else {
+            return response()->json(Payment::where('treasury_report_id', NULL)->get());
+        }
     }
 
     /**

@@ -263,6 +263,8 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
             <AdditionalPayments
                 paymentHook={[additionalPayments, setAdditionalPayments]}
                 totalHook={[additionalPaymentsTotal, setAdditionalPaymentsTotal]}
+                accounts = {accounts}
+                defaultAccount = {accounts.find(x => x.id == defaultAccounts.find(y => y.model === "App\\Models\\Payment").account_id)}
             />
 
 
@@ -285,7 +287,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
                                 purchasesTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Purchase') ? purchasesTotal : 0}
                                 servicesTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Maintenance') ? servicesTotal : 0}
                                 recurringTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\RecurringPayment') ? calculatedRecurring : 0}
-                                additionalPaymentsTotal={defaultAccounts.find(y => y.account_id === x.id && y.model == 'App\\Models\\Payment') ? additionalPaymentsTotal : 0}
+                                additionalPaymentsTotal={additionalPaymentsTotal}
                                 balanceHook={[accountBalances, setAccountBalances]}
                             />
                         ))}
