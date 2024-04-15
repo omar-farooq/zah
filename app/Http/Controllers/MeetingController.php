@@ -68,7 +68,7 @@ class MeetingController extends Controller
         $meeting->save();
 
         //Send email to everyone
-        $meeting_time = Carbon::parse($request->time)->locale('uk')->format('l jS \\of F Y h:i A');
+        $meeting_time = Carbon::parse($request->time)->setTimezone('Europe/London')->locale('uk')->format('l jS \\of F Y h:i A');
         $subject = "new meeting scheduled";
         $messageBody = "<p>A new meeting has been scheduled for <b>" . $meeting_time . "</b></p><p> If you haven't already added your availability to the schedule then please do so so that we know if you are going to attend</p>";
         app(JobController::class)->notificationEmail($subject, $messageBody);

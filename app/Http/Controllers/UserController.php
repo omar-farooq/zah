@@ -78,7 +78,11 @@ class UserController extends Controller
     {
         if($request->query('view') && $request->query('view') == 'avatar') {
             $avatar = User::where('id', $id)->first()->avatar;
-            return Storage::get('avatars/'.$avatar);
+            if(!isset($avatar) || $avatar === NULL || $avatar === "") {
+                return Storage::disk('local')->get('/avatars/blankavatar.webp');
+            } else {
+                return Storage::get('avatars/'.$avatar);
+            }
         } else {
             return Inertia::render('Users/Profile', [
                 'title' => 'User Profile',

@@ -94,8 +94,8 @@ class MaintenanceController extends Controller
         ]);
 
         //Send email to notify people about the maintenance
-        $maintenance_start_date = Carbon::parse($maintenanceRequest->start_date)->locale('uk')->format('l jS \\of F Y');
-        $maintenance_start_time = Carbon::parse($maintenanceRequest->start_time)->locale('uk')->format('h:i A');
+        $maintenance_start_date = Carbon::parse($maintenanceRequest->start_date)->setTimezone('Europe/London')->locale('uk')->format('l jS \\of F Y');
+        $maintenance_start_time = Carbon::parse($maintenanceRequest->start_time)->setTimezone('Europe/London')->locale('uk')->format('h:i A');
         $subject = "House Maintenance Scheduled";
         $messageBody = "<p>This is to inform you that maintenance has been scheduled for " . $maintenance_start_date . " and is due to start at " . $maintenance_start_time . "</p><p><a href='". config('app.url') . "/maintenance/" . $maintenance->id  ."'>Click here to view details of the scheduled maintenance</a></p>";
 

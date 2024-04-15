@@ -119,7 +119,7 @@ export default function AccountsIndex({initialAccounts, defaultAccounts, warning
                             <tr>
                                 <FirstTD data={x.account_name} />
                                 <TD data={x.bank} />
-                                <TD data={x.treasury_reports?.length > 0 ? "£" + (x.treasury_reports[0]?.pivot.account_balance) : "£" + x.starting_balance} />
+                                <TD data={x.treasury_reports?.length > 0 ? "£" + Number(x.treasury_reports[0]?.pivot.account_balance).toFixed(2) : "£" + x.starting_balance} />
                                 <TD data={x.description} />
                                 <LastTD>
                                     <TrashIcon
