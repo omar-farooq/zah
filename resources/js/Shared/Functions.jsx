@@ -56,6 +56,19 @@ export function LongDateTimeFormat(date) {
     )
 }
 
+//Get number of months when using month picker
+export function NumberOfMonths(m1,m2) {
+    if(!m2) {
+        return 1
+    } else {
+        let months
+        months = (m2.getFullYear() - m1.getFullYear()) * 12
+        months -= m1.getMonth()
+        months += m2.getMonth()
+        return months <= 0 ? 1 : months + 1
+    }
+}
+
 //Get first day of the month
 export function FirstDayOfTheMonth() {
     let date = new Date();
@@ -66,9 +79,9 @@ export function FirstDayOfTheMonth() {
     return date
 }
 
-export function LastDayOfTheMonth() {
-    let today = new Date()
-    return new Date(today.getFullYear(), today.getMonth()+1, 0);
+export function LastDayOfTheMonth(date) {
+    let day = date ?? new Date()
+    return new Date(day.getFullYear(), day.getMonth()+1, 0);
 }
 
 /***

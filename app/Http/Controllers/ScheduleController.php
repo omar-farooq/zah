@@ -14,6 +14,21 @@ use Inertia\Inertia;
 
 class ScheduleController extends Controller
 {
+
+    /**
+     * Get the schedule
+     *
+     * @param Illuminate\Http\Request $request
+     *
+     * @return json $response
+     */
+    public function scheduled(Request $request)
+    {
+        $meeting = new Meeting;
+        $scheduled = $meeting->allUpcoming();
+        return response()->json($scheduled);
+    }
+
     /**
 	* Display the schedule
 	*
@@ -25,11 +40,10 @@ class ScheduleController extends Controller
 	*/
 
 	public function browse(Schedule $schedule, User $users, ScheduleService $scheduleService)
-	{
+    {
         return Inertia::render('Meetings/Schedule', [
             'title' => 'Meeting Schedule',
-            'upcomingDate' => $scheduleService->upcoming()['upcomingDate'],
-            'upcomingID' => $scheduleService->upcoming()['upcomingID'],
+            'upcoming' => $scheduleService->upcoming(),
             'members' => $users->currentMember()->with('scheduleSuggestions')->get(),
             'schedule' => $schedule->current(),
 			'currentUser' => Auth::user()

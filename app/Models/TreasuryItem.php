@@ -10,6 +10,7 @@ class TreasuryItem extends Model
     use HasFactory;
 
     protected $fillable = [
+        'account_id',
         'treasurable_id',
         'treasurable_type',
         'treasury_report_id',
@@ -23,6 +24,14 @@ class TreasuryItem extends Model
     public function treasuryReport()
     {
         return $this->belongsTo(TreasuryReport::Class);
+    }
+
+    /*
+     * Account this treasurable belongs to
+     */
+    public function account() 
+    {
+        return $this->belongsTo(Account::Class);
     }
 
     /*

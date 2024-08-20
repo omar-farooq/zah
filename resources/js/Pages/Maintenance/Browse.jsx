@@ -50,39 +50,41 @@ export default function Browse({auth}) {
             {needAction.length > 0 ?
                 <>
                     <h2 className="text-2xl font-bold tracking-tight text-gray-900 mt-4">Needs payment Confirmation</h2>
-                    <Table>
-                        <THead>
-                            <FirstTH heading="Name" />
-                            <TH heading="Cost" />
-                            <TH heading="Type" />
-                            <TH heading="Additional Details" />
-                            <LastTH />
-                        </THead>
-                        <TBody>
-                            {needAction.map(x =>
-                                <Fragment key={x.id}>
-                                    <tr>
-                                        <FirstTD data={x.maintenance_request.required_maintenance} />
-                                        <TD data={x.final_cost} />
-                                        <TD data={x.maintenance_request.type} />
-                                        <TD data={x.additional_details} />
-                                        <LastTD
-                                            href={"maintenance"}
-                                            itemID={x.id}
-                                        >
-                                            <PencilSquareIcon 
-                                                className="w-6 h-6 mr-2 cursor-pointer"
-                                                onClick={() => {
-                                                    setOpened(!opened);
-                                                    setSelected(x)
-                                                }}
-                                            />
-                                        </LastTD>
-                                    </tr>
-                                </Fragment>
-                            )}
-                        </TBody>
-                    </Table>
+                    <div className="max-w-sm md:max-w-none md:w-full md:flex md:justify-center">
+                        <Table>
+                            <THead>
+                                <FirstTH heading="Name" />
+                                <TH heading="Cost" />
+                                <TH heading="Type" />
+                                <TH heading="Additional Details" />
+                                <LastTH />
+                            </THead>
+                            <TBody>
+                                {needAction.map(x =>
+                                    <Fragment key={x.id}>
+                                        <tr>
+                                            <FirstTD data={x.maintenance_request.required_maintenance} />
+                                            <TD data={x.final_cost} />
+                                            <TD data={x.maintenance_request.type} />
+                                            <TD data={x.additional_details} />
+                                            <LastTD
+                                                href={"maintenance"}
+                                                itemID={x.id}
+                                            >
+                                                <PencilSquareIcon 
+                                                    className="w-6 h-6 mr-2 cursor-pointer"
+                                                    onClick={() => {
+                                                        setOpened(!opened);
+                                                        setSelected(x)
+                                                    }}
+                                                />
+                                            </LastTD>
+                                        </tr>
+                                    </Fragment>
+                                )}
+                            </TBody>
+                        </Table>
+                    </div>
                     <Pagination 
                         className="mt-5 mb-10" 
                         total={totalUnpaidPages} 
@@ -103,31 +105,33 @@ export default function Browse({auth}) {
                     />
                     </div>
                     <h2 className="text-2xl font-bold tracking-tight text-gray-900 mt-4">Historical Maintenance</h2>
-                    <Table>
-                        <THead>
-                            <FirstTH heading="Name" />
-                            <TH heading="Cost" />
-                            <TH heading="Type" />
-                            <TH heading="Additional Details" />
-                            <LastTH />
-                        </THead>
-                        <TBody>
-                            {paidMaintenance.map(x =>
-                                <Fragment key={x.id}>
-                                    <tr>
-                                        <FirstTD data={x.maintenance_request.required_maintenance} />
-                                        <TD data={x.final_cost} />
-                                        <TD data={x.maintenance_request.type} />
-                                        <TD data={x.additional_details} />
-                                        <LastTD
-                                            href={"maintenance"}
-                                            itemID={x.id}
-                                        />
-                                    </tr>
-                                </Fragment>
-                            )}
-                        </TBody>
-                    </Table>
+                    <div className="max-w-sm md:max-w-none md:w-full md:flex md:justify-center">
+                        <Table>
+                            <THead>
+                                <FirstTH heading="Name" />
+                                <TH heading="Cost" />
+                                <TH heading="Type" />
+                                <TH heading="Additional Details" />
+                                <LastTH />
+                            </THead>
+                            <TBody>
+                                {paidMaintenance.map(x =>
+                                    <Fragment key={x.id}>
+                                        <tr>
+                                            <FirstTD data={x.maintenance_request.required_maintenance} />
+                                            <TD data={x.final_cost} />
+                                            <TD data={x.maintenance_request.type} />
+                                            <TD data={x.additional_details} />
+                                            <LastTD
+                                                href={"maintenance"}
+                                                itemID={x.id}
+                                            />
+                                        </tr>
+                                    </Fragment>
+                                )}
+                            </TBody>
+                        </Table>
+                    </div>
                     <Pagination 
                         className="mt-5" 
                         total={totalPaidPages} 

@@ -11,9 +11,7 @@ class MeetingAttendance extends Model
     protected $fillable = [
         'user_id',
         'meeting_id',
-        'name',
         'late',
-        'guest'
     ];
 
     protected $with = [

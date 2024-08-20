@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\PollOption;
 use App\Models\Vote;
+use Auth;
 
 class VoteController extends Controller
 {
@@ -25,6 +27,29 @@ class VoteController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->has('onBehalfOf')) {
+            if(Auth::user()->role['name'] !== 'Chair') {
+                return response()->json([
+                    'message' => 'unauthorized'
+                ],401);
+            }
+            //find the poll currently voting in
+            $pollId = PollOption::where('id', $request->poll_option_id)->first()->poll_id;
+
+            //get all poll options
+            $pollOptions = PollOption::where('poll_id', $pollId)->get();
+
+            //loop through the options
+            //and get existing votes by the user on that option
+            //then delete that before creating a new vote
+            forEach($pollOptions as $pollOption) {
+                $existingUserVotes = Vote::Where('poll_option_id', $pollOption['id'])->where('user_id', $request->user_id)->get();
+                forEach($existingUserVotes as $existingUserVote) {
+                    $voteToDelete = Vote::find($existingUserVote->id);
+                    $voteToDelete->delete();
+                }
+            }
+        }
         $vote = Vote::Create($request->all());
         return response()->json([
             'voteId' => $vote->id,

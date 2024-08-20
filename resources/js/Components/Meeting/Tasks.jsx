@@ -117,7 +117,8 @@ export default function Tasks() {
 					dispatch({type: 'complete', itemId: e.model.id})
 				}
 			})
-        return function cleanup() {
+        return () => {
+            Echo.private(`meeting`).stopListening('.TaskCreated').stopListening('.TaskUpdated').stopListening('.TaskDeleted')
             Echo.leaveChannel('meeting')
         }
     }, [])
@@ -137,7 +138,7 @@ export default function Tasks() {
             <ComponentTitle bg="bg-amber-600">
                 Tasks
             </ComponentTitle>
-            <table className="table-auto col-start-1 lg:col-start-3 col-end-9 lg:col-end-7 mb-4 border border-collapse border-slate-800 bg-orange-100">
+            <table className="table-auto col-start-1 col-end-9 mb-4 border border-collapse border-slate-800 bg-orange-100">
                 <thead>
                     <tr>
                         <th className="border border-collapse border-slate-600">Task</th>
@@ -150,7 +151,7 @@ export default function Tasks() {
                     {tasks.taskList.map(task =>
                         <tr key={task.id} className={`${task.completed == 0 ? '' : 'line-through decoration-green-500 decoration-2'}`}>
                             <td className="border border-collapse border-slate-600" >{task.item}</td>
-                            <td className="border border-collapse border-slate-600">{task.users.map(x => x.name)}</td>
+                            <td className="border border-collapse border-slate-600">{task.users.map((x,i) => i == task.users.length - 1 ? x.name : x.name + ', ')}</td>
                             <td className="border border-collapse border-slate-600">{task.due_by ? new Date(task.due_by).toDateString() : ''}</td>
                             <td className="border border-collapse border-slate-600"><CheckIcon className="h-6 w-6 text-green-400 cursor-pointer hover:text-green-600 ml-2" onClick={() => completeTaskItem(task.id)} /></td>
                         </tr>
@@ -158,7 +159,7 @@ export default function Tasks() {
                 </tbody>
             </table>
 
-            <form onSubmit={handleSubmit} className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7 grid grid-cols-4 gap-2">
+            <form onSubmit={handleSubmit} className="col-start-1 xl:col-start-3 col-end-9 xl:col-end-7 grid grid-cols-4 gap-2">
                 <div className="col-start-1 col-end-5">
                     <Input 
                         type="text" 
@@ -191,7 +192,7 @@ export default function Tasks() {
                     />
                 </div>
 
-                <Button color="dark" type="submit" className="bg-black mt-4 col-start-1 lg:col-start-2 col-end-5 lg:col-end-4 w-1/2 place-self-center">Assign Task</Button>
+                <Button color="dark" type="submit" className="bg-black mt-4 col-start-1 col-end-5 w-1/2 md:w-1/3 lg:w-1/2 place-self-center">Assign Task</Button>
                 
             </form>
         </>

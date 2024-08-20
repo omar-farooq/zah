@@ -20,3 +20,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('meeting', function ($user) {
     return true;
 });
+
+Broadcast::channel('meeting-register', function ($user) {
+    return true;
+});

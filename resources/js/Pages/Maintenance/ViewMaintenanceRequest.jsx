@@ -35,7 +35,7 @@ export default function MaintenanceRequest(props) {
             <TileContainer>
                 <CardTile>
                     <FlexAlignLeft>
-                        <div className={`${approvalStatus == 'Chair to decide' && props.auth.user.role.name == 'Chair' ? '' : 'flex'} content-between min-w-full`}>
+                        <div className={`${approvalStatus == 'Chair to decide' && props.auth.user.role?.name == 'Chair' ? '' : 'flex'} content-between min-w-full`}>
                             <RequestName name={requestService.required_maintenance} />
                                 <div className="ml-auto mt-2 flex flex-row space-x-1">
                                     <Approval 
@@ -43,7 +43,7 @@ export default function MaintenanceRequest(props) {
                                         approvalStatusHook={[approvalStatus, setApprovalStatus]}
                                         model={model} 
                                         verified={verified}
-                                        isChair={props.auth.user.role.name == 'Chair'}
+                                        isChair={props.auth.user.role?.name == 'Chair'}
                                         isEmergency={props.maintenanceRequest.emergency == 1 ? true : false}
                                     />
                                 </div>

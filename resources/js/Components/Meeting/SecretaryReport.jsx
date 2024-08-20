@@ -3,6 +3,7 @@ import { Document, Page } from 'react-pdf/dist/esm/entry.vite'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { Alert, MantineProvider, Text, Group, Button, createStyles, Textarea, rem } from '@mantine/core'
+import { ComponentTitle } from '@/Components/Meeting'
 import { Dropzone, MIME_TYPES } from '@mantine/dropzone'
 import { Notifications, showNotification } from '@mantine/notifications'
 import { SuccessNotificationSettings } from '@/Shared/Functions'
@@ -29,20 +30,20 @@ const useStyles = createStyles((theme) => ({
             },
 }));
 
-export default function SecretaryReport() {
+export default function SecretaryReport({auth}) {
 
     const { classes, theme } = useStyles()
     const openRef = useRef(null)
 
 	//Reducer
 	const initialReportState = {
-		id: '',
-		written_report: '',
+        id: '',
+        written_report: '',
         attachment: '',
-		uploaded: '',
+        uploaded: '',
         attachment_link: '',
-		composeType: 'write',
-		_method: ''
+        composeType: 'write',
+        _method: ''
 	}
 	
 	function reducer(report, action) {
@@ -91,7 +92,8 @@ export default function SecretaryReport() {
             .listen('.SecretaryReportUpdated', (e) => {
                 dispatch({type: 'edit', report: e.model.written_report, uploaded: e.model.attachment})
             })
-        return function cleanup() {
+        return () => {
+            Echo.private(`meeting`).stopListening('.SecretaryReportCreated').stopListening('.SecretaryReportUpdated')
             Echo.leaveChannel('meeting')
         }
     }, [])
@@ -116,19 +118,24 @@ export default function SecretaryReport() {
   //            messages.current.show({severity: 'error', summary: 'Error!'})
             }
         } else {
-            let config = { headers: { 'content-type': 'multipart/form-data' }}
-            let res = await axios.post('/secretary-reports', report, config)
-            showNotification(SuccessNotificationSettings(res.data.status, res.data.message, theme))
+            try {
+                let config = { headers: { 'content-type': 'multipart/form-data' }}
+                let res = await axios.post('/secretary-reports', report, config)
+                showNotification(SuccessNotificationSettings(res.data.status, res.data.message, theme))
+            } catch (error) {
+                showNotification({title: 'Error', message: 'Missing content', autoClose: 2000, color: 'red'})
+            }
         }
     }
 
     return (
         <>
+        <ComponentTitle bg="bg-sky-600">Secretary's Report</ComponentTitle>
+        {auth.user.role.name == 'Chair' || auth.user.role.name == 'Secretary' ?
             <MantineProvider withNormalizeCSS withGlobalStyles>
                 <Notifications />
-                    <form onSubmit={handleSubmit} className="grid grid-cols-8 gap-4">
-                        <div className="text-xl col-start-1 lg:col-start-3 col-end-5 bg-sky-700 text-white flex justify-center">Secretary's Report</div>
-                        <div className="col-start-1 lg:col-start-3 col-end-6">
+                    <form onSubmit={handleSubmit} className="w-full col-start-1 col-end-9 flex flex-col justify-center">
+                        <div>
                             <label htmlFor="write">Write Report</label>
                             <input 
                                 type="radio" 
@@ -151,21 +158,22 @@ export default function SecretaryReport() {
 
                         {report.composeType == 'write' &&
                             <>
-                            {report.uploaded ? <Alert title="Warning" color="red" className="col-start-3 col-end-7"> writing a report will remove your attached report</Alert> : ''}
+                            {report.uploaded ? <Alert title="Warning" color="red"> writing a report will remove your attached report</Alert> : ''}
                             <Textarea 
                                 value={report.written_report? report.written_report : ''} 
                                 onChange={(e) => dispatch({type: 'write', report: e.target.value})} 
                                 autosize
                                 label="Write Report"
-                                minRows={3}
-                                className="col-start-2 lg:col-start-3 col-end-8 lg:col-end-7"
+                                minRows={4}
+                                className="w-3/4 self-center"
+                                classNames={{ input: 'bg-zinc-100' }}
                             />
                             </>
                         }
                         
                         {report.composeType == 'upload' &&
                         <>
-                            {report.written_report ? <Alert title="Warning" color="red" className="col-start-3 col-end-7"> uploading a report will delete your written report</Alert> : ''}
+                            {report.written_report ? <Alert title="Warning" color="red"> uploading a report will delete your written report</Alert> : ''}
                             <div className="col-start-1 col-end-9">
                                 <div className={classes.wrapper}>
                                     <Dropzone
@@ -195,7 +203,7 @@ export default function SecretaryReport() {
                                                 <Dropzone.Reject>Pdf file less than 30mb</Dropzone.Reject>
                                                 <Dropzone.Idle>{
                                                     report.attachment ? 'attached ' + report.attachment.name 
-                                                    : report.uploaded ? 'Upload a different report'
+                                                    : report.uploaded ? 'Report uploaded. Upload a different report?'
                                                     : 'Upload Report'}</Dropzone.Idle>
                                             </Text>
                                             <Text align="center" size="sm" mt="xs" color="dimmed">
@@ -217,26 +225,34 @@ export default function SecretaryReport() {
                             </div>
                         </>
                     }
-                        <Button type="submit" color="dark" className="col-start-2 lg:col-start-4 col-end-8 lg:col-end-6 bg-black w-1/2 place-self-center mb-10">{report.composeType == 'write' ? 'Save' : 'Upload'}</Button>
+                        <Button type="submit" color="dark" className="col-start-1 col-end-9 bg-black w-1/2 md:w-1/3 xl:w-1/4 place-self-center top-4">{report.composeType == 'write' ? 'Save' : 'Upload'}</Button>
                     </form>
             </MantineProvider>
-            <div className="flex flex-col items-center">
-                {report.uploaded &&
-                    <>
-                        <Document file={report.attachment_link} onLoadSuccess={onDocumentLoadSuccess}>
-                            <Page pageNumber={pageNumber} />
-                        </Document>
-                        <p>
-                            Page {pageNumber} of {numPages}
-                        </p>
-                        <a href={`/secretary-reports/${report.id}?type=download`}>
-                            <div className="flex flex-col items-center">
-                                <DocumentArrowDownIcon className="h-12 w-12" />Download Report
+            :
+                <div className="flex flex-col col-start-1 col-end-9 mt-4">
+                    {report.uploaded ?
+                        <>
+                            <Document file={report.attachment_link} onLoadSuccess={onDocumentLoadSuccess}>
+                                <Page pageNumber={pageNumber} />
+                            </Document>
+                            <p>
+                                Page {pageNumber} of {numPages}
+                            </p>
+                            <a href={`/secretary-reports/${report.id}?type=download`}>
+                                <div className="flex flex-col items-center">
+                                    <DocumentArrowDownIcon className="h-12 w-12" />Download Report
+                                </div>
+                            </a>
+                        </>
+                    :
+                        <>
+                            <div>
+                                {report.written_report}
                             </div>
-                        </a>
-                    </>
-                }
-            </div>
+                        </>
+                    }
+                </div>
+        }
         </>
     )
 }

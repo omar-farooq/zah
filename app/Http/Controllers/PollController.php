@@ -111,6 +111,7 @@ class PollController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $poll = Poll::where('id', $id)->first();
+        $poll->delete();
     }
 }

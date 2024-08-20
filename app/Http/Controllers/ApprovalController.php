@@ -95,7 +95,9 @@ class ApprovalController extends Controller
      */
     public function destroy(Approval $approval)
     {
-        $approval->destroy($approval->id);
+        if($approval->user_id === auth()->user()->id) {
+            $approval->destroy($approval->id);
+        }
     }
 
     /**

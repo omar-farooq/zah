@@ -44,11 +44,29 @@ class ReceiptController extends Controller
     {
         $receipt = new Receipt;
         $receiptName = date('Ymdhis') . $request->receiptFile->getClientOriginalName();
-        Storage::disk('public')->putFileAs('documents/receipts', $request->receiptFile, $receiptName);
+
+        //Upload to storage
+        try {
+            Storage::putFileAs('documents/receipts', $request->receiptFile, $receiptName);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => 'false',
+                'message' => 'could not upload'
+            ],500);
+        }
+
+        //Add to the database
         $receipt['receipt'] = $receiptName;
         $receipt['payable_type'] = $request->payable_type;
         $receipt['payable_id'] = $request->payable_id;
         $receipt->save();
+
+        if(isset($receipt->id)) {
+            return response()->json([
+                'success' => 'true',
+                'message' => 'receipt successfully uploaded'
+            ],200);
+        }
     }
 
     /**
@@ -59,11 +77,7 @@ class ReceiptController extends Controller
      */
     public function show(Receipt $receipt)
     {
-        //S3 specific
-        //Storage::temporaryUrl($receipt->receipt, now()->addMinutes(2));
-
-        //Local driver
-        return Storage::disk('public')->download('documents/receipts/'.$receipt->receipt);
+        return Storage::download('documents/receipts/'.$receipt->receipt);
 
     }
 
@@ -98,7 +112,7 @@ class ReceiptController extends Controller
      */
     public function destroy(Receipt $receipt)
     {
-        Storage::disk('public')->delete('documents/receipts/'.$receipt->receipt);
+        Storage::delete('documents/receipts/'.$receipt->receipt);
         Receipt::destroy($receipt->id);
     }
 }

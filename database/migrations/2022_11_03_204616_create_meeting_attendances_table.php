@@ -15,11 +15,9 @@ return new class extends Migration
     {
         Schema::create('meeting_attendances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable();
+            $table->foreignId('user_id');
             $table->foreignId('meeting_id');
             $table->boolean('late')->default(0);
-            $table->boolean('guest')->default(0);
-            $table->string('name')->nullable();
         });
     }
 

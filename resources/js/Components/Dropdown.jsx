@@ -1,5 +1,5 @@
 import React, { useState, useContext, Fragment } from 'react';
-import { Link } from '@inertiajs/inertia-react';
+import { Link } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
 
 const DropDownContext = React.createContext();
@@ -71,12 +71,14 @@ const Content = ({ align = 'right', width = '48', contentClasses = 'py-1 bg-whit
 };
 
 const DropdownLink = ({ href, method = 'post', as = 'a', children }) => {
+    const { open, setOpen, toggleOpen } = useContext(DropDownContext);
     return (
         <Link
             href={href}
             method={method}
             as={as}
             className="block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+            onClick={toggleOpen}
         >
             {children}
         </Link>

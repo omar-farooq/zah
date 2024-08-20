@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Fragment } from 'react'
-import { InertiaLink } from '@inertiajs/inertia-react'
+import { Link } from '@inertiajs/react'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { Pagination } from '@mantine/core'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/Table'
@@ -37,24 +37,24 @@ export default function ListMinutes ({meetingsPageOne}) {
 
             if(pollResults) {
                 return (
-                    <div key={i} className="bg-white w-1/3 border mt-4">
+                    <div key={i} className="bg-white w-4/5 lg:w-1/3 border mt-4">
                         <div className="text-xl">Poll <br />{pollResults.name}</div>
                         <div>from {result.time_of_meeting}</div>
-                        <InertiaLink href={route('meetings.show', result.id)}>
+                        <Link href={route('meetings.show', result.id)}>
                             <div className="text-cyan-600">Click here to view the original meeting</div>
-                        </InertiaLink>
+                        </Link>
                     </div>
                 )
             }
             if(minuteResults) {
                 return (
-                    <div key={i} className="bg-white w-1/3 border mt-4">
+                    <div key={i} className="bg-white w-4/5 lg:w-1/3 border mt-4">
                         <div className="text-xl">Minute </div>
                         <div>{minuteResults.minute_text}</div>
                         <div>from {result.time_of_meeting}</div>
-                        <InertiaLink href={route('meetings.show', result.id)}>
+                        <Link href={route('meetings.show', result.id)}>
                             <div className="text-cyan-600">Click here to view the original meeting</div>
-                        </InertiaLink>
+                        </Link>
                     </div>
                 )
             }
@@ -64,7 +64,7 @@ export default function ListMinutes ({meetingsPageOne}) {
     return (
         <>
             <div className="w-full flex flex-col items-center">
-                <div className="w-5/6 flex flex-row mt-6">
+                <div className="w-5/6 flex flex-row mt-6 justify-center md:justify-start">
                     <Input
                         className="w-full pr-10"
                         placeholder="Search"

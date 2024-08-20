@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { ArrowRightIcon, ArrowUpRightIcon, ArrowDownRightIcon } from '@heroicons/react/24/solid'
-import { InertiaLink } from '@inertiajs/inertia-react'
+import { Link } from '@inertiajs/react'
 import { TrashIcon } from '@heroicons/react/24/outline'
 import { useDisclosure } from '@mantine/hooks'
 import { createStyles, Button, Group, Modal, Paper, SimpleGrid, Text, ThemeIcon } from '@mantine/core'
@@ -156,7 +156,7 @@ export default function TreasurySummary({currentYearPurchaseCount, previousYearP
 
     return (
         <>           
-            <div className={classes.root}>
+            <div className="mt-10 lg:mt-20">
                 <SimpleGrid cols={3} breakpoints={[{ maxWidth: 'sm', cols: 1 }]}>
                    {stats}
                 </SimpleGrid>
@@ -207,13 +207,13 @@ export default function TreasurySummary({currentYearPurchaseCount, previousYearP
             </div>
 
             <form 
-                className="grid grid-cols-2 gap-2 mt-8 mb-8"
+                className="grid grid-cols-2 gap-1 md:gap-2 mt-8 mb-8"
                 onSubmit={(e) => handleAddPayment(e)}
             >
                 <div className="col-start-1 col-end-3 text-center mb-2">Add a new payment</div>
                 <Input
                     placeholder={"Recipient"}
-                    className="h-10"
+                    className="h-10 w-full"
                     value={newPayment.recipient}
                     required={true}
                     handleChange={(e) => setNewPayment({...newPayment, recipient: e.target.value})}
@@ -221,7 +221,7 @@ export default function TreasurySummary({currentYearPurchaseCount, previousYearP
 
                 <Input
                     placeholder={"Short explanation"}
-                    className="h-10"
+                    className="h-10 w-full"
                     value={newPayment.description}
                     handleChange={(e) => setNewPayment({...newPayment, description: e.target.value})}
                 />
@@ -229,8 +229,7 @@ export default function TreasurySummary({currentYearPurchaseCount, previousYearP
                 <Input
                     type={"number"}
                     placeholder={"Amount"}
-                    required={true}
-                    className="h-10"
+                    className="h-10 w-full"
                     value={newPayment.amount}
                     handleChange={(e) => setNewPayment({...newPayment, amount: e.target.value})}
                 />
@@ -336,14 +335,14 @@ export default function TreasurySummary({currentYearPurchaseCount, previousYearP
             </form>
             <Modal opened={modalOpened} onClose={modalHandlers.close} title="Confirm Delete" centered>
                 <div className="mb-4">Are you sure you want to delete the recurring payments to {selectedPaymentToDestroy.name}?</div>
-                <InertiaLink 
+                <Link 
                     href={route('recurring-payments.destroy', selectedPaymentToDestroy.id)} 
                     method="delete" as="button" 
                     onClick={(e) => {handlePaymentDelete(selectedPaymentToDestroy.id); modalHandlers.close()}}
                     className="bg-red-600 hover:bg-red-700 text-white h-9 w-20 border rounded-md mr-0.5"
                 >
                     Confirm
-                </InertiaLink>
+                </Link>
                 <button className="bg-zinc-800 text-white h-9 w-20 border rounded-md" onClick={modalHandlers.close}>Cancel</button>
             </Modal>
         </>

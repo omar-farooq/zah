@@ -7,6 +7,7 @@ use App\Models\RecurringPayment;
 use App\Models\Rent;
 use App\Models\TreasuryPlan;
 use App\Models\TreasuryReport;
+use Auth;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -41,7 +42,7 @@ class TreasuryPlanController extends Controller
         return Inertia::render('Treasury/Plans/Create', [
             'title' => 'Treasury Planning',
             'lastPlan' => TreasuryPlan::latest()->first(),
-            'balance' => TreasuryReport::latest()->first()->remaining_budget,
+            'balance' => TreasuryReport::latest()->first()->remaining_budget ?? 0,
             'rent' => Rent::pluck('amount')->sum(),
             'weeklyRecurringPayments' => RecurringPayment::where('frequency', 'weekly')->pluck('amount')->sum(),
             'monthlyRecurringPayments' => RecurringPayment::where('frequency', 'monthly')->pluck('amount')->sum(),
@@ -57,12 +58,13 @@ class TreasuryPlanController extends Controller
      */
     public function store(Request $request)
     {
-        $plan = TreasuryPlan::Create($request->except('components'));
+//        $plan = TreasuryPlan::Create($request->except('components'));
+        $plan = Auth::User()->treasuryPlans()->create($request->except('components'));
         foreach($request->input('components') as $component) {
             $newComponent = PlanComponent::create($component);
             $plan->planComponents()->attach([$newComponent->id => ['priority' => $component['priority']]]);
         }
-
+        return response()->json($plan->id);
     }
 
     /**

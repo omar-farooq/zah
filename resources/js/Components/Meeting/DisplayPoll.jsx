@@ -1,9 +1,23 @@
 import { useState, useEffect } from 'react'
+import { useDisclosure } from '@mantine/hooks'
 import { BarController, BarElement, CategoryScale, Chart, LinearScale, Title } from 'chart.js'
-import { CheckCircleIcon } from '@heroicons/react/24/solid'
+import { CheckCircleIcon, PlusCircleIcon, XMarkIcon } from '@heroicons/react/24/solid'
 import { draw, generate } from 'patternomaly'
+import { Modal } from '@mantine/core'
+import ConfirmModal from '@/Components/ConfirmModal'
 
-export default function DisplayPoll({auth, poll}) {
+export default function DisplayPoll({auth, poll, allowDelete=false}) {
+
+    const [members, setMembers] = useState([])
+
+    //Modal state for confirming poll deletion
+    const [modalOpened, modalHandlers] = useDisclosure(false)
+
+    //Modal and state for voting on behalf of someone else
+    //Reserved for the chair person
+    const [behalfOfOpened, behalfOfHandlers] = useDisclosure(false)
+    const [behalfOfPollOption, setBehalfOfPollOption] = useState({poll: '', option: ''})
+
     Chart.register(
         BarController,
         BarElement,
@@ -20,6 +34,15 @@ export default function DisplayPoll({auth, poll}) {
     const canvasStyle = {
         width: '800px'
     }
+
+    //Get members for the ability to choose who to vote on behalf of
+    useEffect(() => {
+        const getMembers = async () => {
+            let res = await axios.get('/memberships')
+            setMembers(res.data.members)
+        }
+        getMembers()
+    },[])
 
 	//Find if the user has voted and set their vote if it exists
     useEffect(() => {
@@ -97,33 +120,79 @@ export default function DisplayPoll({auth, poll}) {
             })
     }
 
+    const voteOnBehalfOf = (userId) => {
+        axios.post('/vote?onBehalfOf', {
+            user_id: userId,
+            poll_option_id: behalfOfPollOption.option
+        })
+    }
+
+    const deletePoll = () => {
+        axios.delete('/poll/'+poll.id)
+    }
+
     return (
         <>
-            <div className="flex flex-row">
+            <div className="flex flex-row my-4">
                 <div className="w-full"><canvas id={`poll-${poll.id}-results`} className="w-full"></canvas></div>
+                {allowDelete ?
+                    <XMarkIcon 
+                        className="h-10 w-10 text-red-600 cursor-pointer"
+                        onClick={() => modalHandlers.open()}
+                    >
+                        X
+                    </XMarkIcon>
+                    : ''
+                }
                 {!poll.meeting_id ?
 
-                <div className="flex flex-col justify-center ml-4">
-                    <ul key={poll.id}>
-                        {poll.poll_items.map(option => (
-                            <li key={option.id}>
-                                <div className="flex flex-row mt-2">
-                                    {option.option}
-                                    <CheckCircleIcon
-                                        className="h-6 w-6 text-black cursor-pointer hover:text-green-600 ml-2"
-                                        onClick={() => vote(option.id)}
-                                    />
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                    <div className="flex flex-col justify-center ml-4">
+                        <ul key={poll.id}>
+                            {poll.poll_items.map(option => (
+                                <li key={option.id}>
+                                    <div className="flex flex-row mt-2">
+                                        {option.option}
+                                        <CheckCircleIcon
+                                            className="h-6 w-6 text-black cursor-pointer hover:text-green-600 ml-2"
+                                            onClick={() => vote(option.id)}
+                                        />
+                                        {auth.user.role.name === 'Chair' &&
+                                        <PlusCircleIcon
+                                            className="h-6 w-6 text-black cursor-pointer hover:text-green-600 ml-2"
+                                            onClick={() => {behalfOfHandlers.open(); setBehalfOfPollOption({poll: poll.id, option: option.id})}}
+                                        />}
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
 
                     :
                     ''
                 }
 
             </div>
+  				<ConfirmModal
+                	text={<p>Are you sure you want to delete this poll?</p>}
+                	confirmFunction={() => {deletePoll(); modalHandlers.close()}}
+                	cancelFunction={() => {modalHandlers.close()}}
+                	modalOpened={modalOpened}
+				/>
+
+  				<Modal opened={behalfOfOpened} onClose={() => behalfOfHandlers.close()}>
+                	Who do you want to vote on behalf of?
+                        <div className="flex flex-col gap-y-2">
+                        {members.map(member => (
+                            <button 
+                                key={member.id}
+                                onClick={() => voteOnBehalfOf(member.id)}
+                                className="bg-blue-500 cursor-pointer h-8 text-white"
+                            >
+                                {member.name}
+                            </button>
+                        ))}
+                        </div>
+				</Modal>
         </>
 	)
 }

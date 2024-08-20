@@ -1,11 +1,62 @@
 import { useEffect, useReducer, useState } from 'react'
 import { ArrowLongRightIcon } from '@heroicons/react/24/solid'
+import { DocumentArrowUpIcon } from '@heroicons/react/24/outline'
 import { DateTimeToUKDate } from '@/Shared/Functions'
-import { Loader } from '@mantine/core';
+import { ErrorNotification, SuccessNotification } from '@/Components/Notifications'
+import { Button, Group, HoverCard, Loader, Modal, Text, FileInput } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks'
 import Select from 'react-select'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
-export default function ViewTreasuryReport({report, rents, treasuryItems, previousBudget}) {
+//Upload any missing receipts via this component in a modal
+export function ReceiptModal({modalDisclosure, model}) {
+
+    const [modalOpened, modalHandlers] = modalDisclosure
+    const [attached, setAttached] = useState('')
+    const [uploading, setUploading] = useState(false)
+
+    const uploadReceipt = async () => {
+        setUploading(true)
+        let config = { headers: { 'content-type': 'multipart/form-data' }}
+        try {
+            let res = await axios.post('/receipts', {
+                receiptFile: attached,
+                payable_type: model.type,
+                payable_id: model.id
+            },config)
+            SuccessNotification('Success!', res.data.message)
+            modalHandlers.close()
+            setAttached('')
+            setUploading(false)
+        } catch (err) {
+            ErrorNotification(err)
+            setUploading(false)
+        }
+    }
+
+    return (
+        <Modal opened={modalOpened} onClose={() => {modalHandlers.close(); setAttached('')}} title="No receipt found!" centered>
+            <div className="mb-4">
+                upload receipt
+                <FileInput
+                    value={attached}
+                    onChange={setAttached}
+                    icon={<DocumentArrowUpIcon />}
+                />
+            </div>
+            {attached && !uploading ?
+                <button className="bg-sky-600 text-white h-9 w-20 border rounded-md" onClick={() => uploadReceipt()}>Upload</button>
+                : attached && uploading ?
+                <Button loading={true} className="bg-sky-600">Upload</Button>
+                : ''
+            }
+            <button className="bg-zinc-800 text-white h-9 w-20 border rounded-md" onClick={() => {modalHandlers.close(); setAttached('')}}>Cancel</button>
+        </Modal>
+    )
+}
+
+//The main page to view reports
+export default function ViewTreasuryReport({reports, rents, treasuryItems, previousBudget, remainingBudget, calculatedRemainingBudget, start, end}) {
 
     function init(treasuryItems) {
         return treasuryItems
@@ -19,6 +70,14 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
                 return treasuryItems.filter(x => x.is_incoming == 0) 
             case 'rent':
                 return treasuryItems.filter(x => x.treasurable_type == "App\\Models\\PaidRent")
+            case 'payment':
+                return treasuryItems.filter(x => x.treasurable_type == "App\\Models\\Payment")
+            case 'recurring':
+                return treasuryItems.filter(x => x.treasurable_type == "App\\Models\\PaidRecurringPayment")
+            case 'purchase':
+                return treasuryItems.filter(x => x.treasurable_type == "App\\Models\\Purchase")
+            case 'maintenance':
+                return treasuryItems.filter(x => x.treasurable_type == "App\\Models\\Maintenance")
             case 'reset':
                 return init(filter.payload)
             default:
@@ -32,6 +91,10 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
     const [mappedTreasuryItems, setMappedTreasuryItems] = useState([])
     const [loading, setLoading] = useState(true)
 
+    const [modalOpened, modalHandlers] = useDisclosure(false)
+
+    const [selectedModel, setSelectedModel] = useState({id: '', model: ''})
+
     useEffect(() => {
         const getReceipts = async () => {
             let arr = []
@@ -41,18 +104,59 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
             }
             setReceipts(arr)
         }
-        getReceipts()
-    },[])
+        if(!modalOpened) {
+            getReceipts()
+        }
+    },[modalOpened])
+
+    // for the dropdown
+    const groupedOptions = [
+        {
+            label: 'Payment Direction',
+            options: [
+                {value: 'incoming', label: 'Incoming'},
+                {value: 'outgoing', label: 'Outgoing'}
+            ]
+        },
+        {
+            label: 'Payment Type',
+            options: [
+                {value: 'rent', label: 'Rent'},
+                {value: 'recurring', label: 'Recurring'},
+                {value: 'purchase', label: 'Purchase'},
+                {value: 'maintenance', label: 'Maintenance'},
+                {value: 'payment', label: 'Other/General'},
+            ]
+        }
+    ]
+
+    //optional for the dropdown, not currently used
+    const groupStyles = {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    }
+
+    const formatGroupLabel = (data) => (
+        <div style={groupStyles}>
+            <span>{data.label}</span>
+            <span>{data.options.length}</span>
+        </div>
+    )
 
     useEffect(() => {
         const mapTreasuryItems = async () => {
             let arr = []
             for (let item of treasuryItems) {
+                let description
+                item.treasurable_type == 'App\\Models\\Payment' ? description = await axios.get('/payments/'+item.treasurable_id+'?description') : description = ''
+
                 let sourceOrRecipient = await axios.get('/treasury-reports?find=sourceOrRecipient&type='+item.treasurable_type+'&id='+item.treasurable_id)
                 arr.push({
                 id: item.id,
                 type: item.treasurable_type,
                 sourceOrRecipient: sourceOrRecipient.data,
+                description: typeof description.data == "object" ? 'There is no description' : description.data,
                 friendly_type: item.treasurable_type == 'App\\Models\\PaidRent' ? 'Rent'
                 : item.treasurable_type == 'App\\Models\\Payment' ? 'Payment'
                 : item.treasurable_type == 'App\\Models\\PaidRecurringPayment' ? 'Recurring Payment'
@@ -72,15 +176,19 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
         if(rcpt) {
             let url = "/receipts/" + rcpt.id
             return <a href={url}>Download Receipt</a>
-        } else {
+        } else if (type == 'App\\Models\\PaidRent') {
             return ''
+        } else {
+            return <button onClick={() => {setSelectedModel({id: id, type: type}); modalHandlers.open()}}>Upload Receipt</button>
         }
     }
 
     const getFriendlyName = (type) => {
-        return mappedTreasuryItems.map(x => x.type == type ? 
-            x.friendly_type
-         : '')
+        return mappedTreasuryItems.find(x => x.type == type).friendly_type
+    }
+
+    const getDescription = (id) => {
+        return mappedTreasuryItems.find(x => x.id === id).description
     }
 
     return (
@@ -89,9 +197,9 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
             :
         <>
             <div className="flex flex-row mt-4">
-                <div className="bg-white text-sm md:text-xl mr-4">Report Start: {DateTimeToUKDate(report.start_date)}</div>
+                <div className="bg-white text-sm md:text-xl mr-4">Report Start: {DateTimeToUKDate(start)}</div>
                 <ArrowLongRightIcon className="h-6 w-6" />
-                <div className="bg-white text-sm md:text-xl ml-4">Report End: {DateTimeToUKDate(report.end_date)}</div>
+                <div className="bg-white text-sm md:text-xl ml-4">Report End: {DateTimeToUKDate(end)}</div>
             </div>
             <div>Starting Balance: £{previousBudget}</div>
             <div className="w-full flex flex-col items-center">
@@ -100,11 +208,7 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
                         className="w-full md:w-1/2 lg:w-1/4"
                         placeholder="Filter"
                         isClearable
-                        options={[
-                            {value: 'incoming', label: 'Incoming'},
-                            {value: 'outgoing', label: 'Outgoing'},
-                            {value: 'rent', label: 'Type: Rent'},
-                        ]}
+                        options={groupedOptions}
                         onChange={(e) => e ? dispatch({type: e.value}) : dispatch({type: 'reset', payload: treasuryItems})}
                     />
                 </div>
@@ -121,9 +225,26 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
                         <tr key={item.id} className={`${item.is_incoming ? 'bg-white' : 'bg-white'}`}>
                             <FirstTD>£{item.amount}</FirstTD>
                             <TD>
+                                <div className="flex flex-row gap-x-1">
                                     {
                                         getFriendlyName(item.treasurable_type)
                                     }
+                                    { 
+                                        item.treasurable_type === 'App\\Models\\Payment' &&
+                                            <Group position="center">
+                                                <HoverCard width={280} shadow="md">
+                                                    <HoverCard.Target>
+                                                        <button className="bg-blue-400 w-4 h-4 text-white border rounded-full">i</button>
+                                                    </HoverCard.Target>
+                                                    <HoverCard.Dropdown>
+                                                        <Text size="sm">
+                                                            {getDescription(item.id)}
+                                                        </Text>
+                                                    </HoverCard.Dropdown>
+                                                </HoverCard>
+                                            </Group>
+                                    }
+                                </div>
                             </TD>
                             <TD>{item.is_incoming ? 'incoming' : 'outgoing'}</TD>
                             <TD>
@@ -140,8 +261,9 @@ export default function ViewTreasuryReport({report, rents, treasuryItems, previo
                 </Table>
             </div>
 
-            <div className="mt-5 text-2xl">Calculated remaining budget: £{report.calculated_remaining_budget}</div>
-            {report.remaining_budget != report.calculated_remaining_budget && <div>Adjusted budget: £{report.remaining_budget}</div>}
+            {remainingBudget !== calculatedRemainingBudget && <div className="mt-5 text-2xl">Adjusted budget: £{remainingBudget}</div>}
+            <div className={`${remainingBudget === calculatedRemainingBudget ? 'mt-5 text-2xl' : ''}`}>Calculated remaining budget: £{calculatedRemainingBudget}</div>
+            <ReceiptModal modalDisclosure={[modalOpened, modalHandlers]} model={selectedModel} />
         </>
     )
 }

@@ -22,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'avatar',
         'is_tenant'
     ];
 
@@ -66,8 +68,6 @@ class User extends Authenticatable
 
 	 /**
 	 * Relationship with Membership
-	 *
-	 *
 	 */
     public function membership() {
         return $this->hasOne(Membership::class);
@@ -75,7 +75,6 @@ class User extends Authenticatable
 
      /**
       * Relationship with Meeting Agends
-      *
       */
     public function meetingAgendas() {
         return $this->hasMany(MeetingAgenda::class);
@@ -83,7 +82,6 @@ class User extends Authenticatable
      
      /**
       * Relationship with Purchase Requests
-      *
       */
      public function purchaseRequests() {
         return $this->hasMany(PurchaseRequest::class);
@@ -91,7 +89,6 @@ class User extends Authenticatable
      
      /**
       * Relationship with Maintenance Requests
-      *
       */
      public function maintenanceRequests() {
         return $this->hasMany(MaintenanceRequest::class);
@@ -99,7 +96,6 @@ class User extends Authenticatable
      
      /**
       * Relationship with Tasks
-      *
       */
      public function tasks() {
         return $this->hasMany(Task::class);
@@ -107,7 +103,6 @@ class User extends Authenticatable
 
      /**
       * Relationship with Roles
-      *
       */
      public function role() {
         return $this->hasOne(Role::class);
@@ -115,7 +110,6 @@ class User extends Authenticatable
 
      /**
       * Relationship with Delegated Roles
-      *
       */
      public function delegatedRole() {
         return $this->hasOne(DelegatedRole::class);
@@ -123,7 +117,6 @@ class User extends Authenticatable
 
      /**
       * Relationship with Rent Arrears
-      *
       */
      public function rentArrear() {
         return $this->hasOne(RentArrear::class);
@@ -148,23 +141,27 @@ class User extends Authenticatable
 
     /**
      * Relationship with Meeting Attendances
-     *
      */
      public function attendance() {
-        return $this->hasMany(MeetingAttendance::class);
+        return $this->belongsToMany(Meeting::class, 'meeting_attendances')->withPivot('late');
      } 
 
     /**
      * Relationship with Secretary Reports
-     *
      */
      public function secretaryReports() {
         return $this->hasMany(SecretaryReport::class);
      } 
 
+    /**
+     * Relationship with Treasury Plans
+     */
+     public function treasuryPlans() {
+        return $this->hasMany(TreasuryPlan::class);
+     } 
+
      /**
       * Relationship with Rent
-      *
       */
      public function rent() {
         return $this->hasOne(Rent::class);
@@ -172,12 +169,17 @@ class User extends Authenticatable
 
 	/**
 	 * Get Members
-	 *
-     *
 	**/
 	public function currentMember() {
 		return $this->with('membership')->whereHas('membership', function($query){
 			$query->whereNull('end_date');
 		});
-	}
+    }
+
+    /**
+     * Get Next Of Kin
+     */
+     public function nextOfKin() {
+        return $this->hasOne(NextOfKin::class);
+     }
 }

@@ -24,7 +24,7 @@ class StoreMeetingRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'time' => 'required|date|after:now'
         ];
     }
 }

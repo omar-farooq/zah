@@ -81,15 +81,15 @@ export default function CreatePlan({lastPlan, balance, rent, weeklyRecurringPaym
     }
 
     const calculateExpectedIncomings = () => {
-        return rent * 52 * 5
+        return rent * 12 * 5
     }
 
     const calculateRemainingBalance = () => Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings()) - fiveYearPlan.reduce((a,b) => {
        return Number(b.cost) + Number(a) 
     },[])
 
-    const savePlan = () => {
-        axios.post('/treasury-plans', {
+    const savePlan = async () => {
+        let planID = await axios.post('/treasury-plans', {
             expected_incoming: calculateExpectedIncomings(),
             expected_outgoing: calculateExpectedOutgoings(),
             available_balance: balance,
@@ -98,15 +98,16 @@ export default function CreatePlan({lastPlan, balance, rent, weeklyRecurringPaym
             plan_length: '5y',
             components: state
         })
+        window.location = "/treasury-plans/"+planID.data
     }
 
     return (
         <>
-            <div className="grid grid-cols-6 bg-white m-4 shadow-md text-sm md:text-base">
-                <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2">£{calculateExpectedIncomings()}</span>
-                <span className="m-2 font-bold col-span-2">Expected outgoing (5 years):</span> <span className="mt-2">£{calculateExpectedOutgoings()}</span>
-                <span className="m-2 font-bold col-span-2">Available balance:</span> <span className="mt-2">£{balance}</span>
-                <span className="m-2 font-bold col-span-2">Expected 5 year balance:</span><span className="mt-2"> £{Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings())}</span>
+            <div className="grid grid-cols-6 bg-white md:m-4 mt-4 shadow-md text-sm md:text-base">
+                <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2 -ml-4 sm:ml-0">£{calculateExpectedIncomings()}</span>
+                <span className="m-2 font-bold col-span-2">Expected outgoing (5 years):</span> <span className="mt-2 -ml-4 sm:ml-0">£{calculateExpectedOutgoings()}</span>
+                <span className="m-2 font-bold col-span-2">Available balance:</span> <span className="mt-2 -ml-4 sm:ml-0">£{balance}</span>
+                <span className="m-2 font-bold col-span-2">Expected balance (in 5 years):</span><span className="mt-2 -ml-4 sm:ml-0"> £{Number(balance) + Number(calculateExpectedOutgoings()) + Number(calculateExpectedIncomings())}</span>
             </div>
             <ScrollArea>
               <DragDropContext

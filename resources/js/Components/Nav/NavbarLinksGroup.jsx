@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Group, Box, Collapse, ThemeIcon, UnstyledButton, createStyles, rem } from '@mantine/core';
 import { ChevronRightIcon, ChevronLeftIcon, CalendarDaysIcon } from '@heroicons/react/24/outline'
 import NavLink from '@/Components/Nav/NavLink' 
-import { Link } from '@inertiajs/inertia-react'
+import { Link } from '@inertiajs/react'
 
 const useStyles = createStyles((theme) => ({
   control: {
@@ -50,8 +50,10 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }) {
   const ChevronIcon = theme.dir === 'ltr' ? ChevronRightIcon : ChevronLeftIcon;
   const items = (hasLinks ? links : []).map((link) => (
 
-      //Joining a meeting isn't an inertia link as we're joining a channel, otherwise the broadcasting events bubble
-      link.label == 'Join' ?
+      //Joining a meeting wasn't an inertia link for a period of time as, when joining a channel, the broadcasting events would bubble.
+      //This seems to have been resolved by doing the proper cleanup on the mounted components.
+      //Keeping in for now in case a link is needed for a route in the future
+      link.label == 'NotNeededAnymore' ?
         <a
             className={`${classes.link} text-slate-300`}
             href={link.link}
@@ -75,7 +77,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }) {
           <UnstyledButton onClick={() => setOpened((o) => !o)} className={`${classes.control} text-slate-300`}>
             <Group position="apart" spacing={0}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <ThemeIcon variant="light" size={30}>
+                <ThemeIcon variant="dark" size={30}>
                     <Icon />
                 </ThemeIcon>
                 <Box ml="md">{label}</Box>
@@ -98,7 +100,7 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, links }) {
                 <UnstyledButton onClick={() => setOpened((o) => !o)} className={`${classes.control} text-slate-300`}>
                     <Group position="apart" spacing={0}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <ThemeIcon variant="light" size={30}>
+                            <ThemeIcon variant="dark" size={30}>
                                 <Icon />
                             </ThemeIcon>
                             <Box ml="md">{label}</Box>

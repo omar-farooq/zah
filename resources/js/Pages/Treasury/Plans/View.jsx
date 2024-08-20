@@ -1,21 +1,21 @@
 import { Fragment } from 'react'
-import { Link } from '@inertiajs/inertia-react';
+import { Link } from '@inertiajs/react';
 import { DateToUKLocale } from '@/Shared/Functions'
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/solid'
 export default function ViewPlan({treasuryPlan}) {
 
     return (
         <>
-            <div className="grid grid-cols-6 bg-white m-4 shadow-md md:text-base text-sm">
-                <span className="m-2 font-bold col-span-2">Plan Created:</span><span className="mt-2">{DateToUKLocale(treasuryPlan.created_at)}</span>
-                <span className="m-2 font-bold col-span-2"></span><span className="mt-2"></span>
-                <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2">£{treasuryPlan.expected_incoming}</span>
-                <span className="m-2 font-bold col-span-2">Expected outgoing (5 years):</span> <span className="mt-2">£{treasuryPlan.expected_outgoing}</span>
-                <span className="m-2 font-bold col-span-2">Available balance:</span> <span className="mt-2">£{treasuryPlan.available_balance}</span>
-                <span className="m-2 font-bold col-span-2">Expected 5 year balance:</span><span className="mt-2"> £{treasuryPlan.expected_balance}</span>
+            <div className="grid grid-cols-4 md:grid-cols-6 bg-white md:m-4 mt-4 shadow-md text-sm md:text-base justify-items-end md:justify-items-center">
+                <span className="m-2 font-bold col-span-2">Plan Created:</span><span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">{DateToUKLocale(treasuryPlan.created_at)}</span>
+                <span className="m-2 font-bold col-span-2">Created by:</span><span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">{treasuryPlan.user.name}</span>
+                <span className="m-2 font-bold col-span-2">Expected incoming (5 years):</span> <span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">£{Number(treasuryPlan.expected_incoming).toFixed(2)}</span>
+                <span className="m-2 font-bold col-span-2">Expected outgoing (5 years):</span> <span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">£{Number(treasuryPlan.expected_outgoing).toFixed(2)}</span>
+                <span className="m-2 font-bold col-span-2">Available balance:</span> <span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center">£{Number(treasuryPlan.available_balance).toFixed(2)}</span>
+                <span className="m-2 font-bold col-span-2">Expected balance (5 years):</span><span className="mt-2 -ml-3 sm:ml-0 justify-self-end md:justify-self-center"> £{Number(treasuryPlan.expected_balance).toFixed(2)}</span>
             </div>
 
-            <table>
+            <table className="xl:w-2/3">
                 <thead className="text-slate-700 font-bold text-left">
                     <tr>
                         <th></th>
@@ -27,7 +27,7 @@ export default function ViewPlan({treasuryPlan}) {
                 <tbody>
                         {treasuryPlan.plan_components.map(component => (
                             <Fragment key={component.id}>
-                    <tr>
+                    <tr className="xl:text-xl">
                                 <td className="bg-white w-16"><EllipsisHorizontalIcon className="h-6 w-6 text-slate-400 mx-auto" /></td>
                                 <td className="bg-white w-20">{component.pivot.priority}</td>
                                 <td className="bg-white w-36">{component.component}</td>
@@ -38,7 +38,7 @@ export default function ViewPlan({treasuryPlan}) {
                 </tbody>
             </table>
 
-            <div className="m-6 text-xl">
+            <div className="m-6 md:text-xl">
                 Estimated Remaining Balance: £{treasuryPlan.estimated_remaining_balance} 
             </div>
 

@@ -13,47 +13,57 @@ export default function MobileNavMenu({navHook}) {
             <Accordion.Item value="Meetings">
                 <Accordion.Control>Meetings</Accordion.Control>
                 <Accordion.Panel>
-                    <Link endpoint='schedule' name='Schedule' />
-                    <Link endpoint='meetings.create' name='Join' />
-                    <Link endpoint='meetings.index' name='Previous Minutes' />
+                    <Link endpoint='schedule' name='Schedule' linkClick={linkClick} />
+                    <Link endpoint='meetings.create' name='Join' linkClick={linkClick} />
+                    <Link endpoint='meetings.index' name='Previous Minutes' linkClick={linkClick} />
                 </Accordion.Panel>
             </Accordion.Item>
 
             <Accordion.Item value="Treasury">
                 <Accordion.Control>Treasury</Accordion.Control>
                 <Accordion.Panel>
-                    <Link endpoint='treasury.summary' name='Summary' />
-                    <Link endpoint='treasury-reports.index' name='Reports' />
-                    <Link endpoint='treasury-plans.latest' name='Plans' />
-                    <Link endpoint='rents.index' name='Rents' />
+                    <Link endpoint='treasury.summary' name='Summary' linkClick={linkClick} />
+                    <Link endpoint='treasury-reports.index' name='Reports' linkClick={linkClick} />
+                    <Link endpoint='treasury-plans.latest' name='Plans' linkClick={linkClick} />
+                    <Link endpoint='accounts.index' name='Accounts' linkClick={linkClick} />
+                    <Link endpoint='rents.index' name='Rents' linkClick={linkClick} />
                 </Accordion.Panel>
             </Accordion.Item>
 
             <Accordion.Item value="Purchases">
                 <Accordion.Control>Purchases</Accordion.Control>
                 <Accordion.Panel>
-                    <Link endpoint='purchases.index' name='All Purchases' />
-                    <Link endpoint='purchase-requests.create' name='Request' />
-                    <Link endpoint='purchase-requests.index' name='Pending Approval' />
+                    <Link endpoint='purchases.index' name='All Purchases' linkClick={linkClick} />
+                    <Link endpoint='purchase-requests.create' name='Request' linkClick={linkClick} />
+                    <Link endpoint='purchase-requests.index' name='Pending Approval' linkClick={linkClick} />
                 </Accordion.Panel>
             </Accordion.Item>
 
             <Accordion.Item value="Maintenance">
                 <Accordion.Control>Maintenance</Accordion.Control>
                 <Accordion.Panel>
-                    <Link endpoint='maintenance.index' name='All Maintenance' />
-                    <Link endpoint='maintenance.upcoming' name='Upcoming' />
-                    <Link endpoint='maintenance-requests.create' name='Request' />
-                    <Link endpoint='maintenance-requests.index' name='Pending Approval' />
+                    <Link endpoint='maintenance.index' name='All Maintenance' linkClick={linkClick} />
+                    <Link endpoint='maintenance.upcoming' name='Upcoming' linkClick={linkClick} />
+                    <Link endpoint='maintenance-requests.create' name='Request' linkClick={linkClick} />
+                    <Link endpoint='maintenance-requests.index' name='Pending Approval' linkClick={linkClick} />
+                </Accordion.Panel>
+            </Accordion.Item>
+
+            <Accordion.Item value="Documents">
+                <Accordion.Control>Documents</Accordion.Control>
+                <Accordion.Panel>
+                    <Link endpoint='documents.index' name='Browse Documents' linkClick={linkClick} />
+                    <Link endpoint='documents.create' name='Upload' linkClick={linkClick} />
+                    <Link endpoint='documentation' name='Documentation' linkClick={linkClick} />
                 </Accordion.Panel>
             </Accordion.Item>
 
             <Accordion.Item value="Users">
                 <Accordion.Control>Users</Accordion.Control>
                 <Accordion.Panel>
-                    <Link endpoint='roles.index' name='Member Roles' />
-                    <Link endpoint='users.index' name='Manage' />
-                    <Link endpoint='dashboard' name='Rules' />
+                    <Link endpoint='roles.index' name='Member Roles' linkClick={linkClick} />
+                    <Link endpoint='users.index' name='Manage' linkClick={linkClick} />
+                    <Link endpoint='rules.index' name='Rules' linkClick={linkClick} />
                 </Accordion.Panel>
             </Accordion.Item>
 

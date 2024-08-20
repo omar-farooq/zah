@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreMinuteRequest;
 use App\Http\Requests\UpdateMinuteRequest;
+use App\Models\Meeting;
 use App\Models\Minute;
 
 class MinuteController extends Controller
@@ -16,9 +17,23 @@ class MinuteController extends Controller
      */
     public function index(Minute $minute, Request $request)
     {
-        return response()->json([
-            'minutes' => $minute->where('meeting_id', $request->meeting_id)->get()
-        ]);
+        if($request->has('latest')) {
+            $meeting = new Meeting;
+            $last_meeting = $meeting->where('cancelled', 0)
+                                    ->where('completed', 1)
+                                    ->latest('time_of_meeting')
+                                    ->first()
+                                    ->id;
+
+            return response()->json(
+                $minute->where('meeting_id', $last_meeting)
+                       ->get()
+            );
+        } else {
+            return response()->json([
+                'minutes' => $minute->where('meeting_id', $request->meeting_id)->get()
+            ]);
+        }
     }
 
     /**
@@ -74,9 +89,9 @@ class MinuteController extends Controller
      * @param  \App\Models\Minute  $minute
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateMinuteRequest $request, Minute $minute)
+    public function update(Request $request, Minute $minute)
     {
-        //
+        $minute->update($request->all());
     }
 
     /**

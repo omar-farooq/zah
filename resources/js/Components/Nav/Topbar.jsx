@@ -4,16 +4,17 @@ import Dropdown from '@/Components/Dropdown';
 import MobileNavMenu from '@/Components/Nav/MobileNavMenu';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link } from '@inertiajs/inertia-react';
+import { Link } from '@inertiajs/react';
 
 export default function Topbar({ auth, header, title }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
-            <nav className="bg-white border-b border-gray-100 shadow w-full lg:bg-[url('/images/floral.webp')]">
+            <nav className="bg-white border-b border-gray-100 shadow w-full">
                 <div className="w-5/6 mx-auto">
                     <div className="flex justify-between h-16">
-                        <div className="flex">
+                        <div className="flex items-center lg:items-stretch">
+                            <div className="text-3xl lg:hidden">ZAH</div>
                             <div className="shrink-0 flex items-center hidden">
                                 <Link href="/">
                                     <ApplicationLogo className="block h-9 w-auto text-gray-500" />
@@ -36,6 +37,7 @@ export default function Topbar({ auth, header, title }) {
                                                 type="button"
                                                 className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                                             >
+                                                <img src={`/users/${auth?.user.id}?view=avatar`} className="relative rounded-3xl h-8 w-8 mr-2" />
                                                 {auth?.user.name}
 
                                                 <svg
@@ -55,6 +57,13 @@ export default function Topbar({ auth, header, title }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
+                                        <Dropdown.Link 
+                                            href={route('users.edit', auth.user.id)} 
+                                            method="get" 
+                                            as="button"
+                                        >
+                                            Edit Profile
+                                        </Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
                                             Log Out
                                         </Dropdown.Link>

@@ -6,12 +6,17 @@ use App\Models\PaidRent;
 use App\Models\PaidRecurringPayment;
 use App\Models\Payment;
 use App\Models\Receipt;
+use App\Models\RentArrear;
 use App\Models\RecurringPayment;
 use App\Models\TreasuryItem;
 use App\Models\TreasuryReport;
 use Illuminate\Support\Facades\Storage;
 
 class TreasuryService {
+
+    public function __construct() {
+        $this->arrears = new RentArrear;
+    }
     
     /**
      * Create a new report from the request
@@ -26,9 +31,30 @@ class TreasuryService {
         $new_report = TreasuryReport::create($request->all());
         $new_report_id = $new_report->id;
         $this->payRent($new_report_id, $request->paid_rents);
+        $this->updateArrears($request->arrears);
+        $this->updateAccounts($new_report_id, $request->accounts_balances);
         $this->addReportIDToUnreported($new_report_id);
+        $this->linkAdditionalPaymentsToReport($new_report_id);
 
         return $new_report->id;
+    }
+
+    /**
+     * Update the accounts
+     *
+     * @param int $report_id
+     * @param array $accounts
+     * @return void
+     *
+     */
+    protected function updateAccounts($report_id, $accounts)
+    {
+        $report = TreasuryReport::find($report_id);
+
+        forEach($accounts as $account) {
+            $new_balance = $account['final'] ?? $account['calculated'];
+            $report->accounts()->attach($account['id'], ['account_balance' => $new_balance]);
+        }
     }
 
     /**
@@ -49,6 +75,15 @@ class TreasuryService {
         }
     }
 
+    protected function updateArrears($newArrears)
+    {
+        foreach($newArrears as $newArrear) {
+            $arrear = $this->arrears->find($newArrear['id']);
+            $arrear->amount = $newArrear['amount'];
+            $arrear->save();
+        }
+    }
+
     /**
      * Add recurring payments to Treasury Items
      *
@@ -62,7 +97,7 @@ class TreasuryService {
             $paid_recurring = new PaidRecurringPayment;
             $paid_recurring->treasury_report_id = $recurring->treasuryReportID;
             $paid_recurring->recurring_payment_id = $recurring->id;
-            $paid_recurring->amount_paid = $recurring->amount;
+            $paid_recurring->amount_paid = $recurring->amount ?? $recurring->uniqueAmount;
             $paid_recurring->save();
 
             //Upload receipt
@@ -71,7 +106,7 @@ class TreasuryService {
             }
         
             //Create treasurable
-            $this->createTreasurable($recurring->treasuryReportID, "App\\Models\\PaidRecurringPayment", $paid_recurring->id, false, $recurring->amount);
+            $this->createTreasurable($recurring->treasuryReportID, "App\\Models\\PaidRecurringPayment", $paid_recurring->id, false, $recurring->amount ?? $recurring->uniqueAmount);
     }
 
     /**
@@ -87,7 +122,7 @@ class TreasuryService {
     {
         $receipt = new Receipt;
         $receiptName = date('Ymdhis') . $file->getClientOriginalName();
-        Storage::disk('public')->putFileAs('documents/receipts', $file, $receiptName);
+        Storage::putFileAs('documents/receipts', $file, $receiptName);
         $receipt['receipt'] = $receiptName;
         $receipt['payable_type'] = $payable_type;
         $receipt['payable_id'] = $payable_id;
@@ -125,6 +160,23 @@ class TreasuryService {
     {
         TreasuryItem::where('treasury_report_id', NULL)
                     ->update(['treasury_report_id' => $treasury_report_id]);
+    }
+
+    /*
+     * Add the report ID to additional payments
+     *
+     */
+    protected function linkAdditionalPaymentsToReport($treasury_report_id)
+    {
+        $payments = Payment::where('treasury_report_id', NULL)->get();
+
+        foreach($payments as $payment) {
+            $this->createTreasurable($treasury_report_id, 'App\\Models\\Payment', $payment->id, $payment->incoming, $payment->amount);
+        }
+
+        Payment::where('treasury_report_id', NULL)
+                ->update(['treasury_report_id' => $treasury_report_id]);
+        
     }
 
     /*

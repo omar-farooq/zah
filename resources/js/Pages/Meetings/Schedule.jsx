@@ -1,16 +1,32 @@
-import { useState, Fragment, useReducer } from 'react'
+import { useEffect, useState, Fragment, useReducer } from 'react'
 import { Alert } from '@mantine/core'
-import { notifications } from '@mantine/notifications';
 import { DateTimeToUKLocale, LongDateFormat, LongDateTimeFormat } from '@/Shared/Functions'
 import { ErrorNotification } from '@/Components/Notifications'
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
+import { useDisclosure } from '@mantine/hooks'
 import Modal from '@/Components/Modal'
 import ButtonColoured from '@/Components/ButtonColoured'
+import ConfirmModal from '@/Components/ConfirmModal'
 
 export default function Schedule(props) {
-    
+   
+    //get upcoming scheduled meetings and put them in state
+    const [scheduled, setScheduled] = useState([])
+
+    const getScheduled = async () => {
+        let res = await axios.get('/meetings/scheduled')
+        setScheduled(res.data)
+    }
+
+    useEffect(() => {
+        getScheduled()
+    },[])
+
     //handle the modal open/close state
     const [modalOpenState, setModalOpenState] = useState('false')
+
+    const [deleteMeetingModalOpened, modalHandlers] = useDisclosure(false)
+    const [meetingToCancel, setMeetingToCancel] = useState('')
 
     //reducer to handle schedule state
     const initialSchedule = {
@@ -18,7 +34,8 @@ export default function Schedule(props) {
         overwriteSelected: [],
         scheduledSelected: [],
         selectedDay: '',
-        upcomingMeeting: props.upcomingDate,
+        upcomingMeeting: props.upcoming['date'],
+        cancelStatus: props.upcoming['status'],
         userSuggestions: props.members.reduce((a,b) => {
             if(b.id == props.currentUser.id) {
                 return [b.schedule_suggestions][0]
@@ -111,11 +128,16 @@ export default function Schedule(props) {
     //function to create a meeting
     const createMeeting = async () => {
         let time = document.getElementById('suggest-or-schedule-time').value
-        await axios.post('/meetings', {time: new Date(schedule.selectedDay + " " + time)})
+        try {
+            await axios.post('/meetings', {time: new Date(schedule.selectedDay + " " + time)})
+        } catch (error) {
+            return ErrorNotification('Error', error)
+        }
         if (new Date(schedule.selectedDay + " " + time) < new Date(schedule.upcomingMeeting) || schedule.upcomingMeeting == 'null'){
             dispatch({type: 'setNewUpcomingMeeting', datetime: schedule.selectedDay + " " + time})
         }
         setModalOpenState('false')
+        getScheduled()
     }
 
     //axios request to update user availability
@@ -148,6 +170,11 @@ export default function Schedule(props) {
         dispatch({type: 'deleteSuggestion', suggestionID: suggestionID})
     }
 
+    const cancelMeeting = async (meetingId) => {
+        await axios.delete('/meetings/'+meetingId)
+        getScheduled()
+    }
+
     return (
         <Fragment>
         {/*Upcoming Date*/}
@@ -163,6 +190,15 @@ export default function Schedule(props) {
             >
                 Arrange a meeting by clicking on one of the dates on the schedule
             </Alert>
+        : schedule.cancelStatus == 1 ?
+            <Alert 
+                color="red" 
+                icon={<ExclamationCircleIcon className="h-6 w-6" />}
+                title="Meeting cancelled" 
+                className="mt-4" 
+            >
+                Upcoming meeting at {schedule.upcomingMeeting} has been cancelled
+            </Alert>
         :
             <Alert 
                 color="orange" 
@@ -175,7 +211,7 @@ export default function Schedule(props) {
         }
 
         {/* Dropdown */}
-            <div className="mt-4">
+            <div className="mt-4 sm:max-w-none p-2 overflow-x-scroll">
                     <select
                         onChange={e => dispatch({type: 'selectWeekToDisplay', selectedWeek: e.currentTarget.value})}
                         className="lg:text-base"
@@ -189,7 +225,7 @@ export default function Schedule(props) {
 
                 {/* Schedule */}
 
-                <table className="table-fixed bg-white max-w-sm md:max-w-fit">
+                <table className="table-fixed bg-white md:max-w-fit">
                     <thead>
                         <tr className="md:text-base text-sm">
                             <th className="lg:w-48"></th>
@@ -207,7 +243,7 @@ export default function Schedule(props) {
                     {sevenDays().map((day, index) => {
                         return (
                             <tr key={index}>
-                                <th className="md:text-base text-sm lg:h-8">
+                                <th className="sm:text-base text-xs lg:h-8">
                                     <button onClick={() => { 
                                         dispatch({type: 'selectDayForMeeting', selectedDay: day}); 
                                         setModalOpenState(!modalOpenState) 
@@ -270,7 +306,7 @@ export default function Schedule(props) {
                                 :
                                     null
                         }
-                    <div className="mb-6">
+                    <div className="mb-6 flex flex-col flex-wrap justify-center space-y-2 w-3/5 md:flex-row md:space-y-0 md:w-initial">
                 
                         {/*available on selected days*/}
                         <ButtonColoured 
@@ -324,7 +360,7 @@ export default function Schedule(props) {
                 { suggesters.length > 0
                     ?
                         <>
-                            <div className="font-bold text-lg">Suggested dates</div>
+                            <div className="text-center text-2xl mt-4">Suggested dates</div>
                             <ul>
                                 {suggesters.map(suggester => {
                                     return(
@@ -352,14 +388,14 @@ export default function Schedule(props) {
                 { schedule.userSuggestions.length > 0 
                     ?
                         <>
-                            <div className="font-bold text-lg">Your Suggestions</div>
+                            <div className="text-center text-2xl mt-4">Your Suggestions</div>
                             <ul>
                                 {schedule.userSuggestions.map(suggested => {
                                     return(
                                         <li key={suggested.id}>
                                             {LongDateTimeFormat(suggested.suggested_date)}
                                             <button 
-                                                className="ml-2" 
+                                                className="ml-2 text-red-600" 
                                                 onClick={() => deleteSuggestion(suggested.id)}
                                             >
                                                 delete
@@ -373,6 +409,23 @@ export default function Schedule(props) {
                         null
                 }
             </div>
+
+            {/* All upcoming meetings if there are multiple */}
+            {
+                scheduled.length > 1 &&
+                    <div className="text-center">
+                        <div className="text-2xl mt-4">Scheduled meetings</div>
+                        <ul>
+                            {scheduled.map(x => (
+                                <li key={x.id}>
+                                    <div className={`${x.cancelled && 'line-through decoration-red-400 decoration-2'} flex flex-row space-x-2`}>
+                                        <div>{x.time_of_meeting}</div> {!x.cancelled && <button className="text-red-500 hover:text-red-600" onClick={() => {setMeetingToCancel(x.id); modalHandlers.open()}}>cancel</button>}
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+            }
 
             {/*Modal Component for suggesting or scheduling a date*/}
             <Modal title='Suggest or Schedule date' 
@@ -403,6 +456,14 @@ export default function Schedule(props) {
             >
                 {schedule.selectedDay} <input type="time" className="ml-3" defaultValue="18:30" id="suggest-or-schedule-time"></input> ?
             </Modal>
+
+            <ConfirmModal
+                title="Confirm Meeting Cancellation"
+                text={<p>Are you sure you want to cancel this meeting?</p>}
+                confirmFunction={() => {cancelMeeting(meetingToCancel); modalHandlers.close()}}
+                cancelFunction={() => modalHandlers.close()}
+                modalOpened={deleteMeetingModalOpened}
+            />
         </Fragment>
     )
 }

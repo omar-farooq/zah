@@ -13,20 +13,23 @@ export default function RoleNomination({auth, nominee, role, nomination, userIni
 
     if(auth.user) {
         verified = auth.user.membership.start_date != null && auth.user.membership.end_date == null
-        isChair = auth.user.role.name == 'Chair'
+        isChair = auth.user.role?.name == 'Chair'
     }
 
     return (
         <>
-            <div>
-                <p>{nominee} for {role}</p>
-                <Approval 
-                    authUserApprovalHook={[authUserApproval, setAuthUserApproval]} 
-                    approvalStatusHook={[approvalStatus, setApprovalStatus]}
-                    model={model} 
-                    verified={auth.user.membership.start_date != null && auth.user.membership}
-                    isChair={auth.user.role.name == 'Chair'}
-                />
+            <div className="mt-4">
+                <p className="text-sky-600">{nominee} for {role}</p>
+                <div className="space-x-2">
+                    <Approval 
+                        authUserApprovalHook={[authUserApproval, setAuthUserApproval]} 
+                        approvalStatusHook={[approvalStatus, setApprovalStatus]}
+                        model={model} 
+                        verified={auth.user.membership.start_date != null && auth.user.membership}
+                        isChair={auth.user.role?.name == 'Chair'}
+                        buttonType='text'
+                    />
+                </div>
             </div>
         </>
     )

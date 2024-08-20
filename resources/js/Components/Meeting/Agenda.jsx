@@ -1,21 +1,25 @@
 import { Button, Textarea } from '@mantine/core'
+import { ComponentTitle } from '@/Components/Meeting'
 import { TrashIcon } from '@heroicons/react/24/outline'
 import { useState, useEffect, useReducer } from 'react'
 import Input from '@/Components/Input'
 
-export default function Agenda() {
+export default function Agenda({auth}) {
 
     const initialState = []
 
     function reducer(reactiveAgenda, action) {
         switch (action.type) {
             case 'initialFetch':
-                return action.fetched
+                return action.fetched.sort((a,b) => a.user_id - b.user_id)
             case 'add':
                 //add a failsafe to prevent the possibility of duplicates.
                 if(!reactiveAgenda.find(x => x.id == action.id)) {
+                    //don't sort and instead return the latest one after the rest for visibility
+                    //return [...reactiveAgenda, {id: action.id, item: action.item, user_id: action.user_id}].sort((a,b) =>a.user_id - b.user_id)
                     return [...reactiveAgenda, {id: action.id, item: action.item, user_id: action.user_id}]
                 } else {
+                    //return reactiveAgenda.sort((a,b) =>a.user_id - b.user_id)
                     return reactiveAgenda
                 }
             case 'delete':
@@ -26,6 +30,9 @@ export default function Agenda() {
     }
 
     const [reactiveAgenda, dispatch] = useReducer(reducer, initialState);
+    
+    //members
+    const [users, setUsers] = useState('')
 
     //agenda form input
     const [inputValue, setInputValue] = useState('')
@@ -47,6 +54,8 @@ export default function Agenda() {
     //Receive the current agenda items via an api call
     useEffect(() => {
 		async function getAgendaItems() { 
+            let fetchedUsers = await axios.get('/users?filter=none')
+            await setUsers(fetchedUsers.data)
 			let res = await axios.get('/agenda')
             dispatch({type: 'initialFetch', fetched: res.data.agenda})
 		}
@@ -60,7 +69,8 @@ export default function Agenda() {
             .listen('.MeetingAgendaDeleted', (e) => {
                 dispatch({type: 'delete', itemId: e.model.id})
             })
-        return function cleanup() {
+        return () => {
+            Echo.private(`meeting`).stopListening('.MeetingAgendaCreated').stopListening('.MeetingAgendaDeleted')
             Echo.leaveChannel('meeting')
         }
     },[])
@@ -72,27 +82,36 @@ export default function Agenda() {
 
     return (
         <>
-            <div className="text-xl col-start-1 lg:col-start-3 col-end-5 bg-rose-700 text-white flex justify-center">Agenda</div>
-            <ul className="lg:col-start-3 lg:col-end-7 col-start-1 col-end-9">
-                {reactiveAgenda.map((agenda,i) =>
-                    <li key={agenda.id} className={`${i % 2 == 0 ? 'border-black' : 'border-black'} bg-white text-black flex justify-between items-center m-1 border`}>
-                        <div className="ml-2 whitespace-pre-line">{agenda.item}</div> 
-                        <div><TrashIcon className="w-5 h-5 cursor-pointer mr-2" onClick={() => deleteAgendaItem(agenda.id)} /></div>
-                    </li>
-                )}
+            <ComponentTitle bg="bg-rose-700">Agenda</ComponentTitle>
+            <ul className="col-start-1 col-end-9">
+                {
+                    reactiveAgenda.length === 0 ? <div className="text-2xl">No agenda has been set</div> :
+                    reactiveAgenda.map((agenda,i) =>
+                        <li key={agenda.id} className={`${i % 2 == 0 ? 'border-black bg-white' : 'border-black bg-zinc-100'} text-black flex justify-between items-center m-1 border`}>
+                            <div className="ml-2 whitespace-pre-line">
+                                <span className="text-sm">{users?.find(x => x.id === agenda.user_id).name}:</span>
+                                <br />
+                                {agenda.item} 
+                            </div> 
+                            <div className={`${auth.user.id === agenda.user_id ? '' : 'hidden'}`}>
+                                <TrashIcon className="w-5 h-5 cursor-pointer mr-2" onClick={() => deleteAgendaItem(agenda.id)} />
+                            </div>
+                        </li>
+                    )
+                }
             </ul>
 
-            <form onSubmit={handleSubmit} className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7 flex flex-col items-center">
+            <form onSubmit={handleSubmit} className="col-start-1 col-end-9 flex flex-col items-center">
                 <Textarea
                     value={inputValue}
                     onChange={handleChange}
                     autosize
                     minRows={4}
                     required={true}
-                    className="w-3/4 mt-1"
-                    classNames={{ input: 'bg-gray-100 border-black'}}
+                    className="w-3/4 mt-6"
+                    classNames={{ input: 'bg-zinc-100'}}
                 />
-                <Button color="dark" type="submit" className="bg-black w-1/3 lg:w-1/4 mt-4">Add Agenda Item </Button>
+                <Button color="dark" type="submit" className="bg-black w-1/2 md:w-1/3 lg:w-1/4 mt-4 top-4">Add Agenda Item </Button>
             </form>
         </>
     )

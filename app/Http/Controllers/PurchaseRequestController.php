@@ -8,6 +8,7 @@ use App\Models\PurchaseRequest;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Redirect;
 
@@ -21,24 +22,38 @@ class PurchaseRequestController extends Controller
     public function index(PurchaseRequest $purchaseRequest, Request $request)
     {
         if(isset($request->cards)) {
+            $term = $request->search;
 
             if($request->cards == 'needApproval') {
+                $user_role = \App\Models\Role::where('user_id', Auth::id())->first()->name ?? 'null';
                 return response()->json(
-                    $purchaseRequest->whereDoesntHave('approvals', function (Builder $q) {
-                        $q->where('user_id', Auth::id());
-                    })->paginate(4)
+                    $purchaseRequest::where('approval_status', 'in voting')
+                        ->when($user_role === 'Chair', function (Builder $q) {
+                           $q->orWhere('approval_status', 'Chair to decide');
+                        })
+                        ->whereDoesntHave('approvals', function (Builder $q) {
+                            $q->where('user_id', Auth::id());
+                        })
+                        ->paginate(4)
                 );
             }
 
             if($request->cards == 'all') {
                 return response()->json(
-                    $purchaseRequest->orderBy('created_at', 'desc')->paginate(4)
+                    $purchaseRequest
+                        ->when($term, function($q) use ($term) {
+                            return $q->where('name', 'like', '%'.$term.'%')
+                                     ->orWhere('description', 'like', '%'.$term.'%');
+                        })
+                        ->orderBy('created_at', 'desc')
+                        ->paginate(4)
                 );
             }
 
         } else {
             return Inertia::render('PurchaseRequests/Browse', [
-                'title' => 'All Purchase Requests'
+                'title' => 'All Purchase Requests',
+                'requestNumber' => PurchaseRequest::count()
             ]);    
         }
     }
@@ -57,6 +72,7 @@ class PurchaseRequestController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * upload to gcs before adding to the database
      *
      * @param  \App\Http\Requests\StorePurchaseRequestRequest  $request
      * @return \Illuminate\Http\Response
@@ -67,7 +83,15 @@ class PurchaseRequestController extends Controller
 
         if($request->file('image')) {
             $imageName = time() . '.' .$request->image->getClientOriginalName();
-            $request->image->move(public_path('images'), $imageName);
+//            $request->image->move(public_path('images'), $imageName);
+            try{
+                Storage::putFileAs('images', $request->image, $imageName);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => 'false',
+                    'message' => 'Failed to upload image'
+                ],500);
+            }
             $new_purchase_request['image'] = $imageName;
             $new_purchase_request->save();
         }
@@ -86,7 +110,8 @@ class PurchaseRequestController extends Controller
     {
         return Inertia::render('Purchases/ViewPurchaseRequest', [
             'purchaseRequest' => $purchaseRequest,
-            'title' => 'Request to purchase ' .$purchaseRequest->name
+            'title' => 'Request to purchase ' .$purchaseRequest->name,
+            'requestImage' => Storage::temporaryUrl('images/'.$purchaseRequest->image, now()->addMinutes(5)),
         ]);
     }
 
