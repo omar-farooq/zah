@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useReducer } from 'react'
-import { Document, Page } from 'react-pdf/dist/esm/entry.vite'
+import { Document, Page } from 'react-pdf'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { Alert, MantineProvider, Text, Group, Button, createStyles, Textarea, rem } from '@mantine/core'

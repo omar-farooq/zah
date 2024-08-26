@@ -1,7 +1,7 @@
 import Agenda from '@/Components/Meeting/Agenda'
 import { Link } from '@inertiajs/react'
 
-export default function NotYetScheduled({auth}) {
+export default function NotYetScheduled({auth, meetingId}) {
     return (
         <>
             <div className="mt-4 text-lg"> 
@@ -12,6 +12,7 @@ export default function NotYetScheduled({auth}) {
             <div className="w-full lg:w-1/2 mt-4 mb-4"> 
                 <Agenda 
                     auth={auth}
+                    meetingId={meetingId}
                 />
             </div>
                 <Link 

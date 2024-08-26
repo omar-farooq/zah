@@ -4,7 +4,7 @@ import { TrashIcon } from '@heroicons/react/24/outline'
 import { useState, useEffect, useReducer } from 'react'
 import Input from '@/Components/Input'
 
-export default function Agenda({auth}) {
+export default function Agenda({auth, meetingId}) {
 
     const initialState = []
 
@@ -43,7 +43,7 @@ export default function Agenda({auth}) {
         if(inputValue.length < 3) {
            return
         }
-        axios.post('/agenda', {item: inputValue});
+        axios.post('/agenda', {item: inputValue, meeting_id: meetingId});
         setInputValue('')
     }
 
@@ -56,7 +56,11 @@ export default function Agenda({auth}) {
 		async function getAgendaItems() { 
             let fetchedUsers = await axios.get('/users?filter=none')
             await setUsers(fetchedUsers.data)
-			let res = await axios.get('/agenda')
+            let res
+            meetingId ?
+			    res = await axios.get('/agenda?meeting_id='+meetingId)
+            :
+			    res = await axios.get('/agenda')
             dispatch({type: 'initialFetch', fetched: res.data.agenda})
 		}
         getAgendaItems()

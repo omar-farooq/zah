@@ -37,7 +37,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
 use App\Models\Document;
 use App\Models\MaintenanceRequest;
-use App\Models\Meeting;
 use App\Models\PurchaseRequest;
 use App\Services\ImageService;
 use Inertia\Inertia;
@@ -125,6 +124,7 @@ Route::middleware(['member', 'auth'])->group(function() {
 
 //View upcoming maintenance
 Route::get('/maintenance/upcoming', [MaintenanceController::class, 'upcoming'])->middleware(['auth'])->name('maintenance.upcoming');
+Route::get('/agenda/upcoming', [MeetingAgendaController::class, 'upcoming'])->middleware(['auth'])->name('agenda.upcoming');
 
 //Requires user to be signed in
 Route::middleware(['auth'])->group(function() {
