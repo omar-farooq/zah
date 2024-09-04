@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useReducer } from 'react'
-import { Document, Page } from 'react-pdf'
+import { pdfjs, Document, Page } from 'react-pdf'
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { Alert, MantineProvider, Text, Group, Button, createStyles, Textarea, rem } from '@mantine/core'
@@ -9,6 +9,11 @@ import { Notifications, showNotification } from '@mantine/notifications'
 import { SuccessNotificationSettings } from '@/Shared/Functions'
 import { DocumentArrowDownIcon, XMarkIcon, ArrowDownIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline'
 import Input from '@/Components/Input'
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+      'pdfjs-dist/build/pdf.worker.min.mjs',
+      import.meta.url,
+).toString();
 
 const useStyles = createStyles((theme) => ({
       wrapper: {
