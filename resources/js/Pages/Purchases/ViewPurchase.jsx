@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { FormTile, FlexAlignLeft, PreviewImageContainer, PreviewTile, RequestLayout, RequestName, Source, TileContainer, Title } from '@/Layouts/RequestLayout'
 import { Modal } from '@mantine/core'
+import PreviewImage from '@/Components/PreviewImage'
 import Approval from '@/Components/Approval'
 import ConfirmPaymentAndReceipt from '@/Components/ConfirmPaymentAndReceipt'
 
-export default function Purchase({auth,purchaseID}) {
+export default function Purchase({auth,purchaseID,purchaseImage}) {
 
     //variables
     const model = {name: "App\\Models\\Purchase", id: purchaseID}
@@ -44,7 +45,9 @@ export default function Purchase({auth,purchaseID}) {
                     <PreviewImageContainer>
                         {
                             purchase.image ?
-                                <img src={"/images/" + purchase.image} />
+                                <PreviewImage
+                                    src={purchaseImage}
+                                />
                             :
                                 <img src="/images/No_Image_Available.jpg" />
                         }

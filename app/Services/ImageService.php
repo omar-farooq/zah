@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ImageService {
     function getTemporaryUrl(Request $request) {
-        $url = Storage::temporaryUrl('/images/'.$request->name, now()->addMinutes(5));
+        $url = config('app.env') == 'production' ? Storage::temporaryUrl('images/'.$request->name, now()->addMinutes(5)) : Storage::url('images/'.$request->name);
         return $url;
     }
 }

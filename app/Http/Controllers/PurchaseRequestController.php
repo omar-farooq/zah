@@ -111,7 +111,7 @@ class PurchaseRequestController extends Controller
         return Inertia::render('Purchases/ViewPurchaseRequest', [
             'purchaseRequest' => $purchaseRequest,
             'title' => 'Request to purchase ' .$purchaseRequest->name,
-            'requestImage' => Storage::temporaryUrl('images/'.$purchaseRequest->image, now()->addMinutes(5)),
+            'requestImage' => config('app.env') == 'production' ? Storage::temporaryUrl('images/'.$purchaseRequest->image, now()->addMinutes(5)) : Storage::url('images/'.$purchaseRequest->image),
         ]);
     }
 
