@@ -22,6 +22,8 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
     const [additionalPaymentsTotal, setAdditionalPaymentsTotal] = useState(0)
     const [recurringPaymentsToBeMade, setRecurringPaymentsToBeMade] = useState([])
     const [calculatedRecurring, setCalculatedRecurring] = useState('')
+    const [purchasesTotal, setPurchasesTotal] = useState(0)
+    const [servicesTotal, setServicesTotal] = useState(0)
 
     const [accountBalances, setAccountBalances] = useState(accounts.map(x => ({
         id: x.id,
@@ -33,6 +35,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
     const [calculatedFinalBalance, setCalculatedFinalBalance] = useState(0)
 
     //For displaying purchases and services and adding receipts
+    //It's at this parent component so that the items can be looped through when submitting 
     function unreportedReducer(unreportedItems, action) {
         switch (action.type) {
 			case 'map':
@@ -45,6 +48,8 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
                         return x
                     }
                 })
+            case 'delete':
+                return unreportedItems.filter(x => x.id != action.itemId)
             default:
                 throw new Error()
         }
@@ -89,26 +94,6 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
         return Number(a) + Number(b.amount_paid)
     },[])
 
-    let purchasesTotal = 0
-    let servicesTotal = 0
-    if(unreported.length > 0) {
-        const purchasesTotal = unreported.reduce((a,b) => {
-            if(b.treasurable_type == 'App\\Models\\Purchase') {
-                return Number(a) + Number(b.amount)
-            } else {
-                return Number(a)
-            }
-        },[])
-
-        const servicesTotal = unreported.reduce((a,b) => {
-            if(b.treasurable_type == 'App\\Models\\Maintenance') {
-                return Number(a) + Number(b.amount)
-            } else {
-                return Number(a)
-            }
-        },[])
-    }
-
     //return the TOTAL balance for all accounts
     useEffect(() => {
         setCalculatedTotalBalance(
@@ -118,6 +103,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
             accountBalances.reduce((a,b) => Number(a) + Number(b.final ?? b.calculated),0).toFixed(2)
         )
     },[accountBalances])
+
     const submitReport = async (e) => {
         let config = { headers: { 'content-type': 'multipart/form-data' }}
         let reportID = await axios.post('/treasury-reports', {
@@ -257,7 +243,8 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
             <PurchasesAndServices
                 unreported={unreported}
                 itemReducer={[unreportedItems, dispatch]}
-				reducerFunction={unreportedReducer}
+                purchasesTotalHook={[purchasesTotal, setPurchasesTotal]}
+                servicesTotalHook={[servicesTotal, setServicesTotal]}
             />
 
             <AdditionalPayments
