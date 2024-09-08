@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useForm } from '@inertiajs/react'
 import { HiddenCurrencyInput, ShowErrors, InputContainer, FormLabel, RequestLayout, Title, TileContainer, PreviewTile, FormTile } from '@/Layouts/RequestLayout'
+import { NumberInput } from '@mantine/core'
 import PreviewImage from '@/Components/PreviewImage'
 import RequestFormButton from '@/Components/RequestFormButton'
 import Input from '@/Components/RequestFormInput'
@@ -75,6 +76,7 @@ export default function PurchaseRequestForm() {
         
                     <FormTile> 
                         <div className="mt-8">
+                            <FormLabel>Item</FormLabel>
                             <Input 
                                 type="text" 
                                 name="Name" 
@@ -87,36 +89,53 @@ export default function PurchaseRequestForm() {
                             </ShowErrors>
                         </div>
        
-                        <FormLabel>Financial</FormLabel>
                         <InputContainer>
                             <div>
-                                <HiddenCurrencyInput amount={price} />
-
-                                <Input 
-                                    type="number" 
-                                    step="0.01" 
+                                <NumberInput 
+                                    classNames={{input: 'border border-gray-300 rounded placeholder-gray-600 text-gray-600 h-12'}}
+                                    label="Price"
+                                    step={0.01}
+                                    precision={2}
+                                    min={0}
                                     placeholder="Price" 
-                                    changeAction={(e) => {e.target.value == '' ? setPrice('') : setPrice(parseFloat(e.target.value).toFixed(2)); setData('price', e.target.value)}} 
+                                    parser={(value) => value.replace(/\£\s?|(,*)/g, '')}
+                                    formatter={(value) =>
+                                                !Number.isNaN(parseFloat(value))
+                                                  ? `£ ${value}`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+                                                  : '£ '
+                                    }
+                                    onChange={(e) => {e == '' ? setPrice('') : setPrice(parseFloat(e).toFixed(2)); setData('price', e)}} 
                                 />
                                 <ShowErrors>{errors.price}</ShowErrors>
                             </div>
 
-                            <div className="flex-row flex">
+                            <div className="flex-row flex space-x-6 mt-2">
 
-                                <HiddenCurrencyInput amount={deliveryCost} />
-
-                                <Input 
-                                    type="number"
-                                    step="0.01"
+                                <NumberInput 
+                                    classNames={{input: 'border border-gray-300 rounded placeholder-gray-600 text-gray-600 h-12'}}
+                                    label="Delivery Cost"
+                                    step={0.01}
+                                    precision={2}
+                                    min={0}
                                     placeholder="Delivery Cost" 
-                                    changeAction={(e) => {e.target.value == '' ? setDeliveryCost('') : setDeliveryCost(parseFloat(e.target.value).toFixed(2)); setData('delivery_cost', e.target.value)}} 
+                                    parser={(value) => value.replace(/\£\s?|(,*)/g, '')}
+                                    formatter={(value) =>
+                                                !Number.isNaN(parseFloat(value))
+                                                  ? `£ ${value}`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+                                                  : '£ '
+                                    }
+                                    onChange={(e) => {e == '' ? setDeliveryCost('') : setDeliveryCost(parseFloat(e).toFixed(2)); setData('delivery_cost', e)}} 
                                 />
 
 
-                                <Input 
-                                    type="number"
-                                    placeholder="Quantity" 
-                                    changeAction={(e) => setData('quantity', e.target.value)} 
+                                <NumberInput 
+                                    classNames={{input: 'border border-gray-300 rounded placeholder-gray-600 text-gray-600 h-12'}}
+                                    label="Quantity"
+                                    step={1}
+                                    defaultValue={1}
+                                    min={1}
+                                    placeholder="e.g. 1" 
+                                    changeAction={(e) => setData('quantity', e)} 
                                 />
 
                             </div>
