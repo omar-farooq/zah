@@ -14,7 +14,7 @@ export default function RequestFormInput
     {
     return (
         <input 
-            className={`border border-gray-300 p-4 rounded w-full text-base leading-4 placeholder-gray-600 text-gray-600 ${additionalClasses}`}
+            className={`border border-gray-300 p-4 rounded w-full text-base leading-4 placeholder-gray-600 text-gray-600 placeholder:text-slate-400 placeholder:italic ${additionalClasses}`}
             type={type} 
             name={name} 
             value={value}
