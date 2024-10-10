@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { FormTile, FlexAlignLeft, PreviewImageContainer, PreviewTile, RequestLayout, RequestName, Source, TileContainer, Title } from '@/Layouts/RequestLayout'
+import { Link } from '@inertiajs/react'
 import PreviewImage from '@/Components/PreviewImage'
 import Approval from '@/Components/Approval'
 import Comments from '@/Components/Comments'
@@ -70,6 +71,9 @@ export default function PurchaseRequest(props) {
 
                 <FormTile>
                     {requesterIsViewing ? "You" : requestItem.user.name} requested this <i>"{requestItem.reason}" </i>
+                    {
+                        requesterIsViewing && <Link href={"/purchase-requests/"+requestItem.id+"/edit"}>Click here to edit this</Link>
+                    }
                     <Comments model={model} />
                 </FormTile>
             </TileContainer>
