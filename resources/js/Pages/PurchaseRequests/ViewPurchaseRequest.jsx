@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { FormTile, FlexAlignLeft, PreviewImageContainer, PreviewTile, RequestLayout, RequestName, Source, TileContainer, Title } from '@/Layouts/RequestLayout'
 import { Link } from '@inertiajs/react'
+import { Modal } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 import PreviewImage from '@/Components/PreviewImage'
 import Approval from '@/Components/Approval'
 import Comments from '@/Components/Comments'
@@ -29,8 +31,10 @@ export default function PurchaseRequest(props) {
     //hooks
     const [authUserApproval, setAuthUserApproval] = useState(authUserApprovalObject)
     const [approvalStatus, setApprovalStatus] = useState(requestItem.approval_status)
+    const [modalOpened, modalHandlers] = useDisclosure(false)
 
     return (
+        <>
         <RequestLayout>
             <Title>Purchase Request</Title>
             <TileContainer>
@@ -72,12 +76,32 @@ export default function PurchaseRequest(props) {
                 <FormTile>
                     {requesterIsViewing ? "You" : requestItem.user.name} requested this <i>"{requestItem.reason}" </i>
                     {
-                        requesterIsViewing && <Link href={"/purchase-requests/"+requestItem.id+"/edit"}>Click here to edit this</Link>
+                        requesterIsViewing && 
+                        <>
+                            <div className="flex flex-col text-center space-y-2 mt-2">
+                                <Link className="text-amber-600 text-xl" href={"/purchase-requests/"+requestItem.id+"/edit"}>edit this request</Link>
+                                <button className="text-red-600 text-xl" onClick={() => {modalHandlers.open()}}>delete this request</button>
+                            </div>
+                        </>
                     }
                     <Comments model={model} />
                 </FormTile>
             </TileContainer>
                
         </RequestLayout>
+
+       <Modal opened={modalOpened} onClose={modalHandlers.close} title="Confirm Delete" centered>
+           <div className="mb-4">Are you sure you want to delete this purchase request?</div>
+           <Link
+               href={route('purchase-requests.destroy', props.purchaseRequest.id)}
+               method="delete" as="button"
+               onClick={(e) => {modalHandlers.close()}}
+               className="bg-red-600 hover:bg-red-700 text-white h-9 w-20 border rounded-md mr-0.5"
+           >
+               Confirm
+           </Link>
+           <button className="bg-zinc-800 text-white h-9 w-20 border rounded-md" onClick={modalHandlers.close}>Cancel</button>
+        </Modal> 
+        </>
    )
 }

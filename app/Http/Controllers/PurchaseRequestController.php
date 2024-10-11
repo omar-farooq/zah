@@ -95,7 +95,13 @@ class PurchaseRequestController extends Controller
             $new_purchase_request->save();
         }
 
-            return Redirect::route('purchase-requests.show', $new_purchase_request);
+        //send email
+        $email_subject = "Purchase Request made";
+        $messageBody = "<p>" . $request->name . " has been requested for the following reason:</p><p>" . $request->reason . "</p><p>please <a href=\"" . env('APP_URL') . "/purchase-requests/" . $new_purchase_request->id . "\">click here</a> and review the request as soon as possible.</p>";
+
+        app(JobController::class)->notificationEmail($email_subject, $messageBody);
+
+        return Redirect::route('purchase-requests.show', $new_purchase_request);
 
     }
 
@@ -107,7 +113,7 @@ class PurchaseRequestController extends Controller
      */
     public function show(PurchaseRequest $purchaseRequest)
     {
-        return Inertia::render('Purchases/ViewPurchaseRequest', [
+        return Inertia::render('PurchaseRequests/ViewPurchaseRequest', [
             'purchaseRequest' => $purchaseRequest,
             'title' => 'Request to purchase ' .$purchaseRequest->name,
             'requestImage' => config('app.env') == 'production' ? Storage::temporaryUrl('images/'.$purchaseRequest->image, now()->addMinutes(5)) : Storage::url('images/'.$purchaseRequest->image),
@@ -177,6 +183,11 @@ class PurchaseRequestController extends Controller
      */
     public function destroy(PurchaseRequest $purchaseRequest)
     {
-        //
+        if($purchaseRequest->user_id != Auth::id()) {
+            return;
+        }
+
+        $purchaseRequest->delete();
+        return Redirect::route('purchase-requests.index');
     }
 }
