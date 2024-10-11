@@ -49,7 +49,7 @@ export default function MaintenanceRequestForm() {
                                     name="Requirement" 
                                     id="RequirementInput" 
                                     placeholder="e.g. fix the front door" 
-                                    changeAction={(e) => {setData('required_maintenance', e.target.value)}} 
+                                    changeaction={(e) => {setData('required_maintenance', e.target.value)}} 
                                 />
                                 <ShowErrors>
                                     {errors.required_maintenance}
@@ -63,7 +63,7 @@ export default function MaintenanceRequestForm() {
                                     name="Reason" 
                                     id="ReasonInput" 
                                     placeholder="e.g. lock isn't working" 
-                                    changeAction={(e) => {setData('reason', e.target.value)}} 
+                                    changeaction={(e) => {setData('reason', e.target.value)}} 
                                 />
                                 <ShowErrors>
                                     {errors.reason}
@@ -161,7 +161,7 @@ export default function MaintenanceRequestForm() {
                                 <Input 
                                     type="text"
                                     placeholder="Contractor" 
-                                    changeAction={(e) => {setData('contractor', e.target.value)}} 
+                                    changeaction={(e) => {setData('contractor', e.target.value)}} 
                                 />
 
                                 <ShowErrors>
@@ -174,7 +174,7 @@ export default function MaintenanceRequestForm() {
                 	                <Input
             	                        type="text"
         	                            placeholder="e.g. 07979940337"
-    	                                changeAction={(e) => {setData('contractor_phone', e.target.value)}}
+    	                                changeaction={(e) => {setData('contractor_phone', e.target.value)}}
 	                                />
 								</div>
 
@@ -183,7 +183,7 @@ export default function MaintenanceRequestForm() {
 									<Input
 										type="text"
 										placeholder="e.g. mail@superb-builders.co.uk"
-										changeAction={(e) => {setData('contractor_email', e.target.value)}}
+										changeaction={(e) => {setData('contractor_email', e.target.value)}}
 									/>
 									<ShowErrors>{errors.contractor_email}</ShowErrors>
 								</div>
@@ -212,7 +212,7 @@ export default function MaintenanceRequestForm() {
                                 <Input
                                     type="text"
                                     placeholder="type of maintenance" 
-                                    changeAction={(e) => {setData('type', e.target.value)}} 
+                                    changeaction={(e) => {setData('type', e.target.value)}} 
                                 />}
                             </div>
                         </InputContainer>
@@ -220,7 +220,7 @@ export default function MaintenanceRequestForm() {
                         <FormLabel>Check if Emergency</FormLabel>
                         <InputContainer>
                             <Checkbox
-                                changeAction={(e) => setData('emergency', e.target.checked)} 
+                                changeaction={(e) => setData('emergency', e.target.checked)} 
                             />
                         </InputContainer>
 

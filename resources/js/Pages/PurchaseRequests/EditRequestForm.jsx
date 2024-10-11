@@ -44,16 +44,20 @@ export default function EditPurchaseRequestForm({purchaseRequest, requestImage})
                         </div>
                         <div className="mt-6 sm:mt-0 xl:my-10 xl:px-20 w-52 sm:w-96 xl:w-auto">
                             <label htmlFor="file-input">
-                                <PreviewImage
-                                    src={requestImage}
-                                />
+                                {typeof data.image != 'string' ?
+                                    <img src={image} />
+                                    :
+                                    <PreviewImage
+                                        src={requestImage}
+                                    />
+                                }
                             </label>
                             <Input 
                                 id="file-input" 
                                 type="file" 
                                 additionalClasses="hidden" 
                                 accept="image/png, image/jpeg" 
-                                changeAction={(e) => { setImage(URL.createObjectURL(e.target.files[0])); setData('image', e.target.files[0])}} 
+                                changeaction={(e) => { setImage(URL.createObjectURL(e.target.files[0])); setData('image', e.target.files[0])}} 
                             />
                         </div>
                         <div className="flex flex-col justify-start items-start w-full space-y-4">
@@ -78,7 +82,7 @@ export default function EditPurchaseRequestForm({purchaseRequest, requestImage})
                                 id="NameInput" 
                                 placeholder="Name" 
                                 defaultValue={purchaseRequest.name}
-                                changeAction={(e) => {setName(e.target.value); setData('name', e.target.value)}} 
+                                changeaction={(e) => {setName(e.target.value); setData('name', e.target.value)}} 
                             />
                             <ShowErrors>
                                 {errors.name}
@@ -132,7 +136,7 @@ export default function EditPurchaseRequestForm({purchaseRequest, requestImage})
                                     defaultValue={purchaseRequest.quantity}
                                     min={1}
                                     placeholder="e.g. 1"
-                                    changeAction={(e) => setData('quantity', e)}
+                                    onChange={(e) => setData('quantity', e)}
                                 />
                             </div>
                         </InputContainer>
@@ -145,7 +149,7 @@ export default function EditPurchaseRequestForm({purchaseRequest, requestImage})
                                     type="text"
                                     placeholder="Description" 
                                     defaultValue={purchaseRequest.description}
-                                    changeAction={(e) => {setDescription(e.target.value); setData('description', e.target.value)}} 
+                                    changeaction={(e) => {setDescription(e.target.value); setData('description', e.target.value)}} 
                                 />
 
                                 <ShowErrors>
@@ -161,7 +165,7 @@ export default function EditPurchaseRequestForm({purchaseRequest, requestImage})
                                     type="text"
                                     placeholder="URL" 
                                     defaultValue={purchaseRequest.url}
-                                    changeAction={(e) => {setLinkToItem(e.target.value); setData('url', e.target.value)}} 
+                                    changeaction={(e) => {setLinkToItem(e.target.value); setData('url', e.target.value)}} 
                                 />
                             </div>
                         </InputContainer>
@@ -172,7 +176,7 @@ export default function EditPurchaseRequestForm({purchaseRequest, requestImage})
                                 type="text"
                                 placeholder="Reason" 
                                 defaultValue={purchaseRequest.reason}
-                                changeAction={(e) => setData('reason', e.target.value)} 
+                                changeaction={(e) => setData('reason', e.target.value)} 
                             />
                             <ShowErrors>
                                 {errors.reason}

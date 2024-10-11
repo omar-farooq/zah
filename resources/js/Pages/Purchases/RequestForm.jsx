@@ -8,15 +8,6 @@ import Input from '@/Components/RequestFormInput'
 
 export default function PurchaseRequestForm() {
 
-    //Change background colour
-    /*
-    useEffect(() => {
-        document.getElementsByTagName('main')[0].className = 'bg-gray-100'
-        return function changePage() {
-            document.getElementsByTagName('main')[0].className = ''
-        }
-    },[])*/
-
     const [name, setName] = useState('')
     const [price, setPrice] = useState('')
     const [deliveryCost, setDeliveryCost] = useState('')
@@ -59,7 +50,7 @@ export default function PurchaseRequestForm() {
                                 type="file" 
                                 additionalClasses="hidden" 
                                 accept="image/png, image/jpeg" 
-                                changeAction={(e) => { setImage(URL.createObjectURL(e.target.files[0])); setData('image', e.target.files[0])}} 
+                                changeaction={(e) => { setImage(URL.createObjectURL(e.target.files[0])); setData('image', e.target.files[0])}} 
                             />
                         </div>
                         <div className="flex flex-col justify-start items-start w-full space-y-4">
@@ -82,7 +73,7 @@ export default function PurchaseRequestForm() {
                                 name="Name" 
                                 id="NameInput" 
                                 placeholder="Name" 
-                                changeAction={(e) => {setName(e.target.value); setData('name', e.target.value)}} 
+                                changeaction={(e) => {setName(e.target.value); setData('name', e.target.value)}} 
                             />
                             <ShowErrors>
                                 {errors.name}
@@ -135,7 +126,7 @@ export default function PurchaseRequestForm() {
                                     defaultValue={1}
                                     min={1}
                                     placeholder="e.g. 1" 
-                                    changeAction={(e) => setData('quantity', e)} 
+                                    onChange={(e) => setData('quantity', e)} 
                                 />
 
                             </div>
@@ -148,7 +139,7 @@ export default function PurchaseRequestForm() {
                                 <Input 
                                     type="text"
                                     placeholder="Description" 
-                                    changeAction={(e) => {setDescription(e.target.value); setData('description', e.target.value)}} 
+                                    changeaction={(e) => {setDescription(e.target.value); setData('description', e.target.value)}} 
                                 />
 
                                 <ShowErrors>
@@ -163,7 +154,7 @@ export default function PurchaseRequestForm() {
                                 <Input
                                     type="text"
                                     placeholder="URL" 
-                                    changeAction={(e) => {setLinkToItem(e.target.value); setData('url', e.target.value)}} 
+                                    changeaction={(e) => {setLinkToItem(e.target.value); setData('url', e.target.value)}} 
                                 />
                             </div>
                         </InputContainer>
@@ -173,7 +164,7 @@ export default function PurchaseRequestForm() {
                             <Input
                                 type="text"
                                 placeholder="Reason" 
-                                changeAction={(e) => setData('reason', e.target.value)} 
+                                changeaction={(e) => setData('reason', e.target.value)} 
                             />
                             <ShowErrors>
                                 {errors.reason}

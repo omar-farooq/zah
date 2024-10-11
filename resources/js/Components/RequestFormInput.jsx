@@ -3,7 +3,7 @@ export default function RequestFormInput
     type, 
     name, 
     id, 
-    changeAction, 
+    changeaction, 
     accept, 
     step, 
     value,
@@ -21,7 +21,7 @@ export default function RequestFormInput
             defaultValue={defaultValue}
             id={id} 
             placeholder={placeholder} 
-            onChange={changeAction} 
+            onChange={changeaction} 
         />
          
     )
