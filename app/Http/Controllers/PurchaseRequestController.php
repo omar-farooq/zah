@@ -97,7 +97,7 @@ class PurchaseRequestController extends Controller
 
         //send email
         $email_subject = 'Purchase Request made';
-        $messageBody = '<p>'.$request->name.' has been requested for the following reason:</p><p>'.$request->reason.'</p><p>please <a href="'.env('APP_URL').'/purchase-requests/'.$new_purchase_request->id.'">click here</a> and review the request as soon as possible.</p>';
+        $messageBody = '<p>'.$request->name.' has been requested for the following reason:</p><p>'.$request->reason.'</p><p>please <a href="'.config('app.url').'/purchase-requests/'.$new_purchase_request->id.'">click here</a> and review the request as soon as possible.</p>';
 
         app(JobController::class)->notificationEmail($email_subject, $messageBody);
 

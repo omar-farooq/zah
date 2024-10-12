@@ -6,11 +6,15 @@ ARG uid
 ARG GID=33
 
 # Install additional required PHP extensions for Laravel
-RUN docker-php-ext-install bcmath pdo_mysql pcntl
+RUN docker-php-ext-install bcmath pdo_mysql pcntl opcache
 
 # Change upload size
 RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini && \
-    sed -i -e "s/upload_max_filesize = 2M/upload_max_filesize = 20M/g" /usr/local/etc/php/php.ini
+    sed -i -e "s/upload_max_filesize = 2M/upload_max_filesize = 20M/g" /usr/local/etc/php/php.ini && \
+    sed -i -e "s/allow_url_fopen = On/allow_url_fopen = Off/g" /usr/local/etc/php/php.ini && \
+    sed -i -e "s/expose_php = On/expose_php = Off/g" /usr/local/etc/php/php.ini
+
+COPY ./webserver/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # Install composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
