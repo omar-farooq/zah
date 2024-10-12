@@ -20,7 +20,7 @@ export default function ProductCards({cards,model}) {
             setImageCards(updatedCards)
         }
         fetchImages()
-    },[])
+    },[cards])
 
     return (
         imageCards ?
