@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('schedule_suggestions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-			$table->timestamp('suggested_date');
-			$table->foreignId('user_id');
+            $table->timestamp('suggested_date');
+            $table->foreignId('user_id');
         });
     }
 

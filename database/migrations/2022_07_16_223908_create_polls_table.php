@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('polls', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-			$table->string('name');
-			$table->foreignId('meeting_id')->nullable();
-			$table->timestamp('poll_end')->nullable();
+            $table->string('name');
+            $table->foreignId('meeting_id')->nullable();
+            $table->timestamp('poll_end')->nullable();
         });
     }
 

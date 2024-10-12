@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('poll_options', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-			$table->tinyText('option');
-			$table->foreignId('poll_id');
+            $table->tinyText('option');
+            $table->foreignId('poll_id');
         });
     }
 

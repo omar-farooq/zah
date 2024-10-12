@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\CommentController;
@@ -9,8 +7,8 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MaintenanceRequestController;
-use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MeetingAgendaController;
+use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\MinuteController;
 use App\Http\Controllers\NextOfKinController;
@@ -23,22 +21,24 @@ use App\Http\Controllers\RecurringPaymentController;
 use App\Http\Controllers\RentController;
 use App\Http\Controllers\RoleAssignmentController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\RuleController;
 use App\Http\Controllers\RuleChangeController;
+use App\Http\Controllers\RuleController;
 use App\Http\Controllers\RuleDeleteController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SecretaryReportController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenancyController;
-use App\Http\Controllers\TreasuryReportController;
 use App\Http\Controllers\TreasuryPlanController;
+use App\Http\Controllers\TreasuryReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
 use App\Models\Document;
 use App\Models\MaintenanceRequest;
 use App\Models\PurchaseRequest;
 use App\Services\ImageService;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 /*
@@ -52,13 +52,13 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function() {
+Route::get('/', function () {
     return redirect('/dashboard');
 });
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
-        'title' => 'Dashboard'
+        'title' => 'Dashboard',
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -80,7 +80,7 @@ Route::get('/documents/{document}/comments', function (Document $document) {
 });
 
 //Members Only
-Route::middleware(['member', 'auth'])->group(function() {
+Route::middleware(['member', 'auth'])->group(function () {
     //Stats pages
     Route::get('/treasury', [TreasuryReportController::class, 'summary'])->name('treasury.summary');
 
@@ -106,19 +106,19 @@ Route::middleware(['member', 'auth'])->group(function() {
     Route::resource('rule-change', RuleChangeController::class);
     Route::resource('rule-delete', RuleDeleteController::class);
     Route::resource('settings', SettingsController::class)->parameters([
-        'settings' => 'settings:name'
+        'settings' => 'settings:name',
     ]);
     Route::resource('treasury-plans', TreasuryPlanController::class);
     Route::resource('treasury-reports', TreasuryReportController::class);
     Route::resource('users', UserController::class);
 
     //Schedule
-    Route::controller(ScheduleController::class)->group(function() {
-        Route::get('/meetings/schedule', 'browse')->name('schedule');	
+    Route::controller(ScheduleController::class)->group(function () {
+        Route::get('/meetings/schedule', 'browse')->name('schedule');
         Route::post('/meetings/schedule/suggestions/add', 'addSuggestion');
         Route::post('/meetings/schedule/suggestions/delete', 'removeSuggestion');
         Route::put('/meetings/schedule/availability/update', 'updateAvailability');
-        Route::get('/meetings/scheduled', 'scheduled');	
+        Route::get('/meetings/scheduled', 'scheduled');
     });
 });
 
@@ -127,10 +127,10 @@ Route::get('/maintenance/upcoming', [MaintenanceController::class, 'upcoming'])-
 Route::get('/agenda/upcoming', [MeetingAgendaController::class, 'upcoming'])->middleware(['auth'])->name('agenda.upcoming');
 
 //Requires user to be signed in
-Route::middleware(['auth'])->group(function() {
+Route::middleware(['auth'])->group(function () {
     Route::get('/documentation', function () {
         return Inertia::render('Documents/Documentation', [
-            'title' => 'Documentation'
+            'title' => 'Documentation',
         ]);
     })->name('documentation');
     Route::resource('agenda', MeetingAgendaController::class);

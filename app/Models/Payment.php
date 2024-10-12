@@ -15,7 +15,7 @@ class Payment extends Model
         'name',
         'description',
         'payment_date',
-        'account_id'
+        'account_id',
     ];
 
     /*

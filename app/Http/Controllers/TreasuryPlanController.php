@@ -21,24 +21,20 @@ class TreasuryPlanController extends Controller
     public function index(Request $request)
     {
 
-        if(isset($request->getPage) && $request->getPage == true) {
+        if (isset($request->getPage) && $request->getPage == true) {
             return response()->json(
                 TreasuryPlan::paginate(10)
             );
         } else {
             return Inertia::render('Treasury/Plans/Index', [
                 'title' => 'Treasury Plans',
-                'treasuryPlansPageOne' => TreasuryPlan::paginate(10)
+                'treasuryPlansPageOne' => TreasuryPlan::paginate(10),
             ]);
         }
     }
 
-    /**
-     *
-     *
-     */
     public function create()
-    {        
+    {
         return Inertia::render('Treasury/Plans/Create', [
             'title' => 'Treasury Planning',
             'lastPlan' => TreasuryPlan::latest()->first(),
@@ -53,31 +49,30 @@ class TreasuryPlanController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-//        $plan = TreasuryPlan::Create($request->except('components'));
+        //        $plan = TreasuryPlan::Create($request->except('components'));
         $plan = Auth::User()->treasuryPlans()->create($request->except('components'));
-        foreach($request->input('components') as $component) {
+        foreach ($request->input('components') as $component) {
             $newComponent = PlanComponent::create($component);
             $plan->planComponents()->attach([$newComponent->id => ['priority' => $component['priority']]]);
         }
+
         return response()->json($plan->id);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\TreasuryPlan  $treasuryPlan
      * @return \Illuminate\Http\Response
      */
     public function show(TreasuryPlan $treasuryPlan)
     {
         return Inertia::render('Treasury/Plans/View', [
             'title' => 'View treasury plan',
-            'treasuryPlan' => TreasuryPlan::with('planComponents')->where('id', $treasuryPlan->id)->first()
+            'treasuryPlan' => TreasuryPlan::with('planComponents')->where('id', $treasuryPlan->id)->first(),
         ]);
     }
 
@@ -87,8 +82,8 @@ class TreasuryPlanController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function latest()
-    {        
-        if(TreasuryPlan::count() == 0) {
+    {
+        if (TreasuryPlan::count() == 0) {
             return $this->create();
         } else {
             return $this->show(TreasuryPlan::with('planComponents')->latest()->first());
@@ -98,7 +93,6 @@ class TreasuryPlanController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\TreasuryPlan  $treasuryPlan
      * @return \Illuminate\Http\Response
      */
     public function edit(TreasuryPlan $treasuryPlan)
@@ -109,8 +103,6 @@ class TreasuryPlanController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\TreasuryPlan  $treasuryPlan
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, TreasuryPlan $treasuryPlan)

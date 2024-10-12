@@ -13,10 +13,11 @@ class PlanComponent extends Model
     protected $fillable = [
         'component',
         'cost',
-        'plan_length'
+        'plan_length',
     ];
 
-    public function treasuryPlan() {
+    public function treasuryPlan()
+    {
         return $this->belongsToMany(TreasuryPlan::class)->withPivot('priority');
     }
 }

@@ -18,7 +18,7 @@ class Document extends Model
         'meeting_id',
         'permanent',
         'upload_name',
-        'user_id'
+        'user_id',
     ];
 
     public function meeting(): BelongsTo
@@ -34,12 +34,12 @@ class Document extends Model
     /**
      * Get the channels that the model events should be broadcast on
      *
-     * @param string $event
+     * @param  string  $event
      * @return \Illuminate\Broadcasting\Channel|array
      */
     public function broadcastOn($event)
     {
-        return [new PrivateChannel ('meeting')];
+        return [new PrivateChannel('meeting')];
     }
 
     /**

@@ -12,7 +12,7 @@ class PaidRent extends Model
     protected $fillable = [
         'user_id',
         'treasury_report_id',
-        'amount_paid'
+        'amount_paid',
     ];
 
     public function user()
@@ -20,7 +20,7 @@ class PaidRent extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function treasuryReport() 
+    public function treasuryReport()
     {
         return $this->belongsTo(TreasuryReport::class);
     }

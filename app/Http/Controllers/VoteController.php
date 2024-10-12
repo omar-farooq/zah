@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\PollOption;
 use App\Models\Vote;
 use Auth;
+use Illuminate\Http\Request;
 
 class VoteController extends Controller
 {
@@ -27,11 +27,11 @@ class VoteController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->has('onBehalfOf')) {
-            if(Auth::user()->role['name'] !== 'Chair') {
+        if ($request->has('onBehalfOf')) {
+            if (Auth::user()->role['name'] !== 'Chair') {
                 return response()->json([
-                    'message' => 'unauthorized'
-                ],401);
+                    'message' => 'unauthorized',
+                ], 401);
             }
             //find the poll currently voting in
             $pollId = PollOption::where('id', $request->poll_option_id)->first()->poll_id;
@@ -42,18 +42,19 @@ class VoteController extends Controller
             //loop through the options
             //and get existing votes by the user on that option
             //then delete that before creating a new vote
-            forEach($pollOptions as $pollOption) {
+            foreach ($pollOptions as $pollOption) {
                 $existingUserVotes = Vote::Where('poll_option_id', $pollOption['id'])->where('user_id', $request->user_id)->get();
-                forEach($existingUserVotes as $existingUserVote) {
+                foreach ($existingUserVotes as $existingUserVote) {
                     $voteToDelete = Vote::find($existingUserVote->id);
                     $voteToDelete->delete();
                 }
             }
         }
         $vote = Vote::Create($request->all());
+
         return response()->json([
             'voteId' => $vote->id,
-            'optionId' => $vote->poll_option_id
+            'optionId' => $vote->poll_option_id,
         ]);
     }
 
@@ -61,15 +62,15 @@ class VoteController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \App\Http\Requests\UpdateVoteRequest  $request
-     * @param  \App\Models\Vote  $vote
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Vote $vote)
     {
         $vote->update($request->all());
+
         return response()->json([
             'voteId' => $vote->id,
-            'optionId' => $vote->poll_option_id
+            'optionId' => $vote->poll_option_id,
         ]);
     }
 }

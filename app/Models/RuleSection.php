@@ -11,10 +11,11 @@ class RuleSection extends Model
 
     protected $fillable = [
         'title',
-        'number'
+        'number',
     ];
 
-    public function rules() {
+    public function rules()
+    {
         return $this->hasMany(Rule::class);
     }
 }

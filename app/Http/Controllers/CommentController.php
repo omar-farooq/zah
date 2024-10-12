@@ -33,23 +33,22 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreCommentRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreCommentRequest $request)
     {
         $newComment = Auth::User()->comments()->create($request->all());
+
         return response()->json([
             'id' => $newComment->id,
             'user_id' => $newComment->user_id,
-            'user_name' => User::find($newComment->user_id)->name
+            'user_name' => User::find($newComment->user_id)->name,
         ]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
     public function show(Comment $comment)
@@ -60,7 +59,6 @@ class CommentController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
     public function edit(Comment $comment)
@@ -71,8 +69,6 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateCommentRequest  $request
-     * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateCommentRequest $request, Comment $comment)
@@ -83,7 +79,6 @@ class CommentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
     public function destroy(Comment $comment)

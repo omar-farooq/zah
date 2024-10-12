@@ -13,19 +13,21 @@ class Vote extends Model
 
     protected $fillable = [
         'user_id',
-        'poll_option_id'
+        'poll_option_id',
     ];
 
-    public function pollOption() {
+    public function pollOption()
+    {
         return $this->belongsTo(PollOption::class);
     }
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
     public function broadcastOn($event)
     {
-        return [new PrivateChannel ('meeting')];
+        return [new PrivateChannel('meeting')];
     }
 }

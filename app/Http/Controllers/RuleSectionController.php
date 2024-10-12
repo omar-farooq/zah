@@ -27,6 +27,7 @@ class RuleSectionController extends Controller
         $ruleSection->title = $title;
         $ruleSection->number = $new_section_number;
         $ruleSection->save();
+
         return $ruleSection->id;
     }
 

@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('purchase_requests', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->tinyText('name');	
+            $table->tinyText('name');
             $table->float('price');
             $table->float('delivery_cost')->nullable();
             $table->text('description');

@@ -21,9 +21,9 @@ class TreasuryReportController extends Controller
 {
     /**
      * Instantiate Treasury Service
-     *
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->treasuryService = new TreasuryService;
     }
 
@@ -38,9 +38,10 @@ class TreasuryReportController extends Controller
      */
     public function index(TreasuryReport $treasuryReport, Request $request)
     {
-        if($request->has('start_date') && $request->has('end_date')) {
+        if ($request->has('start_date') && $request->has('end_date')) {
 
             $this->treasuryReportService = new TreasuryReportService($request->start_date, $request->end_date);
+
             return Inertia::render('Treasury/Reports/View', [
                 'title' => 'View Treasury Report',
                 'rents' => $this->treasuryReportService->rents,
@@ -49,19 +50,19 @@ class TreasuryReportController extends Controller
                 'start' => $this->treasuryReportService->first_report_start,
                 'end' => $this->treasuryReportService->last_report_end,
                 'remainingBudget' => $this->treasuryReportService->remaining_budget,
-                'calculatedRemainingBudget' => $this->treasuryReportService->calculated_remaining_budget
+                'calculatedRemainingBudget' => $this->treasuryReportService->calculated_remaining_budget,
             ]);
-        } elseif(isset($request->getReports) && $request->getReports === 'true') {
+        } elseif (isset($request->getReports) && $request->getReports === 'true') {
             return response()->json(
                 $treasuryReport->orderBy('created_at', 'desc')->paginate(10)
             );
-        } elseif(isset($request->find) && $request->find == 'sourceOrRecipient') {
+        } elseif (isset($request->find) && $request->find == 'sourceOrRecipient') {
             return $this->treasuryService->getSourceOrRecipient($request);
         } else {
-           return Inertia::render('Treasury/Reports/index', [
-            'title' => 'Treasury Report',
-            'reportPage1' => TreasuryReport::orderBy('created_at', 'desc')->paginate(10)
-           ]);
+            return Inertia::render('Treasury/Reports/index', [
+                'title' => 'Treasury Report',
+                'reportPage1' => TreasuryReport::orderBy('created_at', 'desc')->paginate(10),
+            ]);
         }
     }
 
@@ -73,35 +74,34 @@ class TreasuryReportController extends Controller
     public function create()
     {
         //check the default accounts have been set first
-        $models = ["Purchase", "Maintenance", "PaidRent", "RecurringPayment", "Payment"];
-        foreach($models as $model) {
-            $default = DefaultAccount::where("model", "App\\Models\\".$model)->first();
-            if($default === null) {
+        $models = ['Purchase', 'Maintenance', 'PaidRent', 'RecurringPayment', 'Payment'];
+        foreach ($models as $model) {
+            $default = DefaultAccount::where('model', 'App\\Models\\'.$model)->first();
+            if ($default === null) {
                 return app(AccountController::class)->index($model);
             }
         }
 
         $arrears = new RentArrear;
         TreasuryReport::count() > 0 ? $latest_treasury_report = TreasuryReport::all()->last()->id : $latest_treasury_report = null;
-        
+
         return Inertia::render('Treasury/Reports/Create', [
             'title' => 'Create Treasury Report',
             'rents' => Rent::with('user')->get(),
             'arrears' => $arrears->currentTenant()->get(),
-            'accounts' => Account::with(['treasuryReports' => function($q) use($latest_treasury_report){
+            'accounts' => Account::with(['treasuryReports' => function ($q) use ($latest_treasury_report) {
                 $q->where('treasury_report_id', '=', $latest_treasury_report);
             }])->get(),
             'defaultAccounts' => DefaultAccount::all(),
             'previousReport' => TreasuryReport::latest()->first(),
             'recurringPayments' => RecurringPayment::all(),
-            'unreported' => TreasuryItem::where('treasury_report_id', NULL)->get(),
+            'unreported' => TreasuryItem::where('treasury_report_id', null)->get(),
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -115,13 +115,12 @@ class TreasuryReportController extends Controller
             'accounts_balances.*.calculated' => 'decimal:2',
             'accounts_balances.*.final' => 'nullable|decimal:2',
             'recurring.*.amount' => 'nullable|decimal:2',
-            'recurring.*.uniqueAmount' => 'required_without:recurring.*.amount|decimal:2'
+            'recurring.*.uniqueAmount' => 'required_without:recurring.*.amount|decimal:2',
         ]);
 
-        if(isset($request->treasurable) && $request->treasurable == 'recurring') {
+        if (isset($request->treasurable) && $request->treasurable == 'recurring') {
             $this->treasuryService->payRecurring($request);
-        }
-        else if(isset($request->treasurable) && $request->treasurable == 'unreported') {
+        } elseif (isset($request->treasurable) && $request->treasurable == 'unreported') {
             $this->treasuryService->addReceipt($request->receipt, $request->model, $request->modelId);
         } else {
             return response()->json($this->treasuryService->createReport($request));
@@ -131,7 +130,6 @@ class TreasuryReportController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\TreasuryReport  $treasuryReport
      * @return \Illuminate\Http\Response
      */
     public function show(TreasuryReport $treasuryReport)
@@ -139,8 +137,8 @@ class TreasuryReportController extends Controller
 
         $treasuryItems = TreasuryItem::where('treasury_report_id', $treasuryReport->id)->get();
         $rents = PaidRent::where('treasury_report_id', $treasuryReport->id)
-                        ->with('user')
-                        ->get();
+            ->with('user')
+            ->get();
         $previousBudget = TreasuryReport::where('id', $treasuryReport->id - 1)->first()->remaining_budget ?? 0;
 
         return Inertia::render('Treasury/Reports/View', [
@@ -151,14 +149,13 @@ class TreasuryReportController extends Controller
             'start' => $treasuryReport->start_date,
             'end' => $treasuryReport->end_date,
             'remainingBudget' => $treasuryReport->remaining_budget,
-            'calculatedRemainingBudget' => $treasuryReport->calculated_remaining_budget
+            'calculatedRemainingBudget' => $treasuryReport->calculated_remaining_budget,
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\TreasuryReport  $treasuryReport
      * @return \Illuminate\Http\Response
      */
     public function edit(TreasuryReport $treasuryReport)
@@ -169,8 +166,6 @@ class TreasuryReportController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\TreasuryReport  $treasuryReport
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, TreasuryReport $treasuryReport)
@@ -185,22 +180,22 @@ class TreasuryReportController extends Controller
     public function summary()
     {
         $currentYearPurchaseCount = Purchase::where('purchased', 1)
-                                        ->where('created_at', '>', Carbon::now()->subYear())
-                                        ->count();
+            ->where('created_at', '>', Carbon::now()->subYear())
+            ->count();
 
         $previousYearPurchaseCount = Purchase::where('purchased', 1)
-                                         ->whereBetween('created_at', [Carbon::now()->subYears(2), Carbon::now()->subYear()])
-                                         ->count();
+            ->whereBetween('created_at', [Carbon::now()->subYears(2), Carbon::now()->subYear()])
+            ->count();
 
         $currentSpending = TreasuryItem::where('is_incoming', 0)
-                                        ->where('created_at', '>', Carbon::now()->subYear())
-                                        ->pluck('amount')
-                                        ->sum();
+            ->where('created_at', '>', Carbon::now()->subYear())
+            ->pluck('amount')
+            ->sum();
 
         $previousYearSpending = TreasuryItem::where('is_incoming', 0)
-                                            ->whereBetween('created_at', [Carbon::now()->subYears(2), Carbon::now()->subYear()])
-                                            ->pluck('amount')
-                                            ->sum();
+            ->whereBetween('created_at', [Carbon::now()->subYears(2), Carbon::now()->subYear()])
+            ->pluck('amount')
+            ->sum();
 
         return Inertia::render('Treasury/Summary', [
             'title' => 'Treasury Summary',
@@ -209,7 +204,7 @@ class TreasuryReportController extends Controller
             'currentBalance' => TreasuryReport::latest()->first()->remaining_budget ?? 0,
             'previousYearBalance' => TreasuryReport::where('start_date', '<', Carbon::now()->subYear())->first()->remaining_budget ?? 0,
             'currentSpending' => $currentSpending,
-            'previousYearSpending' => $previousYearSpending
+            'previousYearSpending' => $previousYearSpending,
         ]);
     }
 
@@ -217,7 +212,8 @@ class TreasuryReportController extends Controller
      * Get Original Model from Treasury Item
      *
      */
-    public function treasurableModel($id) {        
+    public function treasurableModel($id)
+    {
         return response()->json(TreasuryItem::find($id)->treasurable);
     }
 }

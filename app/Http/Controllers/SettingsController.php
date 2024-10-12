@@ -63,7 +63,7 @@ class SettingsController extends Controller
         //
     }
 
-    public function getIsVacant() 
+    public function getIsVacant()
     {
         return response()->json(Settings::where('name', 'vacancy')->first()->value == 1 ? true : false);
     }

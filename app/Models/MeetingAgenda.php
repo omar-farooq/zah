@@ -13,18 +13,19 @@ class MeetingAgenda extends Model
 
     protected $fillable = ['item', 'user_id', 'meeting_id'];
 
-    public function meeting() {
-        return $this->belongsTo(Meeting::Class);
+    public function meeting()
+    {
+        return $this->belongsTo(Meeting::class);
     }
 
     /**
      * Get the channels that the model events should be broadcast on
      *
-     * @param string $event
+     * @param  string  $event
      * @return \Illuminate\Broadcasting\Channel|array
      */
     public function broadcastOn($event)
     {
-        return [new PrivateChannel ('meeting')];
+        return [new PrivateChannel('meeting')];
     }
 }

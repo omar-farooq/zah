@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
 use App\Models\RoleAssignment;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -19,8 +18,8 @@ class RoleController extends Controller
     {
         return Inertia::render('Users/Roles', [
             'title' => 'Member Roles',
-            'members' =>  $user->currentMember()->get(),
-            'nominations' => $roleAssignment->inVote()
+            'members' => $user->currentMember()->get(),
+            'nominations' => $roleAssignment->inVote(),
         ]);
     }
 
@@ -37,7 +36,6 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -70,7 +68,6 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */

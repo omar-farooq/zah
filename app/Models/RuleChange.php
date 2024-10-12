@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Rule;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,7 +12,7 @@ class RuleChange extends Model
     protected $fillable = [
         'rule_id',
         'rule',
-        'approval_status'
+        'approval_status',
     ];
 
     protected $with = ['approvals'];
@@ -30,5 +29,4 @@ class RuleChange extends Model
     {
         return $this->morphMany(Approval::class, 'approvable');
     }
-
 }

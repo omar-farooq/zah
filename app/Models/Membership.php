@@ -10,18 +10,19 @@ class Membership extends Model
     use HasFactory;
 
     protected $fillable = ['user_id'];
+
     protected $casts = [
-        'start_date' => 'datetime', 
-        'end_date' => 'datetime'
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
     ];
 
-	public function user() 
-	{
-		return $this->belongsTo(User::class);
-	}
-
-    public function getMembers() 
+    public function user()
     {
-		return $this->where('end_date', null)->with('user')->get();
-	}
+        return $this->belongsTo(User::class);
+    }
+
+    public function getMembers()
+    {
+        return $this->where('end_date', null)->with('user')->get();
+    }
 }

@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Mail\ContactForm;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -15,7 +14,11 @@ class SendEmail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $name, $email, $comments;
+    protected $name;
+
+    protected $email;
+
+    protected $comments;
 
     /**
      * Create a new job instance.

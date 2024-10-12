@@ -10,12 +10,11 @@ use Illuminate\Support\Facades\Storage;
 
 class PaymentController extends Controller
 {
-
     /**
      * Instantiate Treasury Service
-     *
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->treasuryService = new TreasuryService;
     }
 
@@ -26,19 +25,20 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->has('account')) {
-            $incomingTotal = Payment::where('treasury_report_id', NULL)
-                                    ->where('account_id', $request->account)
-                                    ->where('incoming', 1)
-                                    ->sum('amount');
-            $outgoingTotal = Payment::where('treasury_report_id', NULL)
-                                    ->where('account_id', $request->account)
-                                    ->where('incoming', 0)
-                                    ->sum('amount');
+        if ($request->has('account')) {
+            $incomingTotal = Payment::where('treasury_report_id', null)
+                ->where('account_id', $request->account)
+                ->where('incoming', 1)
+                ->sum('amount');
+            $outgoingTotal = Payment::where('treasury_report_id', null)
+                ->where('account_id', $request->account)
+                ->where('incoming', 0)
+                ->sum('amount');
             $accountTotal = $incomingTotal - $outgoingTotal;
+
             return response()->json($accountTotal);
         } else {
-            return response()->json(Payment::where('treasury_report_id', NULL)->get());
+            return response()->json(Payment::where('treasury_report_id', null)->get());
         }
     }
 
@@ -55,7 +55,6 @@ class PaymentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -66,29 +65,28 @@ class PaymentController extends Controller
             'amount' => 'required|decimal:2',
             'incoming' => 'boolean',
             'payment_date' => 'date',
-            'receipt' => 'nullable|file'
+            'receipt' => 'nullable|file',
         ]);
 
         $new_payment = Payment::create($request->all());
-        if($request->file('receipt')) {
+        if ($request->file('receipt')) {
             $this->treasuryService->addReceipt($request->file('receipt'), 'App\\Models\\Payment', $new_payment->id);
         }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'successfully saved'
-        ],200);
+            'message' => 'successfully saved',
+        ], 200);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Payment  $payment
      * @return \Illuminate\Http\Response
      */
     public function show(Payment $payment, Request $request)
     {
-        if($request->has('description')) {
+        if ($request->has('description')) {
             return response()->json($payment['description']);
         } else {
             return response()->json($payment);
@@ -98,7 +96,6 @@ class PaymentController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Payment  $payment
      * @return \Illuminate\Http\Response
      */
     public function edit(Payment $payment)
@@ -109,8 +106,6 @@ class PaymentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Payment  $payment
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Payment $payment)
@@ -121,7 +116,6 @@ class PaymentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Payment  $payment
      * @return \Illuminate\Http\Response
      */
     public function destroy(Payment $payment)
@@ -129,7 +123,7 @@ class PaymentController extends Controller
         //delete the receipt before deleting the payment
         $receipt = new Receipt;
         $found_receipt = $receipt->where('payable_type', 'App\\Models\\Payment')->where('payable_id', $payment->id)->first();
-        if($found_receipt !== NULL) {
+        if ($found_receipt !== null) {
             Storage::delete('documents/receipts/'.$found_receipt->receipt);
             $found_receipt->delete();
         }

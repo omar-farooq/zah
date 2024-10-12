@@ -23,10 +23,10 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         AttendanceUpdated::class => [
-            SendAttendanceChange::class
+            SendAttendanceChange::class,
         ],
         GuestListUpdated::class => [
-            SendUpdatedGuestList::class
+            SendUpdatedGuestList::class,
         ],
     ];
 

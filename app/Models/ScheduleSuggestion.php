@@ -10,10 +10,11 @@ class ScheduleSuggestion extends Model
     use HasFactory;
 
     protected $casts = [
-        'suggested_date' => 'datetime' 
+        'suggested_date' => 'datetime',
     ];
 
-	public function user() {
-		return $this->belongsTo(User::class);
-	}
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

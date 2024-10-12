@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests\StoreTaskRequest;
-use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
-     * @param App\Models\Task $task
-     * @param Request $request
      *
+     * @param  App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
     public function index(Task $task, Request $request)
@@ -24,30 +21,28 @@ class TaskController extends Controller
         $id = $request->get('id');
         $user_id = $request->get('user_id');
         $query = Task::query();
-        if($completed) {
+        if ($completed) {
             $query->where('completed', $completed);
         }
 
         //get tasks by id
-        if($id) {
+        if ($id) {
             $query->where('id', $id);
         }
 
         //return the task with the results of the query and with the user relationship
         //If a user id is set then return only those where the user has a task
-        if(isset($user_id)) {
-            $results = $query->whereHas('users', function($q) use($user_id)
-            {
+        if (isset($user_id)) {
+            $results = $query->whereHas('users', function ($q) use ($user_id) {
                 $q->where('id', $user_id);
             })->get();
         } else {
             $results = $query->with('users')->get();
         }
 
-
         //return a JSON response
         return response()->json([
-            'tasks' => $results
+            'tasks' => $results,
         ]);
     }
 
@@ -81,7 +76,6 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
     public function show(Task $task)
@@ -92,7 +86,6 @@ class TaskController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
     public function edit(Task $task)
@@ -104,7 +97,6 @@ class TaskController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \App\Http\Requests\UpdateTaskRequest  $request
-     * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
     public function update(Task $task)

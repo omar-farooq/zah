@@ -15,7 +15,7 @@ class TreasuryReport extends Model
         'end_date',
         'comments',
         'calculated_remaining_budget',
-        'remaining_budget'
+        'remaining_budget',
     ];
 
     protected $casts = [
@@ -26,7 +26,7 @@ class TreasuryReport extends Model
     /*
      * Relationship with Treasury Items
      */
-    public function treasuryItems() 
+    public function treasuryItems()
     {
         return $this->hasMany(TreasuryItem::class);
     }

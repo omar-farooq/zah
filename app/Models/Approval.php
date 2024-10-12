@@ -13,7 +13,7 @@ class Approval extends Model
         'approval',
         'approvable_type',
         'approvable_id',
-        'user_id'
+        'user_id',
     ];
 
     public function approvable()

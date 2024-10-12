@@ -14,7 +14,7 @@ class RentController extends Controller
     public function index()
     {
         return Inertia::render('Treasury/Rents', [
-            'title' => 'Rents'
+            'title' => 'Rents',
         ]);
     }
 

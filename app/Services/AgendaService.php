@@ -8,38 +8,36 @@ use Carbon\Carbon;
 
 class AgendaService
 {
-
-    function meetingIDFromLaterThan($time) 
+    public function meetingIDFromLaterThan($time)
     {
         $existingMeetings = new Meeting;
         //check if there are upcoming meetings
         if (count($existingMeetings->allUpcoming()) > 0) {
             $UpcomingMeeting = $existingMeetings->firstUpcoming();
-            if(Carbon::parse($UpcomingMeeting->time_of_meeting)->gt($time)) {
+            if (Carbon::parse($UpcomingMeeting->time_of_meeting)->gt($time)) {
                 return $UpcomingMeeting->id;
             }
         }
-        return;
+
     }
 
     /*
      *
      */
-    function attachToNewMeeting($newMeetingId, $oldMeetingId) 
+    public function attachToNewMeeting($newMeetingId, $oldMeetingId)
     {
-        MeetingAgenda::where('meeting_id', NULL)->update(['meeting_id' => $newMeetingId]);
-        if(isset($oldMeetingId)) {
+        MeetingAgenda::where('meeting_id', null)->update(['meeting_id' => $newMeetingId]);
+        if (isset($oldMeetingId)) {
             MeetingAgenda::where('meeting_id', $oldMeetingId)->update(['meeting_id' => $newMeetingId]);
         }
 
-        return;
     }
 
-    function detachFromMeeting($meetingId) 
+    public function detachFromMeeting($meetingId)
     {
         $newMeeting = new Meeting;
-        $newMeetingId = $newMeeting->firstUpcoming()->id ?? NULL;
+        $newMeetingId = $newMeeting->firstUpcoming()->id ?? null;
         MeetingAgenda::where('meeting_id', $meetingId)->update(['meeting_id' => $newMeetingId]);
-        return;
+
     }
 }

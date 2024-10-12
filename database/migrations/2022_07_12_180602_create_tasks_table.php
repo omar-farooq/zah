@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-			$table->timestamp('due_by')->nullable();
-			$table->text('item');
+            $table->timestamp('due_by')->nullable();
+            $table->text('item');
             $table->boolean('completed')->default(0);
             $table->foreignId('minute_id')->nullable();
         });

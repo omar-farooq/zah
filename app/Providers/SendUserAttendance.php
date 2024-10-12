@@ -2,10 +2,6 @@
 
 namespace App\Providers;
 
-use App\Providers\UserAttendingMeeting;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
-
 class SendUserAttendance
 {
     /**

@@ -13,11 +13,11 @@ class Comment extends Model
         'body',
         'commentable_type',
         'commentable_id',
-        'user_id'
+        'user_id',
     ];
 
     protected $with = [
-        'user'
+        'user',
     ];
 
     public function commentable()

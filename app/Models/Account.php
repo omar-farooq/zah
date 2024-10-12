@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Account extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'account_name',
         'bank',
         'description',
-        'starting_balance'
+        'starting_balance',
     ];
 
     /**

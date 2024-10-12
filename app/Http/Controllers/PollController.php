@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Poll;
 use App\Models\PollOption;
-use App\Models\Vote;
+use Illuminate\Http\Request;
 
 class PollController extends Controller
 {
@@ -16,21 +15,22 @@ class PollController extends Controller
      */
     public function index(Poll $poll, Request $request)
     {
-        if(isset($request->meeting) && $request->meeting == 'current') {
+        if (isset($request->meeting) && $request->meeting == 'current') {
             return response()->json([
-                'polls' => $poll->where('meeting_id', $request->meeting_id)->get()
+                'polls' => $poll->where('meeting_id', $request->meeting_id)->get(),
             ]);
         }
 
         $id = $request->get('id');
         $attribute = $request->get('attribute');
         $query = Poll::query();
-        if($id) {
-            if($attribute == 'poll_items') {
+        if ($id) {
+            if ($attribute == 'poll_items') {
                 $results = PollOption::where('poll_id', $id)->get();
             } else {
                 $results = $query->where('id', $id)->get();
             }
+
             return response()->json(
                 $results
             );
@@ -54,7 +54,6 @@ class PollController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -64,7 +63,7 @@ class PollController extends Controller
         $poll->poll_end = $request->end;
         $poll->save();
 
-        foreach($request->options as $option) {
+        foreach ($request->options as $option) {
             $poll->pollItems()->create($option);
         }
     }
@@ -94,7 +93,6 @@ class PollController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */

@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests\StoreMinuteRequest;
-use App\Http\Requests\UpdateMinuteRequest;
 use App\Models\Meeting;
 use App\Models\Minute;
+use Illuminate\Http\Request;
 
 class MinuteController extends Controller
 {
@@ -17,21 +15,21 @@ class MinuteController extends Controller
      */
     public function index(Minute $minute, Request $request)
     {
-        if($request->has('latest')) {
+        if ($request->has('latest')) {
             $meeting = new Meeting;
             $last_meeting = $meeting->where('cancelled', 0)
-                                    ->where('completed', 1)
-                                    ->latest('time_of_meeting')
-                                    ->first()
+                ->where('completed', 1)
+                ->latest('time_of_meeting')
+                ->first()
                                     ->id;
 
             return response()->json(
                 $minute->where('meeting_id', $last_meeting)
-                       ->get()
+                    ->get()
             );
         } else {
             return response()->json([
-                'minutes' => $minute->where('meeting_id', $request->meeting_id)->get()
+                'minutes' => $minute->where('meeting_id', $request->meeting_id)->get(),
             ]);
         }
     }
@@ -55,6 +53,7 @@ class MinuteController extends Controller
     public function store(Request $request)
     {
         $newMinute = Minute::create($request->all());
+
         return response()->json([
             'id' => $newMinute->id,
         ]);
@@ -63,7 +62,6 @@ class MinuteController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Minute  $minute
      * @return \Illuminate\Http\Response
      */
     public function show(Minute $minute)
@@ -74,7 +72,6 @@ class MinuteController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Minute  $minute
      * @return \Illuminate\Http\Response
      */
     public function edit(Minute $minute)
@@ -86,7 +83,6 @@ class MinuteController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \App\Http\Requests\UpdateMinuteRequest  $request
-     * @param  \App\Models\Minute  $minute
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Minute $minute)
@@ -97,7 +93,7 @@ class MinuteController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

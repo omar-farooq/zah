@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RuleChange;
 use App\Models\Rule;
+use App\Models\RuleChange;
 use Illuminate\Http\Request;
 
 class RuleChangeController extends Controller
@@ -31,21 +31,22 @@ class RuleChangeController extends Controller
     {
         $request->validate([
             'rule' => 'required|string',
-            'rule_id' => 'required|integer'
+            'rule_id' => 'required|integer',
         ]);
 
         $existing_change_count = RuleChange::where('rule_id', $request->rule_id)->count();
-        if($existing_change_count > 0) {
+        if ($existing_change_count > 0) {
             return response()->json([
                 'success' => 'false',
-                'message' => 'There is already a change for this rule'
-            ],409);
+                'message' => 'There is already a change for this rule',
+            ], 409);
         } else {
             RuleChange::create($request->all());
+
             return response()->json([
                 'success' => 'true',
-                'message' => 'Rule change has entered voting'
-            ],200);
+                'message' => 'Rule change has entered voting',
+            ], 200);
         }
     }
 

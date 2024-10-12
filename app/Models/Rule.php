@@ -15,7 +15,7 @@ class Rule extends Model
         'rule',
         'number',
         'rule_section_id',
-        'approval_status'
+        'approval_status',
     ];
 
     protected $with = ['approvals'];
@@ -39,7 +39,7 @@ class Rule extends Model
     /*
      * Relationship with changes to the rule
      */
-    public function ruleChanges() 
+    public function ruleChanges()
     {
         return $this->hasMany(RuleChange::class);
     }
@@ -47,7 +47,7 @@ class Rule extends Model
     /*
      * Relationship with attempted deletes to the rule
      */
-    public function ruleDeletes() 
+    public function ruleDeletes()
     {
         return $this->hasMany(RuleDelete::class);
     }
