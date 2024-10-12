@@ -57,7 +57,7 @@ export default function EditMaintenanceRequest({maintenanceRequest}) {
                                 id="RequirementInput" 
                                 placeholder="Required Maintenance" 
                                 defaultValue={maintenanceRequest.required_maintenance}
-                                changeAction={(e) => {setData('required_maintenance', e.target.value)}} 
+                                changeaction={(e) => {setData('required_maintenance', e.target.value)}} 
                             />
                             <ShowErrors>
                                 {errors.required_maintenance}
@@ -69,7 +69,7 @@ export default function EditMaintenanceRequest({maintenanceRequest}) {
                                 id="ReasonInput" 
                                 placeholder="Reason" 
                                 defaultValue={maintenanceRequest.reason}
-                                changeAction={(e) => {setData('reason', e.target.value)}} 
+                                changeaction={(e) => {setData('reason', e.target.value)}} 
                             />
                             <ShowErrors>
                                 {errors.reason}
@@ -86,7 +86,7 @@ export default function EditMaintenanceRequest({maintenanceRequest}) {
                                     step="0.01" 
                                     placeholder="Cost" 
                                     defaultValue={maintenanceRequest.cost}
-                                    changeAction={(e) => {e.target.value == '' ? setPrice('') : setPrice(parseFloat(e.target.value).toFixed(2)); setData('cost', e.target.value)}} 
+                                    changeaction={(e) => {e.target.value == '' ? setPrice('') : setPrice(parseFloat(e.target.value).toFixed(2)); setData('cost', e.target.value)}} 
                                 />
                                 <ShowErrors>{errors.cost}</ShowErrors>
                             </div>
@@ -175,7 +175,7 @@ export default function EditMaintenanceRequest({maintenanceRequest}) {
                                     type="text"
                                     placeholder="Contractor" 
                                     defaultValue={maintenanceRequest.contractor}
-                                    changeAction={(e) => {setData('contractor', e.target.value)}} 
+                                    changeaction={(e) => {setData('contractor', e.target.value)}} 
                                 />
 
                                 <ShowErrors>
@@ -187,14 +187,14 @@ export default function EditMaintenanceRequest({maintenanceRequest}) {
                                     type="text"
                                     placeholder="phone"
                                     defaultValue={maintenanceRequest.contractor_phone}
-                                    changeAction={(e) => {setData('contractor_phone', e.target.value)}}
+                                    changeaction={(e) => {setData('contractor_phone', e.target.value)}}
                                 />
 
                                 <Input
                                     type="text"
                                     placeholder="email"
                                     defaultValue={maintenanceRequest.contractor_email}
-                                    changeAction={(e) => {setData('contractor_email', e.target.value)}}
+                                    changeaction={(e) => {setData('contractor_email', e.target.value)}}
                                 />
                                 <ShowErrors>{errors.contractor_email}</ShowErrors>
 
@@ -223,7 +223,7 @@ export default function EditMaintenanceRequest({maintenanceRequest}) {
                                 <Input
                                     type="text"
                                     placeholder="type of maintenance" 
-                                    changeAction={(e) => {setData('type', e.target.value)}} 
+                                    changeaction={(e) => {setData('type', e.target.value)}} 
                                 />}
                             </div>
                         </InputContainer>
@@ -231,7 +231,7 @@ export default function EditMaintenanceRequest({maintenanceRequest}) {
                         <FormLabel>Check if Emergency</FormLabel>
                         <InputContainer>
                             <Checkbox
-                                changeAction={(e) => setData('emergency', e.target.checked)} 
+                                changeaction={(e) => setData('emergency', e.target.checked)} 
                                 defaultValue={maintenanceRequest.emergency}
                             />
                         </InputContainer>

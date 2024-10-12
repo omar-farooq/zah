@@ -15,12 +15,20 @@ use App\Models\Minute;
 use App\Models\SecretaryReport;
 use App\Models\Poll;
 use App\Models\User;
+use App\Services\AgendaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class MeetingController extends Controller
 {
+    /**
+     * Instantiate the Agenda Service
+     */
+    public function __construct() {
+        $this->agendaService = new AgendaService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -62,10 +70,16 @@ class MeetingController extends Controller
             ],409);
         }
 
+        //Check if there is a scheduled meeting starting later than the newly requested one and disassociate the agenda items if there is
+        $laterMeeting = $this->agendaService->meetingIDFromLaterThan(Carbon::parse($request->time)->timezone('Europe/London'));
+
         //Create the meeting
         $meeting = new Meeting;
 		$meeting->time_of_meeting = $request->time;
         $meeting->save();
+
+        //attach the agenda to the meeting (so that the agenda can be added to for future meetings if the meeting is not yet submitted)
+        $this->agendaService->attachToNewMeeting($meeting->id, $laterMeeting);
 
         //Send email to everyone
         $meeting_time = Carbon::parse($request->time)->setTimezone('Europe/London')->locale('uk')->format('l jS \\of F Y h:i A');
@@ -80,14 +94,16 @@ class MeetingController extends Controller
     }
 
     /**
-     * The Meeting
+     * The Meeting where people can join if it has started. If it's not yet started then it returns a different page with the agenda.
      *
      * @return \Illuminate\Http\Response
      */
     public function create(Meeting $meeting, User $user)
     {
         if ($meeting->scheduledNotYetStarted() == null) {
-            return Inertia::render('Meetings/NotYetScheduled');
+            return Inertia::render('Meetings/NotYetScheduled',[
+                'meetingId' => $meeting->firstUpcoming() ? $meeting->firstUpcoming()->id : NULL
+            ]);
         } else {
             return Inertia::render('Meetings/Edit', [
                 'title' => 'Meeting',
@@ -103,7 +119,7 @@ class MeetingController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Show a meeting that has been already created and finished
      *
      * @param  \App\Models\Meeting  $meeting
      * @return \Illuminate\Http\Response
@@ -137,10 +153,12 @@ class MeetingController extends Controller
     public function update(UpdateMeetingRequest $request, Meeting $meeting)
     {
         Document::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
-        MeetingAgenda::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
         Minute::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
         Poll::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
         SecretaryReport::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
+
+        //Meeting Agendas are now handled on a meeting by meeting basis (25/08/2024)
+        //MeetingAgenda::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
 
         $meeting->update(['completed' => 1]);
     }
@@ -154,6 +172,9 @@ class MeetingController extends Controller
     public function destroy(Meeting $meeting)
     {
         $meeting->update(['cancelled' => 1]);
+
+        //Release the agenda from the meeting
+        $this->agendaService->detachFromMeeting($meeting->id);
 
         //Send email to everyone
         $meeting_time = Carbon::parse($meeting->time_of_meeting)->locale('uk')->format('l jS \\of F Y \\a\\t h:i A');

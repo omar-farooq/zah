@@ -18,7 +18,7 @@ Zah is a housing co-operative. This website aims to provide a way to contact the
 
 ## Tech Stack
 
-- php/laravel for the backend
+- php 8.2/laravel 11 for the backend
 - javascript/react for the front end
 - mysql used for the relational database
 - tailwind for styling

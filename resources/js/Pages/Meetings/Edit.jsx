@@ -50,6 +50,7 @@ export default function NewMeeting({meeting, tenants, auth}) {
                         <div className="w-full lg:w-1/2 mt-4 mb-4">
                             <Agenda
                                 auth={auth}
+                                meetingId={meeting.id}
                             />
                         </div>
                     </>
@@ -77,7 +78,10 @@ export default function NewMeeting({meeting, tenants, auth}) {
                         </ComponentWrapperWhite>
 
                         <ComponentWrapperWhite>
-                            <Agenda auth={auth} />
+                            <Agenda 
+                                auth={auth} 
+                                meetingId={meeting.id}
+                            />
                         </ComponentWrapperWhite>
 
                         <ComponentWrapperWhite>

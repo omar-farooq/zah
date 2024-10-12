@@ -8,6 +8,7 @@ use App\Models\Purchase;
 use App\Models\PurchaseRequest;
 use App\Services\TreasuryService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class PurchaseController extends Controller
@@ -104,7 +105,8 @@ class PurchaseController extends Controller
         } else {
             return Inertia::render('Purchases/ViewPurchase', [
                 'title' => 'Purchase History',
-                'purchaseID' => $purchase->id
+                'purchaseID' => $purchase->id,
+                'purchaseImage' => config('app.env') == 'production' ? Storage::temporaryUrl('images/'.$purchase->image, now()->addMinutes(5)) : Storage::url('images/'.$purchase->image),
             ]);
         }
     }

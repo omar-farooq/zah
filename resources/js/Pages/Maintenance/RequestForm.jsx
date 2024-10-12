@@ -1,5 +1,6 @@
 import { ClockIcon } from '@heroicons/react/24/outline'
 import { DateInput, DatePickerInput, TimeInput } from '@mantine/dates'
+import { NumberInput } from '@mantine/core'
 import { HiddenCurrencyInput, ShowErrors, InputContainer, FormLabel, RequestLayout, Title, TileContainer, PreviewTile, FormTile } from '@/Layouts/RequestLayout'
 import { useForm } from '@inertiajs/react'
 import { useState, useEffect } from 'react'
@@ -40,47 +41,55 @@ export default function MaintenanceRequestForm() {
         
                     <FormTile position='centre'> 
 
-                        <div className="mt-8">
-                            <FormLabel>Maintenance</FormLabel>
-                            <Input 
-                                type="text" 
-                                name="Requirement" 
-                                id="RequirementInput" 
-                                placeholder="Required Maintenance" 
-                                changeAction={(e) => {setData('required_maintenance', e.target.value)}} 
-                            />
-                            <ShowErrors>
-                                {errors.required_maintenance}
-                            </ShowErrors>
-
-                            <Input 
-                                type="text" 
-                                name="Reason" 
-                                id="ReasonInput" 
-                                placeholder="Reason" 
-                                changeAction={(e) => {setData('reason', e.target.value)}} 
-                            />
-                            <ShowErrors>
-                                {errors.reason}
-                            </ShowErrors>
-                        </div>
-       
-                        <FormLabel>Cost</FormLabel>
-                        <InputContainer>
+                        <div className="mt-8 flex flex-col space-y-2">
                             <div>
-                                <HiddenCurrencyInput amount={price} />
-
+                                <FormLabel>Maintenance needed</FormLabel>
                                 <Input 
-                                    type="number" 
-                                    step="0.01" 
-                                    placeholder="Cost" 
-                                    changeAction={(e) => {e.target.value == '' ? setPrice('') : setPrice(parseFloat(e.target.value).toFixed(2)); setData('cost', e.target.value)}} 
+                                    type="text" 
+                                    name="Requirement" 
+                                    id="RequirementInput" 
+                                    placeholder="e.g. fix the front door" 
+                                    changeaction={(e) => {setData('required_maintenance', e.target.value)}} 
                                 />
-                                <ShowErrors>{errors.cost}</ShowErrors>
+                                <ShowErrors>
+                                    {errors.required_maintenance}
+                                </ShowErrors>
                             </div>
 
-                        </InputContainer>
+                            <div>
+                                <FormLabel>Reason</FormLabel>
+                                <Input 
+                                    type="text" 
+                                    name="Reason" 
+                                    id="ReasonInput" 
+                                    placeholder="e.g. lock isn't working" 
+                                    changeaction={(e) => {setData('reason', e.target.value)}} 
+                                />
+                                <ShowErrors>
+                                    {errors.reason}
+                                </ShowErrors>
+                            </div>
+                            <div>
+                                <FormLabel>Estimated Cost</FormLabel>
+                                <NumberInput 
+                                    classNames={{input: 'border border-gray-300 rounded placeholder-gray-600 text-gray-600 h-12'}}
+                                    step={0.01}
+                                    precision={2}
+                                    min={0}
+                                    placeholder="Cost" 
+                                    parser={(value) => value.replace(/\£\s?|(,*)/g, '')}
+                                    formatter={(value) =>
+                                                !Number.isNaN(parseFloat(value))
+                                                  ? `£ ${value}`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+                                                  : '£ '
+                                    }
+                                    onChange={(e) => {e == '' ? setPrice('') : setPrice(parseFloat(e).toFixed(2)); setData('cost', e)}} 
+                                />
 
+                                <ShowErrors>{errors.cost}</ShowErrors>
+                            </div>
+                        </div>
+       
                         <FormLabel>Date/Time</FormLabel>
                         <InputContainer>
                             <label htmlFor="single">Single Day</label>
@@ -145,33 +154,39 @@ export default function MaintenanceRequestForm() {
                             </div>
                         </InputContainer>
 
-                        <FormLabel>Contractor details</FormLabel>
                         <InputContainer>
                             <div>
+                        		<FormLabel>Contractor name</FormLabel>
 
                                 <Input 
                                     type="text"
                                     placeholder="Contractor" 
-                                    changeAction={(e) => {setData('contractor', e.target.value)}} 
+                                    changeaction={(e) => {setData('contractor', e.target.value)}} 
                                 />
 
                                 <ShowErrors>
                                     {errors.contractor}
                                 </ShowErrors>
                             </div>
-                            <div className="flex-row flex">
-                                <Input
-                                    type="text"
-                                    placeholder="phone"
-                                    changeAction={(e) => {setData('contractor_phone', e.target.value)}}
-                                />
+                            <div className="flex-row flex space-x-4">
+								<div>
+                    	    		<FormLabel>Phone</FormLabel>
+                	                <Input
+            	                        type="text"
+        	                            placeholder="e.g. 07979940337"
+    	                                changeaction={(e) => {setData('contractor_phone', e.target.value)}}
+	                                />
+								</div>
 
-                                <Input
-                                    type="text"
-                                    placeholder="email"
-                                    changeAction={(e) => {setData('contractor_email', e.target.value)}}
-                                />
-                                <ShowErrors>{errors.contractor_email}</ShowErrors>
+								<div>
+                        			<FormLabel>Email</FormLabel>
+									<Input
+										type="text"
+										placeholder="e.g. mail@superb-builders.co.uk"
+										changeaction={(e) => {setData('contractor_email', e.target.value)}}
+									/>
+									<ShowErrors>{errors.contractor_email}</ShowErrors>
+								</div>
 
                             </div>
                         </InputContainer>
@@ -197,7 +212,7 @@ export default function MaintenanceRequestForm() {
                                 <Input
                                     type="text"
                                     placeholder="type of maintenance" 
-                                    changeAction={(e) => {setData('type', e.target.value)}} 
+                                    changeaction={(e) => {setData('type', e.target.value)}} 
                                 />}
                             </div>
                         </InputContainer>
@@ -205,7 +220,7 @@ export default function MaintenanceRequestForm() {
                         <FormLabel>Check if Emergency</FormLabel>
                         <InputContainer>
                             <Checkbox
-                                changeAction={(e) => setData('emergency', e.target.checked)} 
+                                changeaction={(e) => setData('emergency', e.target.checked)} 
                             />
                         </InputContainer>
 

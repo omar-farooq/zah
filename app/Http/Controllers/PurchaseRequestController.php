@@ -83,7 +83,6 @@ class PurchaseRequestController extends Controller
 
         if($request->file('image')) {
             $imageName = time() . '.' .$request->image->getClientOriginalName();
-//            $request->image->move(public_path('images'), $imageName);
             try{
                 Storage::putFileAs('images', $request->image, $imageName);
             } catch (\Exception $e) {
@@ -96,7 +95,13 @@ class PurchaseRequestController extends Controller
             $new_purchase_request->save();
         }
 
-            return Redirect::route('purchase-requests.show', $new_purchase_request);
+        //send email
+        $email_subject = "Purchase Request made";
+        $messageBody = "<p>" . $request->name . " has been requested for the following reason:</p><p>" . $request->reason . "</p><p>please <a href=\"" . env('APP_URL') . "/purchase-requests/" . $new_purchase_request->id . "\">click here</a> and review the request as soon as possible.</p>";
+
+        app(JobController::class)->notificationEmail($email_subject, $messageBody);
+
+        return Redirect::route('purchase-requests.show', $new_purchase_request);
 
     }
 
@@ -108,10 +113,10 @@ class PurchaseRequestController extends Controller
      */
     public function show(PurchaseRequest $purchaseRequest)
     {
-        return Inertia::render('Purchases/ViewPurchaseRequest', [
+        return Inertia::render('PurchaseRequests/ViewPurchaseRequest', [
             'purchaseRequest' => $purchaseRequest,
             'title' => 'Request to purchase ' .$purchaseRequest->name,
-            'requestImage' => Storage::temporaryUrl('images/'.$purchaseRequest->image, now()->addMinutes(5)),
+            'requestImage' => config('app.env') == 'production' ? Storage::temporaryUrl('images/'.$purchaseRequest->image, now()->addMinutes(5)) : Storage::url('images/'.$purchaseRequest->image),
         ]);
     }
 
@@ -123,7 +128,11 @@ class PurchaseRequestController extends Controller
      */
     public function edit(PurchaseRequest $purchaseRequest)
     {
-        return Inertia::render('Purchases/EditRequestForm', compact('purchaseRequest'));
+        return Inertia::render('PurchaseRequests/EditRequestForm', [
+            'title' => 'Edit your request',
+            'requestImage' => config('app.env') == 'production' ? Storage::temporaryUrl('images/'.$purchaseRequest->image, now()->addMinutes(5)) : Storage::url('images/'.$purchaseRequest->image),
+            'purchaseRequest' => $purchaseRequest,
+        ]);
     }
 
     /**
@@ -135,16 +144,31 @@ class PurchaseRequestController extends Controller
      */
     public function update(UpdatePurchaseRequestRequest $request, PurchaseRequest $purchaseRequest)
     {
-        $purchaseRequest->update($request->all());
+        $purchaseRequest->update([
+            'name' => $request->formData['name'],
+            'reason' => $request->formData['reason'],
+            'price' => $request->formData['price'],
+            'url' => $request->formData['url'],
+            'quantity' => $request->formData['quantity'],
+            'description' => $request->formData['description'],
+            'delivery_cost' => $request->formData['delivery_cost'],
+        ]);
 
-       /* 
-        if($request->file('image') != $purchaseRequest->image) {
-            $imageName = time() . '.' .$request->image->getClientOriginalName();
-            $request->image->move(public_path('images'), $imageName);
-            $purchaseRequest['image'] = $imageName;
-            $purchaseRequest->save();
+        
+        if($request->formData['image'] != $purchaseRequest->image) {
+            $imageName = time() . '.' .$request->formData['image']->getClientOriginalName();
+            try {
+                Storage::putFileAs('images', $request->formData['image'], $imageName);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => 'false',
+                    'message' => 'Failed to upload image'
+                ],500);
+            }
+            Storage::delete('images/'.$purchaseRequest->image);
+            $purchaseRequest->update(['image' => $imageName]);
         }
-        */
+        
             
         $purchaseRequest->approvals->each->delete();
         return Redirect::route('purchase-requests.show', $purchaseRequest);
@@ -159,6 +183,11 @@ class PurchaseRequestController extends Controller
      */
     public function destroy(PurchaseRequest $purchaseRequest)
     {
-        //
+        if($purchaseRequest->user_id != Auth::id()) {
+            return;
+        }
+
+        $purchaseRequest->delete();
+        return Redirect::route('purchase-requests.index');
     }
 }

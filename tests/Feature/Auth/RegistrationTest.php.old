@@ -1,5 +1,7 @@
 <?php
 
+//These tests are irrelevant as the registration page is disabled. You have to be made a member.
+
 namespace Tests\Feature\Auth;
 
 use App\Providers\RouteServiceProvider;

@@ -33,7 +33,7 @@ class TreasuryService {
         $this->payRent($new_report_id, $request->paid_rents);
         $this->updateArrears($request->arrears);
         $this->updateAccounts($new_report_id, $request->accounts_balances);
-        $this->addReportIDToUnreported($new_report_id);
+        $this->addReportIDToUnreported($new_report_id, $request->unreported);
         $this->linkAdditionalPaymentsToReport($new_report_id);
 
         return $new_report->id;
@@ -156,10 +156,12 @@ class TreasuryService {
      * Add the report ID to any treasury Item without the id as they are now accounted for
      *
      */
-    protected function addReportIDToUnreported($treasury_report_id)
+    protected function addReportIDToUnreported($treasury_report_id, $treasurables)
     {
-        TreasuryItem::where('treasury_report_id', NULL)
-                    ->update(['treasury_report_id' => $treasury_report_id]);
+        foreach($treasurables as $treasurable) {
+            TreasuryItem::where('id', $treasurable['id'])
+                        ->update(['treasury_report_id' => $treasury_report_id]);
+        }
     }
 
     /*

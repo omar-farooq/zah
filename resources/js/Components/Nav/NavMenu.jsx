@@ -14,9 +14,10 @@ const NavMenu = [
 
 	{id: 1, label: 'Meetings', icon: ClipboardDocumentListIcon,
         links: [
-            {id: 1, label: 'Schedule', link: '/meetings/schedule'},
-            {id: 2, label: 'Join', link: '/meetings/create'},
-            {id: 3, label: 'Previous Minutes', link: '/meetings'},
+            {id: 1, label: 'Agenda', link: '/agenda/upcoming'},
+            {id: 2, label: 'Schedule', link: '/meetings/schedule'},
+            {id: 3, label: 'Join', link: '/meetings/create'},
+            {id: 4, label: 'Previous Minutes', link: '/meetings'},
         ]
     },
 	{id: 2, label: 'Treasury', icon: CurrencyPoundIcon,

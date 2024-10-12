@@ -1,10 +1,13 @@
 import { Fragment, useState, useEffect, useReducer } from 'react'
+import { TrashIcon } from '@heroicons/react/24/outline'
 import { Link } from '@inertiajs/react'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
 
-export default function PurchasesAndServices({unreported, itemReducer, reducerFunction, calculatedHook}) {
+export default function PurchasesAndServices({unreported, itemReducer, purchasesTotalHook, servicesTotalHook}) {
 
     const [items, dispatch] = itemReducer
+	const [purchasesTotal, setPurchasesTotal] = purchasesTotalHook
+	const [servicesTotal, setServicesTotal] = servicesTotalHook
 
     useEffect(() => {
         const mapItems = () => {
@@ -25,6 +28,28 @@ export default function PurchasesAndServices({unreported, itemReducer, reducerFu
         mapItems()
     },[])
 
+	useEffect(() => {
+		updateTotal()
+	},[items])
+
+	const updateTotal = () => {
+		setPurchasesTotal (items.length > 0 ? items.reduce((a,b) => {
+			if(b.model == 'App\\Models\\Purchase') {
+				return Number(a) + Number(b.price)
+			} else {
+				return Number(a)
+			}
+		},[]) : 0)
+
+		setServicesTotal (items.length > 0 ? items.reduce((a,b) => {
+			if(b.model == 'App\\Models\\Maintenance') {
+				return Number(a) + Number(b.price)
+			} else {
+				return Number(a)
+			}
+		},[]) : 0)
+	}
+
     return (
         items.length > 0 &&
         <>
@@ -34,6 +59,7 @@ export default function PurchasesAndServices({unreported, itemReducer, reducerFu
                     <FirstTH heading="Purchase or Service" />
                     <TH heading="Amount" />
                     <TH heading="Receipt" />
+                    <TH heading="Remove" />
                     <LastTH />
                 </THead>
                 <TBody>
@@ -54,6 +80,9 @@ export default function PurchasesAndServices({unreported, itemReducer, reducerFu
                                             />
                                         : <a href={`/receipts/${x.receipt[0].id}`}>View Receipt</a>
                                     }
+                                </TD>
+                                <TD>
+                                    <TrashIcon className="w-6 h-6 cursor-pointer" onClick={() => dispatch({type: 'delete', itemId: x.id})} />
                                 </TD>
                                 <LastTD>
                                     <a target="_blank" href={x.model == 'App\\Models\\Maintenance' ? '/maintenance/'+x.modelId : '/purchases/'+x.modelId}>View Item</a>

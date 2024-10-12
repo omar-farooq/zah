@@ -13,6 +13,7 @@ export default function MobileNavMenu({navHook}) {
             <Accordion.Item value="Meetings">
                 <Accordion.Control>Meetings</Accordion.Control>
                 <Accordion.Panel>
+                    <Link endpoint='agenda.upcoming' name='Agenda' linkClick={linkClick} />
                     <Link endpoint='schedule' name='Schedule' linkClick={linkClick} />
                     <Link endpoint='meetings.create' name='Join' linkClick={linkClick} />
                     <Link endpoint='meetings.index' name='Previous Minutes' linkClick={linkClick} />

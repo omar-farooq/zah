@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { useForm } from '@inertiajs/react'
+import { useForm, router } from '@inertiajs/react'
 import { HiddenCurrencyInput, ShowErrors, InputContainer, FormLabel, RequestLayout, Title, TileContainer, PreviewTile, FormTile } from '@/Layouts/RequestLayout'
+import { NumberInput } from '@mantine/core'
 import RequestFormButton from '@/Components/RequestFormButton'
 import Input from '@/Components/RequestFormInput'
+import PreviewImage from '@/Components/PreviewImage'
 
-export default function EditPurchaseRequestForm({purchaseRequest}) {
+export default function EditPurchaseRequestForm({purchaseRequest, requestImage}) {
 
     const [name, setName] = useState(purchaseRequest.name)
     const [price, setPrice] = useState(purchaseRequest.price)
@@ -12,7 +14,7 @@ export default function EditPurchaseRequestForm({purchaseRequest}) {
     const [description, setDescription] = useState(purchaseRequest.description)
     const [image, setImage] = useState("/images/"+purchaseRequest.image)
     const [linkToItem, setLinkToItem] = useState(purchaseRequest.url)
-    const { data, setData, patch, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         name: purchaseRequest.name || '',
         reason: purchaseRequest.reason || '',
         price: purchaseRequest.price || '',
@@ -25,7 +27,10 @@ export default function EditPurchaseRequestForm({purchaseRequest}) {
 
     function submit(e) {
         e.preventDefault()
-        patch('/purchase-requests/' + purchaseRequest.id)
+        router.post('/purchase-requests/' + purchaseRequest.id, {
+            _method: 'patch',
+            formData: data,
+        })
     }
 
     return (
@@ -39,14 +44,20 @@ export default function EditPurchaseRequestForm({purchaseRequest}) {
                         </div>
                         <div className="mt-6 sm:mt-0 xl:my-10 xl:px-20 w-52 sm:w-96 xl:w-auto">
                             <label htmlFor="file-input">
-                                <img src={image} />
+                                {typeof data.image != 'string' ?
+                                    <img src={image} />
+                                    :
+                                    <PreviewImage
+                                        src={requestImage}
+                                    />
+                                }
                             </label>
                             <Input 
                                 id="file-input" 
                                 type="file" 
                                 additionalClasses="hidden" 
                                 accept="image/png, image/jpeg" 
-                                changeAction={(e) => { setImage(URL.createObjectURL(e.target.files[0])); setData('image', e.target.files[0])}} 
+                                changeaction={(e) => { setImage(URL.createObjectURL(e.target.files[0])); setData('image', e.target.files[0])}} 
                             />
                         </div>
                         <div className="flex flex-col justify-start items-start w-full space-y-4">
@@ -71,7 +82,7 @@ export default function EditPurchaseRequestForm({purchaseRequest}) {
                                 id="NameInput" 
                                 placeholder="Name" 
                                 defaultValue={purchaseRequest.name}
-                                changeAction={(e) => {setName(e.target.value); setData('name', e.target.value)}} 
+                                changeaction={(e) => {setName(e.target.value); setData('name', e.target.value)}} 
                             />
                             <ShowErrors>
                                 {errors.name}
@@ -81,38 +92,52 @@ export default function EditPurchaseRequestForm({purchaseRequest}) {
                         <FormLabel>Financial</FormLabel>
                         <InputContainer>
                             <div>
-                                <HiddenCurrencyInput amount={price} />
-
-                                <Input 
-                                    type="number" 
-                                    step="0.01" 
+                                <NumberInput
+                                    classNames={{input: 'border border-gray-300 rounded placeholder-gray-600 text-gray-600 h-12'}}
+                                    label="Price"
+                                    step={0.01}
+                                    precision={2}
+                                    min={0}
                                     placeholder="Price"
+                                    parser={(value) => value.replace(/\£\s?|(,*)/g, '')}
+                                    formatter={(value) =>
+                                                !Number.isNaN(parseFloat(value))
+                                                  ? `£ ${value}`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+                                                  : '£ '
+                                    }
                                     defaultValue={purchaseRequest.price}
-                                    changeAction={(e) => {e.target.value == '' ? setPrice('') : setPrice(parseFloat(e.target.value).toFixed(2)); setData('price', e.target.value)}} 
+									onChange={(e) => {e == '' ? setPrice('') : setPrice(parseFloat(e).toFixed(2)); setData('price', e)}}
                                 />
                                 <ShowErrors>{errors.price}</ShowErrors>
                             </div>
 
-                            <div className="flex-row flex">
-
-                                <HiddenCurrencyInput amount={deliveryCost} />
-
-                                <Input 
-                                    type="number"
-                                    step="0.01"
+							<div className="flex-row flex space-x-6 mt-2">
+								<NumberInput
+                                    classNames={{input: 'border border-gray-300 rounded placeholder-gray-600 text-gray-600 h-12'}}
+                                    label="Delivery Cost"
+                                    step={0.01}
+                                    precision={2}
+									defaultValue={purchaseRequest.delivery_cost}
+                                    min={0}
                                     placeholder="Delivery Cost"
-                                    defaultValue={purchaseRequest.delivery_cost}
-                                    changeAction={(e) => {e.target.value == '' ? setDeliveryCost('') : setDeliveryCost(parseFloat(e.target.value).toFixed(2)); setData('delivery_cost', e.target.value)}} 
+                                    parser={(value) => value.replace(/\£\s?|(,*)/g, '')}
+                                    formatter={(value) =>
+                                                !Number.isNaN(parseFloat(value))
+                                                  ? `£ ${value}`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
+                                                  : '£ '
+                                    }
+                                    onChange={(e) => {e == '' ? setDeliveryCost('') : setDeliveryCost(parseFloat(e).toFixed(2)); setData('delivery_cost', e)}}
                                 />
 
-
-                                <Input 
-                                    type="number"
-                                    placeholder="Quantity" 
-                                    changeAction={(e) => setData('quantity', e.target.value)} 
+								<NumberInput
+                                    classNames={{input: 'border border-gray-300 rounded placeholder-gray-600 text-gray-600 h-12'}}
+                                    label="Quantity"
+                                    step={1}
                                     defaultValue={purchaseRequest.quantity}
+                                    min={1}
+                                    placeholder="e.g. 1"
+                                    onChange={(e) => setData('quantity', e)}
                                 />
-
                             </div>
                         </InputContainer>
         
@@ -124,7 +149,7 @@ export default function EditPurchaseRequestForm({purchaseRequest}) {
                                     type="text"
                                     placeholder="Description" 
                                     defaultValue={purchaseRequest.description}
-                                    changeAction={(e) => {setDescription(e.target.value); setData('description', e.target.value)}} 
+                                    changeaction={(e) => {setDescription(e.target.value); setData('description', e.target.value)}} 
                                 />
 
                                 <ShowErrors>
@@ -140,7 +165,7 @@ export default function EditPurchaseRequestForm({purchaseRequest}) {
                                     type="text"
                                     placeholder="URL" 
                                     defaultValue={purchaseRequest.url}
-                                    changeAction={(e) => {setLinkToItem(e.target.value); setData('URL', e.target.value)}} 
+                                    changeaction={(e) => {setLinkToItem(e.target.value); setData('url', e.target.value)}} 
                                 />
                             </div>
                         </InputContainer>
@@ -151,7 +176,7 @@ export default function EditPurchaseRequestForm({purchaseRequest}) {
                                 type="text"
                                 placeholder="Reason" 
                                 defaultValue={purchaseRequest.reason}
-                                changeAction={(e) => setData('reason', e.target.value)} 
+                                changeaction={(e) => setData('reason', e.target.value)} 
                             />
                             <ShowErrors>
                                 {errors.reason}
