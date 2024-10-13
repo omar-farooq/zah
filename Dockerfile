@@ -14,7 +14,6 @@ RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini && \
     sed -i -e "s/allow_url_fopen = On/allow_url_fopen = Off/g" /usr/local/etc/php/php.ini && \
     sed -i -e "s/expose_php = On/expose_php = Off/g" /usr/local/etc/php/php.ini
 
-COPY ./webserver/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # Install composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -35,6 +34,7 @@ RUN rm -rf node_modules
 
 # Single production image 
 FROM webserver AS production
+COPY ./webserver/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 WORKDIR /var/www/html
 COPY --from=assets --chown=www-data:www-data /app/ .
 RUN composer install
