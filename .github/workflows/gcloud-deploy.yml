@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: 'actions/checkout@v4'
 
-    - id: 'auth'
+    - id: auth
       uses: 'google-github-actions/auth@v2'
       with:
         project_id: 'zah-website'
@@ -27,11 +27,12 @@ jobs:
       uses: 'google-github-actions/setup-gcloud@v2'
 
     - name: 'login to artifact registry'
-      uses: 'docker/login-action@v1'
+      id: docker-auth
+      uses: 'docker/login-action@v3'
       with:
-        registry: 'us-east1-docker.pkg.dev'
         username: 'oauth2accesstoken'
         password: '${{ steps.auth.outputs.access_token }}'
+        registry: 'us-east1-docker.pkg.dev'
 
     - name: 'Build and push Container'
       run: |-
