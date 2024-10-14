@@ -23,6 +23,7 @@ jobs:
         project_id: 'zah-website'
         workload_identity_provider: 'projects/231388685322/locations/global/workloadIdentityPools/zah-github/providers/zah-github-provider'
         service_account: 'zah-registry-user@zah-website.iam.gserviceaccount.com'
+        token_format: access_token
 
     - name: 'set up cloud sdk'
       uses: 'google-github-actions/setup-gcloud@v2'
@@ -32,7 +33,7 @@ jobs:
       uses: 'docker/login-action@v3'
       with:
         username: 'oauth2accesstoken'
-        password: 'this is a test'
+        password: ${{ steps.auth.outputs.access_token }}
         registry: 'us-east1-docker.pkg.dev'
 
     - name: 'Build and push Container'
