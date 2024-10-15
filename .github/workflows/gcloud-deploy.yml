@@ -4,6 +4,7 @@ on:
 
 env:
   PROJECT_ID: '231388685322'
+  PROJECT_NAME: 'zah-website'
   GAR_LOCATION: 'us-east1'
   REPOSITORY: 'zah'
 
@@ -42,4 +43,4 @@ jobs:
       with:
         push: true
         tags: |
-          ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/zah:test
+          ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_NAME }}/${{ env.REPOSITORY }}/zah:test
