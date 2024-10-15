@@ -36,7 +36,10 @@ jobs:
         password: ${{ steps.auth.outputs.access_token }}
         registry: 'us-east1-docker.pkg.dev'
 
-    - name: 'Build and push Container'
-      run: |-
-        docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/zah:test" ./
-        docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/zah:test"
+    - id: docker-push-tagged
+      name: 'Build and push Container'
+      uses: docker/build-push-action@v4
+      with:
+        push: true
+        tags: |
+          ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/zah:test
