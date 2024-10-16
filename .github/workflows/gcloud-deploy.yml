@@ -21,7 +21,7 @@ jobs:
 
     - name: 'create env'
       run: |
-        cat ${{ env.BUILD_ENV }} > .env.production
+        echo ${{ env.BUILD_ENV }} > .env.production
       shell: bash
 
     - id: auth
