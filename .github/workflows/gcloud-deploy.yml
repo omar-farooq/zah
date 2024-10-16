@@ -45,8 +45,9 @@ jobs:
 
     - id: docker-push-tagged
       name: 'Build and push Container'
-      uses: docker/build-push-action@v4
+      uses: docker/build-push-action@v6
       with:
         push: true
+        target: production
         tags: |
           ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_NAME }}/${{ env.REPOSITORY }}/zah:test
