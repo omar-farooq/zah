@@ -7,6 +7,7 @@ env:
   PROJECT_NAME: 'zah-website'
   GAR_LOCATION: 'us-east1'
   REPOSITORY: 'zah'
+  BUILD_ENV: ${{ secrets.BUILD_ENV }}
 
 jobs:
   job_id:
@@ -17,6 +18,11 @@ jobs:
 
     steps:
     - uses: 'actions/checkout@v4'
+
+    - name: 'create env'
+      run: |
+        cat ${{ env.BUILD_ENV }} > .env.production
+      shell: bash
 
     - id: auth
       uses: 'google-github-actions/auth@v2'
