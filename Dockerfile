@@ -27,6 +27,15 @@ RUN adduser --disabled-password -G www-data www-data
 
 # Compile assets for production use
 FROM node:20.1-alpine AS assets
+
+### Add environment variables
+RUN --mount=type=secret,id=appid \
+    sed -i "s/PUSHER_APP_ID=/PUSHER_APP_ID=$(cat /run/secrets/appid)/" .env.production
+RUN --mount=type=secret,id=appkey \
+    sed -i "s/PUSHER_APP_KEY=/PUSHER_APP_KEY=$(cat /run/secrets/appkey)/" .env.production
+RUN --mount=type=secret,id=appsecret \
+    sed -i "s/PUSHER_APP_SECRET=/PUSHER_APP_SECRET=$(cat /run/secrets/appsecret)/" .env.production
+
 WORKDIR /app
 COPY . .
 RUN npm install && npm run build
