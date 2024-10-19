@@ -34,9 +34,11 @@ export default function DocumentUploadForm({meetingId=null}) {
     const openRef = useRef(null)
 
 	const [newDoc, setNewDoc] = useState({attachment: '', description: '', meeting_id: meetingId})
+    const [submitted, setSubmitted] = useState(false)
 
     async function handleSubmit(e) {
         e.preventDefault()
+        setSubmitted(true)
 
         try {
             let config = { headers: { 'content-type': 'multipart/form-data' }}
@@ -46,6 +48,7 @@ export default function DocumentUploadForm({meetingId=null}) {
         } catch (error) {
             showNotification({title: 'Error', message: 'Missing content', autoClose: 2000, color: 'red'})
         }
+        setSubmitted(false)
     }
 
     return (
@@ -113,7 +116,12 @@ export default function DocumentUploadForm({meetingId=null}) {
                                 placeholder="e.g. Surveyor's report"
                             />
                         </>
-                        <Button type="submit" color="dark" className="col-start-1 col-end-9 bg-black w-1/2 md:w-1/3 xl:w-1/4 place-self-center top-4">Upload</Button>
+                        {
+                            submitted ?  
+                                <Button disabled className="col-start-1 col-end-9 w-1/2 md:w-1/3 xl:w-1/4 place-self-center top-4">Submitting</Button>
+                            :
+                                <Button type="submit" color="dark" className="col-start-1 col-end-9 bg-black w-1/2 md:w-1/3 xl:w-1/4 place-self-center top-4">Upload</Button>
+                        }
                     </form>
             </MantineProvider>
         </>

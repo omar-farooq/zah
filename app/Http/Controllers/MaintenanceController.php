@@ -107,8 +107,11 @@ class MaintenanceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function show(Maintenance $maintenance)
+    public function show(Maintenance $maintenance, Request $request)
     {
+        if ($request->has('name')) {
+            return response()->json($maintenance['name']);
+        }
         return Inertia::render('Maintenance/ViewMaintenance', [
             'title' => 'Maintenance',
             'maintenance' => $maintenance,

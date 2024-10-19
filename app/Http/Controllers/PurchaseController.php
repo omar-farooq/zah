@@ -94,6 +94,10 @@ class PurchaseController extends Controller
      */
     public function show(Purchase $purchase, Request $request)
     {
+        if ($request->has('name')) {
+            return response()->json($purchase['name']);
+        }
+
         if (isset($request->getPurchase)) {
             return response()->json(
                 $purchase

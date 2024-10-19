@@ -97,7 +97,7 @@ export default function Manage({auth}) {
                                 </Link>
                             </td>
                             <td className="border border-slate-200 text-center">
-                                {membershipApproval.delete.find(approval => approval.approvable_id == member.id) ?
+                                {membershipApproval.delete?.find(approval => approval.approvable_id == member.id) ?
                                     'voted to remove' :
                                     <UserMinusIcon 
                                         className="h-6 w-6 cursor-pointer text-red-700 m-auto" 

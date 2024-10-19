@@ -49,7 +49,7 @@ class MeetingController extends Controller
         } else {
             return Inertia::render('Meetings/Index', [
                 'title' => 'Previous Minutes',
-                'meetingsPageOne' => $meeting->where('cancelled', 1)->orWhere('completed', 1)->orderBy('time_of_meeting', 'desc')->paginate(10),
+                'meetingsPageOne' => $meeting->where('completed', 1)->orderBy('time_of_meeting', 'desc')->paginate(10),
             ]);
         }
     }
