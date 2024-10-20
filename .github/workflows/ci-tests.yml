@@ -41,7 +41,7 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
-      - run: npm run dev
+      - run: npm run build
 
       - name: execute tests via phpunit
         #        services:
