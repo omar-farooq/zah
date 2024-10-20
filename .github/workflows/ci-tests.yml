@@ -36,20 +36,14 @@ jobs:
           touch database/database.sqlite
 
       - name: execute tests via phpunit
-        services:
-          websocket:
-            image: quay.io/soketi/soketi:latest-16-alpine
-            ports:
-              - 6001:6001
-            environment:
-              - DEFAULT_APP_ID: test-id
-              - DEFAULT_APP_KEY: test-key
-              - DEFAULT_APP_SECRET: testsocketsecret
-              - PUSHER_SCHEME: http
-              - PUSHER_PORT: 6001
-              - SOKETI_DEFAULT_APP_SECRET: testsocketsecret
+        #        services:
+          #          websocket:
+          #            image: quay.io/soketi/soketi:latest-16-alpine
+          #            ports:
+          #              - 6001:6001
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
         run: |
+          docker run --name soketi -d -p 6001:6001 quay.io/soketi/soketi:latest-16-alpine
           php artisan test
