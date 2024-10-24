@@ -15,6 +15,7 @@ class Meeting extends Model
     protected $fillable = [
         'cancelled',
         'completed',
+        'minutes_read_and_agreed',
         'notes',
     ];
 

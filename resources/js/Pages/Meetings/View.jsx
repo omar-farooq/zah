@@ -68,14 +68,22 @@ export default function Historical ({meeting, auth}) {
                 <ComponentWrapper>
                     <div className="col-start-1 col-end-9 lg:col-end-5 lg:col-start-3">
                         <ComponentTitle bg="bg-emerald-700">
-                            Minutes
+                            Minutes Notes
                         </ComponentTitle>
                     </div>
-                    <ul className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7"> {meeting.minutes?.map(x => 
-                        <li key={x.id} className='bg-white flex justify-between border m-1 bg-white border-sky-700 text-slate-700'>
-                            <div className="ml-2 whitespace-pre-line">{x.minute_text}</div>
-                        </li>
-                    )}
+                    <ul className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7">
+                        {
+                            meeting.minutes_read_and_agreed ?
+                                <li key="minutesReadAndAgreed" className='bg-white flex justify-between border m-1 bg-white border-sky-700 text-slate-700'>
+                                    <div className="ml-2 whitespace-pre-line">Minutes read and agreed</div>
+                                </li>
+                            : ''
+                        }
+                        {meeting.minutes?.map(x => 
+                            <li key={x.id} className='bg-white flex justify-between border m-1 bg-white border-sky-700 text-slate-700'>
+                                <div className="ml-2 whitespace-pre-line">{x.minute_text}</div>
+                            </li>
+                        )}
                     </ul>
                 </ComponentWrapper>
 

@@ -123,8 +123,14 @@ class MeetingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function show(Meeting $meeting)
+    public function show(Meeting $meeting, Request $request)
     {
+        if($request->exists('getMinutesRead')) {
+            return response()->json(
+                $meeting->minutes_read_and_agreed
+            );
+        }
+
         return Inertia::render('Meetings/View', [
             'title' => 'Historical Meeting',
             'meeting' => $meeting->load(['meetingAgenda', 'minutes', 'attendees', 'secretaryReport', 'polls', 'guests']),
@@ -148,15 +154,20 @@ class MeetingController extends Controller
      */
     public function update(UpdateMeetingRequest $request, Meeting $meeting)
     {
-        Document::where('meeting_id', null)->update(['meeting_id' => $meeting->id]);
-        Minute::where('meeting_id', null)->update(['meeting_id' => $meeting->id]);
-        Poll::where('meeting_id', null)->update(['meeting_id' => $meeting->id]);
-        SecretaryReport::where('meeting_id', null)->update(['meeting_id' => $meeting->id]);
+        if($request->exists('updateMinutesRead')) {
+            $meeting->minutes_read_and_agreed = $request->minutesReadAndAgreed;
+            $meeting->save();            
+        } else {
+            Document::where('meeting_id', null)->update(['meeting_id' => $meeting->id]);
+            Minute::where('meeting_id', null)->update(['meeting_id' => $meeting->id]);
+            Poll::where('meeting_id', null)->update(['meeting_id' => $meeting->id]);
+            SecretaryReport::where('meeting_id', null)->update(['meeting_id' => $meeting->id]);
 
-        //Meeting Agendas are now handled on a meeting by meeting basis (25/08/2024)
-        //MeetingAgenda::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
+            //Meeting Agendas are now handled on a meeting by meeting basis (25/08/2024)
+            //MeetingAgenda::where('meeting_id', NULL)->update(['meeting_id' => $meeting->id]);
 
-        $meeting->update(['completed' => 1]);
+            $meeting->update(['completed' => 1]);
+        }
     }
 
     /**

@@ -136,7 +136,7 @@ export default function SecretaryReport({auth}) {
     return (
         <>
         <ComponentTitle bg="bg-sky-600">Secretary's Report</ComponentTitle>
-        {auth.user.role.name == 'Chair' || auth.user.role.name == 'Secretary' ?
+        {auth.user.role?.name == 'Chair' || auth.user.role?.name == 'Secretary' ?
             <MantineProvider withNormalizeCSS withGlobalStyles>
                 <Notifications />
                     <form onSubmit={handleSubmit} className="w-full col-start-1 col-end-9 flex flex-col justify-center">

@@ -53,16 +53,16 @@ export default function Agenda({auth, meetingId}) {
 
     //Receive the current agenda items via an api call
     useEffect(() => {
-		async function getAgendaItems() { 
+        async function getAgendaItems() { 
             let fetchedUsers = await axios.get('/users?filter=none')
             await setUsers(fetchedUsers.data)
             let res
             meetingId ?
-			    res = await axios.get('/agenda?meeting_id='+meetingId)
+                res = await axios.get('/agenda?meeting_id='+meetingId)
             :
-			    res = await axios.get('/agenda')
+                res = await axios.get('/agenda')
             dispatch({type: 'initialFetch', fetched: res.data.agenda})
-		}
+        }
         getAgendaItems()
 
         //Join websocket channel and listen for updates. Update on event changes.
