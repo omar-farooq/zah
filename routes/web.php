@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\DecisionController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MaintenanceController;
@@ -135,6 +136,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('documentation');
     Route::resource('agenda', MeetingAgendaController::class);
     Route::resource('comments', CommentController::class);
+    Route::resource('decisions', DecisionController::class);
     Route::resource('maintenance', MaintenanceController::class);
     Route::resource('meetings', MeetingController::class);
     Route::resource('minutes', MinuteController::class);

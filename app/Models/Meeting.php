@@ -65,6 +65,11 @@ class Meeting extends Model
         return $this->hasMany(Minute::class);
     }
 
+    public function decision()
+    {
+        return $this->hasMany(Decision::class);
+    }
+
     public function attendees()
     {
         return $this->belongsToMany(User::class, 'meeting_attendances')->withPivot('late');

@@ -107,7 +107,7 @@ export default function Minutes({meetingID}) {
 
     return (
         <>
-            <ComponentTitle bg="bg-emerald-700">
+            <ComponentTitle bg="bg-lime-600">
                 Meeting Notes
             </ComponentTitle>
             <ul className="col-start-1 col-end-9">

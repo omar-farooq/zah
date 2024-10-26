@@ -3,7 +3,7 @@ export default function Historical ({meeting, auth}) {
     //need to add treasurer's reports
     return (
         <div className="w-full">
-            <div className="text-2xl mt-3 mb-5 text-center">Meeting Recap: {meeting.time_of_meeting}</div>
+            <div className="text-2xl mt-3 mb-5 text-center">Minutes: {meeting.time_of_meeting}</div>
 
             <div className="grid grid-cols-4 w-full gap-2">
                 <div className="lg:col-start-2 lg:col-end-2 col-start-1 col-end-5">
@@ -67,8 +67,8 @@ export default function Historical ({meeting, auth}) {
 
                 <ComponentWrapper>
                     <div className="col-start-1 col-end-9 lg:col-end-5 lg:col-start-3">
-                        <ComponentTitle bg="bg-emerald-700">
-                            Minutes Notes
+                        <ComponentTitle bg="bg-lime-600">
+                            Meeting Notes
                         </ComponentTitle>
                     </div>
                     <ul className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7">
@@ -105,6 +105,22 @@ export default function Historical ({meeting, auth}) {
                         }
                     </div>
                 </ComponentWrapper>
+
+                <ComponentWrapper>
+                    <div className="col-start-1 col-end-9 lg:col-end-5 lg:col-start-3">
+                        <ComponentTitle bg="bg-emerald-700">
+                            Decisions Made
+                        </ComponentTitle>
+                    </div>
+                    <ul className="col-start-1 lg:col-start-3 col-end-9 lg:col-end-7">
+                        {meeting.decisions?.map(x => 
+                            <li key={x.id} className='bg-white flex justify-between border m-1 bg-white border-sky-700 text-slate-700'>
+                                <div className="ml-2 whitespace-pre-line">{x.decision_text}</div>
+                            </li>
+                        )}
+                    </ul>
+                </ComponentWrapper>
+
             </div>
         </div>
 

@@ -105,7 +105,7 @@ class MeetingController extends Controller
                 'meetingId' => $meeting->firstUpcoming() ? $meeting->firstUpcoming()->id : null,
             ]);
         } else {
-            return Inertia::render('Meetings/Edit', [
+            return Inertia::render('Meetings/Minutes', [
                 'title' => 'Meeting',
                 'meeting' => $meeting->scheduledNotYetStarted()->load(['attendees', 'guests']),
                 'tenants' => $user->where('is_tenant', 1)->get()->map(function ($user, $key) {
@@ -131,7 +131,7 @@ class MeetingController extends Controller
             );
         }
 
-        return Inertia::render('Meetings/View', [
+        return Inertia::render('Meetings/DisplayPrevious', [
             'title' => 'Historical Meeting',
             'meeting' => $meeting->load(['meetingAgenda', 'minutes', 'attendees', 'secretaryReport', 'polls', 'guests']),
         ]);
