@@ -26,7 +26,7 @@ const NavMenu = [
             {id: 1, label: 'Decisions Made', link: '/decisions?index'},
             {id: 2, label: 'Tasks', link: '/tasks?index'},
             {id: 3, label: 'Rules', link: '/rules'},
-            {id: 4, label: 'Contacts', link: '/contacts'},
+//            {id: 4, label: 'Contacts', link: '/contacts'},
 //            {id: 5, label: 'Inventory', link: '/inventory'},
         ]
     },
