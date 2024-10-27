@@ -13,5 +13,4 @@ class DefaultAccount extends Model
         'account_id',
         'model',
     ];
-
 }

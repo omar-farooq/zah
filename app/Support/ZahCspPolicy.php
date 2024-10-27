@@ -10,7 +10,7 @@ class ZahCspPolicy extends Basic
     public function configure()
     {
         parent::configure();
-        
+
         $this->addDirective(Directive::STYLE, 'fonts.bunny.net');
         $this->addDirective(Directive::FONT, 'fonts.bunny.net');
     }

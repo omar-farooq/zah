@@ -112,6 +112,7 @@ class MaintenanceController extends Controller
         if ($request->has('name')) {
             return response()->json($maintenance['name']);
         }
+
         return Inertia::render('Maintenance/ViewMaintenance', [
             'title' => 'Maintenance',
             'maintenance' => $maintenance,

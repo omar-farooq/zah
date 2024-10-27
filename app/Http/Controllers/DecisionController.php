@@ -17,9 +17,9 @@ class DecisionController extends Controller
     public function index(Decision $decision, Request $request)
     {
         if ($request->has('index')) {
-            if($request->has('getDecisions')) {
+            if ($request->has('getDecisions')) {
                 return response()->json(Decision::where($decision->paginate(10)));
-            } else if($request->has('search')) {
+            } elseif ($request->has('search')) {
                 return response()->json(Decision::where('decision_text', 'like', '%'.$request->search.'%')->get());
             } else {
                 return Inertia::render('House/Decisions', [
@@ -27,21 +27,21 @@ class DecisionController extends Controller
                     'decisionsPageOne' => $decision->paginate(10),
                 ]);
             }
-        } else if ($request->has('latest')) {
+        } elseif ($request->has('latest')) {
             $meeting = new Meeting;
             $last_meeting = $meeting->where('cancelled', 0)
-                          ->where('completed', 1)
-                          ->latest('time_of_meeting')
-                          ->first()
+                ->where('completed', 1)
+                ->latest('time_of_meeting')
+                ->first()
                           ->id;
 
             return response()->json(
                 $decision->where('meeting_id', $last_meeting)
-                         ->get()
+                    ->get()
             );
         } else {
             return response()->json([
-                'decisions' => $decision->where('meeting_id', $request->meeting_id)->get()
+                'decisions' => $decision->where('meeting_id', $request->meeting_id)->get(),
             ]);
         }
     }

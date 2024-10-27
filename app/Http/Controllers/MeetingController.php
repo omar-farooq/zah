@@ -125,7 +125,7 @@ class MeetingController extends Controller
      */
     public function show(Meeting $meeting, Request $request)
     {
-        if($request->exists('getMinutesRead')) {
+        if ($request->exists('getMinutesRead')) {
             return response()->json(
                 $meeting->minutes_read_and_agreed
             );
@@ -154,9 +154,9 @@ class MeetingController extends Controller
      */
     public function update(UpdateMeetingRequest $request, Meeting $meeting)
     {
-        if($request->exists('updateMinutesRead')) {
+        if ($request->exists('updateMinutesRead')) {
             $meeting->minutes_read_and_agreed = $request->minutesReadAndAgreed;
-            $meeting->save();            
+            $meeting->save();
         } else {
             Document::where('meeting_id', null)->update(['meeting_id' => $meeting->id]);
             Minute::where('meeting_id', null)->update(['meeting_id' => $meeting->id]);

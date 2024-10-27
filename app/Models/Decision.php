@@ -13,7 +13,7 @@ class Decision extends Model
 
     protected $fillable = [
         'decision_text',
-        'meeting_id'
+        'meeting_id',
     ];
 
     public function meeting()
@@ -31,5 +31,4 @@ class Decision extends Model
     {
         return [new PrivateChannel('meeting')];
     }
-
 }
