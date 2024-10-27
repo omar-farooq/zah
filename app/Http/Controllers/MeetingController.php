@@ -38,7 +38,7 @@ class MeetingController extends Controller
     {
         if (isset($request->getMeetings) && $request->getMeetings === 'true') {
             return response()->json(
-                $meeting->where('cancelled', 1)->orWhere('completed', 1)->orderBy('time_of_meeting', 'desc')->paginate(10)
+                $meeting->where('completed', 1)->orderBy('time_of_meeting', 'desc')->paginate(10)
             );
         } elseif (isset($request->search)) {
             $result = Meeting::with('minutes', 'polls')->whereRelation('minutes', 'minute_text', 'like', '%'.$request->search.'%')

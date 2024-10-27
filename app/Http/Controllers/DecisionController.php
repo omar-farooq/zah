@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Decision;
 use App\Models\Meeting;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class DecisionController extends Controller
 {
@@ -15,7 +16,18 @@ class DecisionController extends Controller
      */
     public function index(Decision $decision, Request $request)
     {
-        if ($request->has('latest')) {
+        if ($request->has('index')) {
+            if($request->has('getDecisions')) {
+                return response()->json(Decision::where($decision->paginate(10)));
+            } else if($request->has('search')) {
+                return response()->json(Decision::where('decision_text', 'like', '%'.$request->search.'%')->get());
+            } else {
+                return Inertia::render('House/Decisions', [
+                    'title' => 'Decisions Made',
+                    'decisionsPageOne' => $decision->paginate(10),
+                ]);
+            }
+        } else if ($request->has('latest')) {
             $meeting = new Meeting;
             $last_meeting = $meeting->where('cancelled', 0)
                           ->where('completed', 1)
