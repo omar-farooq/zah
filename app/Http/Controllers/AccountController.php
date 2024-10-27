@@ -17,19 +17,20 @@ class AccountController extends Controller
      */
     public function index($model = null)
     {
-        if(TreasuryReport::count() > 0) {
+        if (TreasuryReport::count() > 0) {
             $latest_treasury_report = TreasuryReport::all()->last()->id;
-            $initialAccounts = Account::with(["treasuryReports" => function($q) use($latest_treasury_report){
+            $initialAccounts = Account::with(['treasuryReports' => function ($q) use ($latest_treasury_report) {
                 $q->where('treasury_report_id', '=', $latest_treasury_report);
             }])->get();
 
         } else {
             $initialAccounts = Account::all();
         }
+
         return Inertia::render('Treasury/Accounts/index', [
             'initialAccounts' => $initialAccounts,
             'defaultAccounts' => DefaultAccount::all(),
-            'warning' => $model
+            'warning' => $model,
         ]);
     }
 
@@ -46,21 +47,23 @@ class AccountController extends Controller
      */
     public function store(Request $request)
     {
-        if(isset($request['default'])) {
-            if(DefaultAccount::where('model', $request->model)->count() > 0) {
+        if (isset($request['default'])) {
+            if (DefaultAccount::where('model', $request->model)->count() > 0) {
                 dd('exists');
             } else {
                 DefaultAccount::create($request->all());
+
                 return DefaultAccount::all();
             }
         } else {
             $request->validate([
                 'account_name' => 'required|string',
                 'bank' => 'required|string',
-                'starting_balance' => 'required|numeric'
+                'starting_balance' => 'required|numeric',
             ]);
 
             $new_account = Account::create($request->all());
+
             return $new_account;
         }
     }
@@ -96,7 +99,7 @@ class AccountController extends Controller
     public function destroy(Account $account)
     {
         $accountDefaults = DefaultAccount::where('account_id', $account->id)->get();
-        foreach($accountDefaults as $accountDefault) {
+        foreach ($accountDefaults as $accountDefault) {
             $accountDefault->delete();
         }
         $account->delete();

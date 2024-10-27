@@ -17,7 +17,7 @@
         <link rel="manifest" href="{{ asset('site.webmanifest') }}">
 
         <!-- Scripts -->
-        @routes
+        @routes(nonce: csp_nonce())
         @viteReactRefresh
         @vite('resources/js/app.jsx')
         @inertiaHead

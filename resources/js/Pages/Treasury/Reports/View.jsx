@@ -149,7 +149,10 @@ export default function ViewTreasuryReport({reports, rents, treasuryItems, previ
             let arr = []
             for (let item of treasuryItems) {
                 let description
-                item.treasurable_type == 'App\\Models\\Payment' ? description = await axios.get('/payments/'+item.treasurable_id+'?description') : description = ''
+                item.treasurable_type == 'App\\Models\\Payment' ? description = await axios.get('/payments/'+item.treasurable_id+'?description') 
+                : item.treasurable_type == 'App\\Models\\Purchase' ? description = await axios.get('/purchases/'+item.treasurable_id+'?name')
+                : item.treasurable_type == 'App\\Models\\Maintenance' ? description = await axios.get('/maintenance/'+item.treasurable_id+'?name')
+                : description = ''
 
                 let sourceOrRecipient = await axios.get('/treasury-reports?find=sourceOrRecipient&type='+item.treasurable_type+'&id='+item.treasurable_id)
                 arr.push({
@@ -230,7 +233,7 @@ export default function ViewTreasuryReport({reports, rents, treasuryItems, previ
                                         getFriendlyName(item.treasurable_type)
                                     }
                                     { 
-                                        item.treasurable_type === 'App\\Models\\Payment' &&
+                                        (item.treasurable_type === 'App\\Models\\Payment' || item.treasurable_type === 'App\\Models\\Purchase' || item.treasurable_type === 'App\\Models\\Maintenance') &&
                                             <Group position="center">
                                                 <HoverCard width={280} shadow="md">
                                                     <HoverCard.Target>
@@ -239,6 +242,12 @@ export default function ViewTreasuryReport({reports, rents, treasuryItems, previ
                                                     <HoverCard.Dropdown>
                                                         <Text size="sm">
                                                             {getDescription(item.id)}
+                                                            {item.treasurable_type === 'App\\Models\\Purchase' ?
+                                                                <>
+                                                                <br />
+                                                                <a target="_blank" href={`/purchases/${item.treasurable_id}`} className="text-cyan-600">View Item</a> 
+                                                                </> : ''
+                                                            }
                                                         </Text>
                                                     </HoverCard.Dropdown>
                                                 </HoverCard>

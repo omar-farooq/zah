@@ -16,7 +16,7 @@ class NextOfKinController extends Controller
         $request->validate([
             'name' => 'required|string',
             'email' => 'nullable|email',
-            'phone' => 'nullable|string'
+            'phone' => 'nullable|string',
         ]);
 
         $next_of_kin = new NextOfKin;
@@ -29,7 +29,7 @@ class NextOfKinController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Updated Next Of Kin',
-            'nextOfKin' => $next_of_kin
+            'nextOfKin' => $next_of_kin,
         ]);
     }
 
@@ -41,14 +41,14 @@ class NextOfKinController extends Controller
         $request->validate([
             'name' => 'required|string',
             'email' => 'nullable|email',
-            'phone' => 'nullable|string'
+            'phone' => 'nullable|string',
         ]);
         $nextOfKin->update($request->all());
 
         return response()->json([
             'status' => 'success',
             'message' => 'Updated Next Of Kin',
-            'nextOfKin' => $nextOfKin
+            'nextOfKin' => $nextOfKin,
         ]);
     }
 }

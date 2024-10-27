@@ -10,21 +10,22 @@ class Rent extends Model
     use HasFactory;
 
     protected $fillable = [
-        'amount', 
-        'user_id'
+        'amount',
+        'user_id',
     ];
-    
+
     /**
      * Relationship with the user
      */
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
     /**
      * This is itemized by the Treasury for reports
      */
-    public function treasuryItem() 
+    public function treasuryItem()
     {
         return $this->morphOne(TreasuryItem::class, 'treasurable');
     }

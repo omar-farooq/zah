@@ -6,11 +6,14 @@ ARG uid
 ARG GID=33
 
 # Install additional required PHP extensions for Laravel
-RUN docker-php-ext-install bcmath pdo_mysql pcntl
+RUN docker-php-ext-install bcmath pdo_mysql pcntl opcache
 
 # Change upload size
 RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini && \
-    sed -i -e "s/upload_max_filesize = 2M/upload_max_filesize = 20M/g" /usr/local/etc/php/php.ini
+    sed -i -e "s/upload_max_filesize = 2M/upload_max_filesize = 20M/g" /usr/local/etc/php/php.ini && \
+    sed -i -e "s/allow_url_fopen = On/allow_url_fopen = Off/g" /usr/local/etc/php/php.ini && \
+    sed -i -e "s/expose_php = On/expose_php = Off/g" /usr/local/etc/php/php.ini
+
 
 # Install composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -26,11 +29,21 @@ RUN adduser --disabled-password -G www-data www-data
 FROM node:20.1-alpine AS assets
 WORKDIR /app
 COPY . .
+
+### Add environment variables
+RUN --mount=type=secret,id=appid \
+    sed -i "s/^PUSHER_APP_ID=/PUSHER_APP_ID=$(cat /run/secrets/appid)/" .env.production
+RUN --mount=type=secret,id=appkey \
+    sed -i "s/^PUSHER_APP_KEY=/PUSHER_APP_KEY=$(cat /run/secrets/appkey)/" .env.production
+RUN --mount=type=secret,id=appsecret \
+    sed -i "s/^PUSHER_APP_SECRET=/PUSHER_APP_SECRET=$(cat /run/secrets/appsecret)/" .env.production
+
 RUN npm install && npm run build
 RUN rm -rf node_modules
 
 # Single production image 
 FROM webserver AS production
+COPY ./webserver/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 WORKDIR /var/www/html
 COPY --from=assets --chown=www-data:www-data /app/ .
 RUN composer install

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class Poll extends Model
 {
     use BroadcastsEvents, HasFactory;
+
     protected $fillable = [
         'name',
         'meeting_id',
@@ -19,16 +20,18 @@ class Poll extends Model
 
     protected $with = ['pollItems'];
 
-    public function meeting() {
+    public function meeting()
+    {
         return $this->belongsTo(Meeting::class);
     }
 
-    public function pollItems() {
+    public function pollItems()
+    {
         return $this->hasMany(PollOption::class);
     }
 
     public function broadcastOn($event)
     {
-        return [new PrivateChannel ('meeting')];
+        return [new PrivateChannel('meeting')];
     }
 }

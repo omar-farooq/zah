@@ -1,6 +1,6 @@
 import { Button } from '@mantine/core'
 import { useState, useEffect } from 'react'
-import { Agenda, ComponentWrapper, ComponentWrapperWhite, Documents, Minutes, PreviousMinutes, SecretaryReport, Polls, Register, Tasks } from '@/Components/Meeting'
+import { Agenda, ComponentWrapper, ComponentWrapperWhite, Decisions, Documents, Minutes, MinutesReadAndAgreed, PreviousMinutes, SecretaryReport, Polls, Register, Tasks } from '@/Components/Meeting'
 import { useDisclosure } from '@mantine/hooks'
 import ConfirmModal from '@/Components/ConfirmModal'
 
@@ -22,10 +22,19 @@ export default function NewMeeting({meeting, tenants, auth}) {
     }
     const timeOfMeetingEpoch = new Date(meeting.time_of_meeting).getTime()
 
+    //Handle minutes read and agrees
+    const [minutesRead, setMinutesRead] = useState(false)
+
     //Join the channel via a websocket
     useEffect(() => {
         Echo.private(`meeting`)
             .listen('.MeetingUpdated', (e) => {
+                if(e.model.minutes_read_and_agreed == 0) {
+                    setMinutesRead(false)
+                } else {
+                    setMinutesRead(true)
+                }
+
                 if(e.model.cancelled == 1) {
                     setCancelled(true)
                 }
@@ -40,7 +49,7 @@ export default function NewMeeting({meeting, tenants, auth}) {
 
     return (
         <>
-            <div className="text-xl mt-3 mb-3"> Meeting: {meeting.time_of_meeting} </div>
+            <div className="text-xl xl:text-3xl mt-3 mb-3"> Minutes: {meeting.time_of_meeting} </div>
             {
                 cancelled ?
                     <div>Meeting Cancelled</div>
@@ -77,6 +86,11 @@ export default function NewMeeting({meeting, tenants, auth}) {
                             <PreviousMinutes />
                         </ComponentWrapperWhite>
 
+                        <MinutesReadAndAgreed 
+                            meetingId={meeting.id}
+                            minutesReadHook={[minutesRead, setMinutesRead]}
+                        />
+
                         <ComponentWrapperWhite>
                             <Agenda 
                                 auth={auth} 
@@ -105,6 +119,10 @@ export default function NewMeeting({meeting, tenants, auth}) {
 
                         <ComponentWrapperWhite>
                             <Polls auth={auth} />
+                        </ComponentWrapperWhite>
+
+                        <ComponentWrapperWhite>
+                            <Decisions meetingID={meeting.id} />
                         </ComponentWrapperWhite>
 
                         <Button className="mb-14 mt-14 w-1/2 lg:w-1/4" variant="outline" onClick={() => submitModalHandlers.open()}>

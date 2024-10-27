@@ -17,6 +17,6 @@ class RecurringPayment extends Model
         'day_of_week_due',
         'day_of_month_due',
         'month_due',
-        'amount'
+        'amount',
     ];
 }

@@ -1,0 +1,60 @@
+name: Deploy
+on:
+  push:
+    tags:
+      - v*
+
+env:
+  PROJECT_ID: '231388685322'
+  PROJECT_NAME: 'zah-website'
+  GAR_LOCATION: 'us-east1'
+  REPOSITORY: 'zah'
+  PUSHER_APP_ID: ${{ secrets.PUSHER_APP_ID }}
+  PUSHER_APP_KEY: ${{ secrets.PUSHER_APP_KEY }}
+  PUSHER_APP_SECRET: ${{ secrets.PUSHER_APP_SECRET }}
+
+jobs:
+  job_id:
+    runs-on: 'ubuntu-latest'
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+    - uses: 'actions/checkout@v4'
+
+    - id: auth
+      uses: 'google-github-actions/auth@v2'
+      with:
+        project_id: 'zah-website'
+        workload_identity_provider: 'projects/231388685322/locations/global/workloadIdentityPools/zah-github/providers/zah-github-provider'
+        service_account: 'zah-registry-user@zah-website.iam.gserviceaccount.com'
+        token_format: access_token
+
+    - name: 'set up cloud sdk'
+      uses: 'google-github-actions/setup-gcloud@v2'
+
+    - name: 'login to artifact registry'
+      id: docker-auth
+      uses: 'docker/login-action@v3'
+      with:
+        username: 'oauth2accesstoken'
+        password: ${{ steps.auth.outputs.access_token }}
+        registry: 'us-east1-docker.pkg.dev'
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - id: docker-push-tagged
+      name: 'Build and push Container'
+      uses: docker/build-push-action@v6
+      with:
+        push: true
+        target: production
+        secrets: |
+          "appid=${{ secrets.PUSHER_APP_ID }}"
+          "appkey=${{ secrets.PUSHER_APP_KEY }}"
+          "appsecret=${{ secrets.PUSHER_APP_SECRET }}"
+        tags: |
+          ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_NAME }}/${{ env.REPOSITORY }}/zah:${{ github.ref_name }}
+          ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_NAME }}/${{ env.REPOSITORY }}/zah:latest

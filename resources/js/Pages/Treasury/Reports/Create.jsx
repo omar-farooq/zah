@@ -34,6 +34,8 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
     const [calculatedTotalBalance, setCalculatedTotalBalance] = useState(0)
     const [calculatedFinalBalance, setCalculatedFinalBalance] = useState(0)
 
+    const [submitted, setSubmitted] = useState(false)
+
     //For displaying purchases and services and adding receipts
     //It's at this parent component so that the items can be looped through when submitting 
     function unreportedReducer(unreportedItems, action) {
@@ -105,6 +107,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
     },[accountBalances])
 
     const submitReport = async (e) => {
+        setSubmitted(true)
         let config = { headers: { 'content-type': 'multipart/form-data' }}
         let reportID = await axios.post('/treasury-reports', {
             start_date: dates[0],
@@ -132,6 +135,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
                 ...recurring,
                 treasuryReportID: reportID.data
         },config))))
+        setSubmitted(false)
 
         window.location = "/treasury-reports/"+reportID.data
     }
@@ -304,12 +308,17 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
 
             </div>
 
-            <Button 
-                className="bg-white border-blue-400 text-blue-400 hover:text-white hover:bg-sky-600 mt-12 mb-8"
-                onClick={(e) => submitReport(e)}
-            >
-                Submit Report
-            </Button>
+            {
+                submitted ?
+                    <Button disabled className="mt-12 mb-8">Submitting Report</Button>
+                :
+                    <Button 
+                        className="bg-white border-blue-400 text-blue-400 hover:text-white hover:bg-sky-600 mt-12 mb-8"
+                        onClick={(e) => submitReport(e)}
+                    >
+                        Submit Report
+                    </Button>
+            }
         </>
     )
 }

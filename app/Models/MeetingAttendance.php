@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class MeetingAttendance extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'user_id',
         'meeting_id',
@@ -15,7 +16,7 @@ class MeetingAttendance extends Model
     ];
 
     protected $with = [
-       'user' 
+        'user',
     ];
 
     public $timestamps = false;
@@ -26,7 +27,7 @@ class MeetingAttendance extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::Class);
+        return $this->belongsTo(User::class);
     }
 
     /*
@@ -35,6 +36,6 @@ class MeetingAttendance extends Model
      */
     public function meeting()
     {
-        return $this->belongsTo(Meeting::Class);
+        return $this->belongsTo(Meeting::class);
     }
 }

@@ -23,8 +23,8 @@ return new class extends Migration
             $table->timestamps();
             $table->string('phone')->nullable();
             $table->string('avatar')->nullable();
-			$table->boolean('is_tenant')->default(0);
-			
+            $table->boolean('is_tenant')->default(0);
+
         });
     }
 

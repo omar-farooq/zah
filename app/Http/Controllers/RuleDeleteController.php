@@ -31,23 +31,24 @@ class RuleDeleteController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'rule_id' => 'required|integer'
+            'rule_id' => 'required|integer',
         ]);
 
         $existing_delete_count = RuleDelete::where('rule_id', $request->rule_id)->count();
         $existing_change_count = RuleChange::where('rule_id', $request->rule_id)->count();
 
-        if($existing_change_count > 0 || $existing_delete_count > 0) {
+        if ($existing_change_count > 0 || $existing_delete_count > 0) {
             return response()->json([
                 'success' => 'false',
-                'message' => 'The rule already has a change pending voting'
-            ],409);
+                'message' => 'The rule already has a change pending voting',
+            ], 409);
         } else {
             RuleDelete::create($request->all());
+
             return response()->json([
                 'success' => 'true',
-                'message' => 'Rule deletion is in voting'
-            ],200);
+                'message' => 'Rule deletion is in voting',
+            ], 200);
         }
     }
 
@@ -93,10 +94,10 @@ class RuleDeleteController extends Controller
 
         //decrease the rule number of all rules in the same section with a higher rule number
         $newer_rules = Rule::where('rule_section_id', $deleted_rule_section)
-                            ->where('number', '>', $deleted_rule_number)
-                            ->get();
+            ->where('number', '>', $deleted_rule_number)
+            ->get();
 
-        foreach($newer_rules as $newer_rule) {
+        foreach ($newer_rules as $newer_rule) {
             $newer_rule_number_new_number = $newer_rule->number - 1;
             $newer_rule->number = $newer_rule_number_new_number;
             $newer_rule->save();

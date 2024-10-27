@@ -12,7 +12,7 @@ class PaidRecurringPayment extends Model
     protected $fillable = [
         'recurring_payment_id',
         'treasury_report_id',
-        'amount_paid'
+        'amount_paid',
     ];
 
     public function recurringPayment()

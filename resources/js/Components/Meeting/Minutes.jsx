@@ -107,13 +107,13 @@ export default function Minutes({meetingID}) {
 
     return (
         <>
-            <ComponentTitle bg="bg-emerald-700">
-                Minutes
+            <ComponentTitle bg="bg-lime-600">
+                Meeting Notes
             </ComponentTitle>
             <ul className="col-start-1 col-end-9">
                 {
                     reactiveMinutes.length == 0 ?
-                    <div className="text-2xl mb-4">There are no minutes yet</div>
+                    <div className="text-2xl mb-4">There are no notes yet</div>
                     :
                     reactiveMinutes.map(minute =>
                         <li key={minute.id} className='bg-white flex justify-between border m-1 bg-white border-sky-700 text-slate-700'>

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PurchaseRequest extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'name',
         'price',
@@ -23,12 +24,12 @@ class PurchaseRequest extends Model
 
     protected $with = ['user', 'approvals'];
 
-
     /*
      * Waiting approval
      *
      */
-    public function notYetApproved() {
+    public function notYetApproved()
+    {
         return $this->where('approval_status', 'in voting')->get();
     }
 
@@ -36,9 +37,9 @@ class PurchaseRequest extends Model
      * Relationship with user
      *
      */
-    public function user() 
+    public function user()
     {
-        return $this->belongsTo(User::Class);
+        return $this->belongsTo(User::class);
     }
 
     /*
@@ -47,7 +48,7 @@ class PurchaseRequest extends Model
      */
     public function purchase()
     {
-        return $this->hasOne(PurchaseRequest::Class);
+        return $this->hasOne(PurchaseRequest::class);
     }
 
     /*
@@ -57,7 +58,7 @@ class PurchaseRequest extends Model
      */
     public function approvals()
     {
-       return $this->morphMany(Approval::class, 'approvable'); 
+        return $this->morphMany(Approval::class, 'approvable');
     }
 
     /*
@@ -67,6 +68,6 @@ class PurchaseRequest extends Model
      */
     public function comments()
     {
-       return $this->morphMany(Comment::class, 'commentable'); 
+        return $this->morphMany(Comment::class, 'commentable');
     }
 }

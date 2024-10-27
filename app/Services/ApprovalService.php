@@ -5,19 +5,18 @@ namespace App\Services;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\PurchaseController;
-use App\Http\Controllers\RuleController;
 use App\Http\Controllers\RuleChangeController;
+use App\Http\Controllers\RuleController;
 use App\Http\Controllers\RuleDeleteController;
 use App\Models\Approval;
 use App\Models\Maintenance;
 use App\Models\Membership;
-use App\Models\PurchaseRequest;
 use App\Models\Role;
 use App\Models\RoleAssignment;
 use Carbon\Carbon;
 
-class ApprovalService {
-
+class ApprovalService
+{
     /**
      * Check if Membership has been approved by majority voting
      *
@@ -30,61 +29,60 @@ class ApprovalService {
      * For voting out a member:
      * If the number of votes to remove membership is more than half the number of users then a delete process is invoked
      *
-     * @param $request
      *
      * @return null
      */
-    function checkApproval($request)
+    public function checkApproval($request)
     {
-        if(isset($request->approvable_type) && $request->approvable_type == 'App\Models\Membership') {
+        if (isset($request->approvable_type) && $request->approvable_type == 'App\Models\Membership') {
             $membership = new Membership;
             $current_member_total = $membership->getMembers()->count();
 
-            if($request->approval == 'add') {
+            if ($request->approval == 'add') {
 
                 $total_add_vote_counts = Approval::where('approvable_type', 'App\Models\Membership')
-                                                    ->where('created_at', '>', Carbon::now()->subDays(2))
-                                                    ->where('approval', 'add')
-                                                    ->count();
+                    ->where('created_at', '>', Carbon::now()->subDays(2))
+                    ->where('approval', 'add')
+                    ->count();
 
                 $voted_for_user_add_vote_count = Approval::where('approvable_type', 'App\Models\Membership')
-                                          ->where('approvable_id', $request->approvable_id)
-                                          ->where('created_at', '>', Carbon::now()->subDays(2))
-                                          ->where('approval', 'add')
-                                          ->count();
+                    ->where('approvable_id', $request->approvable_id)
+                    ->where('created_at', '>', Carbon::now()->subDays(2))
+                    ->where('approval', 'add')
+                    ->count();
 
-                if($voted_for_user_add_vote_count > ($current_member_total / 2)) {
+                if ($voted_for_user_add_vote_count > ($current_member_total / 2)) {
                     return $this->approvalFollowUp($request->approvable_type, $request->approvable_id);
                 }
 
-                if($total_add_vote_counts == $current_member_total) {
-                        $final_results = Approval::selectRaw('approvable_id, COUNT(*) as count')
-                                                ->where('approval', 'add')
-                                                ->groupBy('approvable_id')
-                                                ->orderBy('count', 'desc')
-                                                ->get();
+                if ($total_add_vote_counts == $current_member_total) {
+                    $final_results = Approval::selectRaw('approvable_id, COUNT(*) as count')
+                        ->where('approval', 'add')
+                        ->groupBy('approvable_id')
+                        ->orderBy('count', 'desc')
+                        ->get();
 
-                        if($final_results[0]['count'] == $final_results[1]['count']) {
-                            //this is a draw and is decided by the chair's vote
-                            $chair_member_id = Role::where('name', 'chair')->get()->user_id;
-                            $drawn_member_id = Approval::where('approvable_type', $request->approvable_type)
-                                                        ->where('user_id', $chair_member_id)
-                                                        ->get()->approvable_id;
+                    if ($final_results[0]['count'] == $final_results[1]['count']) {
+                        //this is a draw and is decided by the chair's vote
+                        $chair_member_id = Role::where('name', 'chair')->get()->user_id;
+                        $drawn_member_id = Approval::where('approvable_type', $request->approvable_type)
+                            ->where('user_id', $chair_member_id)
+                            ->get()->approvable_id;
 
-                            return $this->approvalFollowUp($request->approvable_type, $drawn_member_id);
-                        } else {
-                            return $this->approvalFollowUp($request->approvable_type, $final_results[0]['approvable_id']);
-                        }
+                        return $this->approvalFollowUp($request->approvable_type, $drawn_member_id);
+                    } else {
+                        return $this->approvalFollowUp($request->approvable_type, $final_results[0]['approvable_id']);
+                    }
                 }
 
-            } elseif($request->approval == 'delete') {
+            } elseif ($request->approval == 'delete') {
                 $voted_for_user_delete_vote_count = Approval::where('approvable_type', $request->approvable_type)
-                                                            ->where('approvable_id', $request->approvable_id)
-                                                            ->where('created_at', '>', Carbon::now()->subDays(2))
-                                                            ->where('approval', 'delete')
-                                                            ->count();
+                    ->where('approvable_id', $request->approvable_id)
+                    ->where('created_at', '>', Carbon::now()->subDays(2))
+                    ->where('approval', 'delete')
+                    ->count();
 
-                if($voted_for_user_delete_vote_count > ($current_member_total / 2)) {
+                if ($voted_for_user_delete_vote_count > ($current_member_total / 2)) {
                     return $this->deleteFollowUp($request->approvable_id);
                 } else {
                     return;
@@ -93,54 +91,57 @@ class ApprovalService {
                 return;
             }
 
-
-        }        
+        }
     }
 
-
-   /**
-    * Approval is given
-    * Follow up action is required on the approved model
-    * i.e. reassign role, create purchase, create maintenance
-    *
-    * @param string $model
-    *
-    * @return null
-    */
-    function approvalFollowUp(string $model, int $id) 
+    /**
+     * Approval is given
+     * Follow up action is required on the approved model
+     * i.e. reassign role, create purchase, create maintenance
+     *
+     *
+     * @return null
+     */
+    public function approvalFollowUp(string $model, int $id)
     {
         switch ($model) {
             case "App\Models\RoleAssignment":
                 return $this->roleAssignment($id);
-                break;        
+                break;
 
             case "App\Models\PurchaseRequest":
-                $purchaseController = new PurchaseController();
+                $purchaseController = new PurchaseController;
+
                 return $purchaseController->store($id);
                 break;
 
             case "App\Models\MaintenanceRequest":
-                $maintenanceController = new MaintenanceController();
+                $maintenanceController = new MaintenanceController;
+
                 return $maintenanceController->store($id);
                 break;
 
             case "App\Models\Membership":
-                $membershipController = new MembershipController();
+                $membershipController = new MembershipController;
+
                 return $membershipController->store($id);
                 break;
 
             case "App\Models\Rule":
-                $ruleController = new RuleController();
+                $ruleController = new RuleController;
+
                 return $ruleController->approved($id);
                 break;
 
             case "App\Models\RuleChange":
-                $ruleChangeController = new RuleChangeController();
+                $ruleChangeController = new RuleChangeController;
+
                 return $ruleChangeController->update($id);
                 break;
 
             case "App\Models\RuleDelete":
-                $ruleChangeController = new RuleDeleteController();
+                $ruleChangeController = new RuleDeleteController;
+
                 return $ruleChangeController->destroy($id);
                 break;
         }
@@ -151,21 +152,19 @@ class ApprovalService {
      * Technically an approval but a separate type of approval
      * this specific case is to remove a user's membership by setting an end date
      *
-     * @param string $model
-     * @param int $id
-     *
+     * @param  string  $model
      * @return null
      */
-    function deleteFollowUp(int $id)
+    public function deleteFollowUp(int $id)
     {
-        $membershipController = new MembershipController();
+        $membershipController = new MembershipController;
+
         return $membershipController->destroy($id);
     }
 
-    function roleAssignment($id)
+    public function roleAssignment($id)
     {
         $roleAssignment = RoleAssignment::find($id)->first();
         Role::where('id', $roleAssignment->role_id)->update(['user_id' => $roleAssignment->user_id]);
     }
-
 }

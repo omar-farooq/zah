@@ -8,12 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class DefaultAccount extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'account_id',
-        'model'
+        'model',
     ];
-
-    /**
-     * 
-     */
 }

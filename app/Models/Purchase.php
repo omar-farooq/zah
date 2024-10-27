@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Purchase extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'purchase_request_id',
         'purchased',
@@ -18,10 +19,11 @@ class Purchase extends Model
         'description',
         'reason',
         'image',
-        'quantity'
+        'quantity',
     ];
 
-    public function purchaseRequest() {
+    public function purchaseRequest()
+    {
         return $this->belongsTo(PurchaseRequest::class);
     }
 

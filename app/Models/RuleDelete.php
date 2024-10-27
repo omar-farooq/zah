@@ -11,7 +11,7 @@ class RuleDelete extends Model
 
     protected $fillable = [
         'rule_id',
-        'approval_status'
+        'approval_status',
     ];
 
     protected $with = ['approvals'];

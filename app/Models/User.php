@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -24,7 +23,7 @@ class User extends Authenticatable
         'password',
         'phone',
         'avatar',
-        'is_tenant'
+        'is_tenant',
     ];
 
     /**
@@ -55,131 +54,144 @@ class User extends Authenticatable
         'membership',
         'role',
         'delegatedRole',
-        'rent'
+        'rent',
     ];
 
-	/**
-	 * Relationship with Schedule Suggestions
-	 *
-	 */
-	public function scheduleSuggestions() {
-	    return $this->hasMany(ScheduleSuggestion::class)->where('suggested_date', '>', Carbon::now('Europe/London'));
-	}
+    /**
+     * Relationship with Schedule Suggestions
+     */
+    public function scheduleSuggestions()
+    {
+        return $this->hasMany(ScheduleSuggestion::class)->where('suggested_date', '>', Carbon::now('Europe/London'));
+    }
 
-	 /**
-	 * Relationship with Membership
-	 */
-    public function membership() {
+    /**
+     * Relationship with Membership
+     */
+    public function membership()
+    {
         return $this->hasOne(Membership::class);
     }
 
-     /**
-      * Relationship with Meeting Agends
-      */
-    public function meetingAgendas() {
+    /**
+     * Relationship with Meeting Agends
+     */
+    public function meetingAgendas()
+    {
         return $this->hasMany(MeetingAgenda::class);
     }
-     
-     /**
-      * Relationship with Purchase Requests
-      */
-     public function purchaseRequests() {
+
+    /**
+     * Relationship with Purchase Requests
+     */
+    public function purchaseRequests()
+    {
         return $this->hasMany(PurchaseRequest::class);
-     }
-     
-     /**
-      * Relationship with Maintenance Requests
-      */
-     public function maintenanceRequests() {
+    }
+
+    /**
+     * Relationship with Maintenance Requests
+     */
+    public function maintenanceRequests()
+    {
         return $this->hasMany(MaintenanceRequest::class);
-     }
-     
-     /**
-      * Relationship with Tasks
-      */
-     public function tasks() {
+    }
+
+    /**
+     * Relationship with Tasks
+     */
+    public function tasks()
+    {
         return $this->hasMany(Task::class);
-     }
+    }
 
-     /**
-      * Relationship with Roles
-      */
-     public function role() {
+    /**
+     * Relationship with Roles
+     */
+    public function role()
+    {
         return $this->hasOne(Role::class);
-     }
+    }
 
-     /**
-      * Relationship with Delegated Roles
-      */
-     public function delegatedRole() {
+    /**
+     * Relationship with Delegated Roles
+     */
+    public function delegatedRole()
+    {
         return $this->hasOne(DelegatedRole::class);
-     }
+    }
 
-     /**
-      * Relationship with Rent Arrears
-      */
-     public function rentArrear() {
+    /**
+     * Relationship with Rent Arrears
+     */
+    public function rentArrear()
+    {
         return $this->hasOne(RentArrear::class);
-     }
+    }
 
     /**
      * Relationship with Approvals
-     *
      */
-     public function approvals() {
+    public function approvals()
+    {
         return $this->hasMany(Approval::class);
-     } 
+    }
 
     /**
      * Relationship with Comments
-     *
      */
-     public function comments() {
+    public function comments()
+    {
         return $this->hasMany(Comment::class);
-     } 
-
+    }
 
     /**
      * Relationship with Meeting Attendances
      */
-     public function attendance() {
+    public function attendance()
+    {
         return $this->belongsToMany(Meeting::class, 'meeting_attendances')->withPivot('late');
-     } 
+    }
 
     /**
      * Relationship with Secretary Reports
      */
-     public function secretaryReports() {
+    public function secretaryReports()
+    {
         return $this->hasMany(SecretaryReport::class);
-     } 
+    }
 
     /**
      * Relationship with Treasury Plans
      */
-     public function treasuryPlans() {
+    public function treasuryPlans()
+    {
         return $this->hasMany(TreasuryPlan::class);
-     } 
+    }
 
-     /**
-      * Relationship with Rent
-      */
-     public function rent() {
+    /**
+     * Relationship with Rent
+     */
+    public function rent()
+    {
         return $this->hasOne(Rent::class);
-     }
+    }
 
-	/**
-	 * Get Members
-	**/
-	public function currentMember() {
-		return $this->with('membership')->whereHas('membership', function($query){
-			$query->whereNull('end_date');
-		});
+    /**
+     * Get Members
+     **/
+    public function currentMember()
+    {
+        return $this->with('membership')->whereHas('membership', function ($query) {
+            $query->whereNull('end_date');
+        });
     }
 
     /**
      * Get Next Of Kin
      */
-     public function nextOfKin() {
+    public function nextOfKin()
+    {
         return $this->hasOne(NextOfKin::class);
-     }
+    }
 }

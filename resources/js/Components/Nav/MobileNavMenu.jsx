@@ -20,6 +20,15 @@ export default function MobileNavMenu({navHook}) {
                 </Accordion.Panel>
             </Accordion.Item>
 
+            <Accordion.Item value="House">
+                <Accordion.Control>House</Accordion.Control>
+                <Accordion.Panel>
+                    <Link endpoint='decisions.index' name='Decisions Made' linkClick={linkClick} />
+                    <Link endpoint='tasks.index' name='Tasks' linkClick={linkClick} />
+                    <Link endpoint='rules.index' name='Rules' linkClick={linkClick} />
+                </Accordion.Panel>
+            </Accordion.Item>
+
             <Accordion.Item value="Treasury">
                 <Accordion.Control>Treasury</Accordion.Control>
                 <Accordion.Panel>
@@ -64,7 +73,6 @@ export default function MobileNavMenu({navHook}) {
                 <Accordion.Panel>
                     <Link endpoint='roles.index' name='Member Roles' linkClick={linkClick} />
                     <Link endpoint='users.index' name='Manage' linkClick={linkClick} />
-                    <Link endpoint='rules.index' name='Rules' linkClick={linkClick} />
                 </Accordion.Panel>
             </Accordion.Item>
 

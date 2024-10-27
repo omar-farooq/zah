@@ -15,26 +15,27 @@ class SecretaryReport extends Model
         'written_report',
         'attachment',
         'user_id',
-        'meeting_id'
+        'meeting_id',
     ];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function meeting() {
+    public function meeting()
+    {
         return $this->belongsTo(Meeting::class);
     }
 
     /**
      * Get the channels that the model events should be broadcast on
      *
-     * @param string $event
+     * @param  string  $event
      * @return \Illuminate\Broadcasting\Channel|array
      */
     public function broadcastOn($event)
     {
-        return [new PrivateChannel ('meeting')];
+        return [new PrivateChannel('meeting')];
     }
-
 }

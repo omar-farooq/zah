@@ -17,10 +17,12 @@
         "league/flysystem-aws-s3-v3": "^3.12",
         "predis/predis": "^2.1",
         "pusher/pusher-php-server": "^7.2",
+        "spatie/laravel-csp": "^2.10",
         "spatie/laravel-google-cloud-storage": "^2.3",
         "tightenco/ziggy": "^1.0"
     },
     "require-dev": {
+        "enlightn/enlightn": "^2.10",
         "fakerphp/faker": "^1.9.1",
         "laravel/breeze": "^2.0",
         "laravel/pint": "^1.0",

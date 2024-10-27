@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -12,7 +11,12 @@ use Illuminate\Queue\SerializesModels;
 class ContactForm extends Mailable
 {
     use Queueable, SerializesModels;
-    protected $name, $email, $comments;
+
+    protected $name;
+
+    protected $email;
+
+    protected $comments;
 
     /**
      * Create a new message instance.
@@ -44,7 +48,7 @@ class ContactForm extends Mailable
             with: [
                 'name' => $this->name,
                 'email' => $this->email,
-                'comments' => $this->comments
+                'comments' => $this->comments,
             ],
         );
     }

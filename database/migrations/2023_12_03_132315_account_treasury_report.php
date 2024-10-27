@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('account_treasury_report', function (Blueprint $table) {
             $table->foreignId('treasury_report_id');
             $table->foreignId('account_id');
-            $table->decimal('account_balance',10,3);
+            $table->decimal('account_balance', 10, 3);
         });
 
     }

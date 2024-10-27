@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Auth;
 use App\Models\User;
-use App\Models\Rent;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -20,7 +19,7 @@ class UserController extends Controller
      */
     public function index(User $user, Request $request)
     {
-        if($request->memberCount == 'true') {
+        if ($request->memberCount == 'true') {
             return response()->json(
                 $user->currentMember()->get()->count()
             );
@@ -38,7 +37,7 @@ class UserController extends Controller
             );
         } else {
             return Inertia::render('Users/Manage', [
-                'title' => 'Manage Users'
+                'title' => 'Manage Users',
             ]);
         }
     }
@@ -56,7 +55,6 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -76,9 +74,9 @@ class UserController extends Controller
      */
     public function show(Request $request, $id)
     {
-        if($request->query('view') && $request->query('view') == 'avatar') {
+        if ($request->query('view') && $request->query('view') == 'avatar') {
             $avatar = User::where('id', $id)->first()->avatar;
-            if(!isset($avatar) || $avatar === NULL || $avatar === "") {
+            if (! isset($avatar) || $avatar === null || $avatar === '') {
                 return Storage::disk('local')->get('/avatars/blankavatar.webp');
             } else {
                 return Storage::get('avatars/'.$avatar);
@@ -86,7 +84,7 @@ class UserController extends Controller
         } else {
             return Inertia::render('Users/Profile', [
                 'title' => 'User Profile',
-                'user' => User::where('id', $id)->with('nextOfKin')->first()
+                'user' => User::where('id', $id)->with('nextOfKin')->first(),
             ]);
         }
     }
@@ -100,20 +98,20 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $current_user_id = Auth::id();
-        if($current_user_id !== $user->id) {
+        if ($current_user_id !== $user->id) {
             abort(403);
         }
         $current_user = User::where('id', $current_user_id)->with('nextOfKin')->first();
+
         return Inertia::render('Users/EditProfile', [
             'title' => 'Edit Profile',
-            'user' => $current_user
+            'user' => $current_user,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -122,18 +120,18 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|email',
-            'phone' => 'nullable|string'
+            'phone' => 'nullable|string',
         ]);
-        if($user->id !== Auth::id()) {
+        if ($user->id !== Auth::id()) {
             abort(403);
-        }        
+        }
         $previous_avatar = $user->avatar;
 
         $user->update($request->except(['avatar']));
 
-        if($request->file('avatar')) {
-            $avatarName = str_replace('@', '_', $user->email) . '_avatar.' . $request->file('avatar')->extension();
-            if($previous_avatar != $avatarName) {
+        if ($request->file('avatar')) {
+            $avatarName = str_replace('@', '_', $user->email).'_avatar.'.$request->file('avatar')->extension();
+            if ($previous_avatar != $avatarName) {
                 Storage::delete('avatars/'.$previous_avatar);
             }
             Storage::putFileAs('avatars', $request->file('avatar'), $avatarName);

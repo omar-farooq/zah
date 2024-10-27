@@ -15,7 +15,7 @@ class TreasuryItem extends Model
         'treasurable_type',
         'treasury_report_id',
         'amount',
-        'is_incoming'
+        'is_incoming',
     ];
 
     /*
@@ -23,15 +23,15 @@ class TreasuryItem extends Model
      */
     public function treasuryReport()
     {
-        return $this->belongsTo(TreasuryReport::Class);
+        return $this->belongsTo(TreasuryReport::class);
     }
 
     /*
      * Account this treasurable belongs to
      */
-    public function account() 
+    public function account()
     {
-        return $this->belongsTo(Account::Class);
+        return $this->belongsTo(Account::class);
     }
 
     /*

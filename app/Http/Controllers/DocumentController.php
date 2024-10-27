@@ -15,14 +15,15 @@ class DocumentController extends Controller
      */
     public function index(Document $document, Request $request)
     {
-        if($request->has('meeting_id')) {
+        if ($request->has('meeting_id')) {
             return response()->json(Document::where('meeting_id', $request->query('meeting_id'))->get());
         } elseif ($request->has('all')) {
-            $searchTerm = $request->query('search');            
+            $searchTerm = $request->query('search');
+
             return response()->json(
                 $document->where('description', 'like', '%'.$searchTerm.'%')
-                ->orderBy('created_at', 'desc')
-                ->paginate(50)
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(50)
             );
         } else {
             return Inertia::render('Documents/Browse', [
@@ -48,22 +49,21 @@ class DocumentController extends Controller
     {
         $request->validate([
             'attachment' => 'file|mimes:pdf,jpg,png,gif',
-            'description' => 'string'
+            'description' => 'string',
         ]);
 
         $original_name = $request->file('attachment')->getClientOriginalName();
         $ext = $request->file('attachment')->extension();
-        $storage_name = 'Zah_Document_' . date('YmdHis') . "." . $ext;
+        $storage_name = 'Zah_Document_'.date('YmdHis').'.'.$ext;
 
         //upload
         try {
             Storage::putFileAs('/documents/general', $request->file('attachment'), $storage_name);
-        } 
-        catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'issue moving to storage'
-            ],400);
+                'message' => 'issue moving to storage',
+            ], 400);
         }
 
         //add to the database
@@ -72,13 +72,13 @@ class DocumentController extends Controller
         $document->original_name = $original_name;
         $document->upload_name = $storage_name;
         $document->user_id = Auth::id();
-        $document->meeting_id = $request->meeting_id ?? NULL;
+        $document->meeting_id = $request->meeting_id ?? null;
         $document->save();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'uploaded'
-        ],200);
+            'message' => 'uploaded',
+        ], 200);
     }
 
     /**
@@ -86,7 +86,7 @@ class DocumentController extends Controller
      */
     public function show(Document $document)
     {
-        return Storage::download('documents/general/' . $document->upload_name);
+        return Storage::download('documents/general/'.$document->upload_name);
     }
 
     /**
@@ -110,7 +110,7 @@ class DocumentController extends Controller
      */
     public function destroy(Document $document)
     {
-        if($document->user_id === Auth::id()) {
+        if ($document->user_id === Auth::id()) {
             Storage::delete('/documents/general/'.$document->upload_name);
             $document->delete();
         }

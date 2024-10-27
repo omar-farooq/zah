@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Carbon\Carbon;
 use App\Models\Approval;
 use App\Models\Membership;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class MembershipController extends Controller
 {
@@ -18,7 +18,7 @@ class MembershipController extends Controller
     public function index(User $user)
     {
         return response()->json([
-            'members' => $user->currentMember()->get()
+            'members' => $user->currentMember()->get(),
         ]);
     }
 
@@ -41,12 +41,12 @@ class MembershipController extends Controller
     public function store($id)
     {
         $membership = new Membership;
-        if($membership->where('user_id', $id)->first()){
+        if ($membership->where('user_id', $id)->first()) {
             $membership->where('user_id', $id)
-                       ->update([
-                           'end_date' => null,
-                           'rejoined' => 1
-                        ]);
+                ->update([
+                    'end_date' => null,
+                    'rejoined' => 1,
+                ]);
         } else {
             $membership->user_id = $id;
             $membership->start_date = Carbon::now();
@@ -81,7 +81,6 @@ class MembershipController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */

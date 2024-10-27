@@ -21,7 +21,7 @@ class MaintenanceRequestController extends Controller
         return Inertia::render('MaintenanceRequests/Browse', [
             'title' => 'Maintenance Requests - Need Approval',
             'maintenanceRequests' => $maintenanceRequest->orderBy('created_at', 'desc')->paginate(10),
-            'unapprovedRequests' => $maintenanceRequest->notYetApproved()
+            'unapprovedRequests' => $maintenanceRequest->notYetApproved(),
         ]);
     }
 
@@ -40,16 +40,15 @@ class MaintenanceRequestController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreMaintenanceRequestRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreMaintenanceRequestRequest $request)
     {
         $new_maintenance_request = Auth::User()->maintenanceRequests()->create($request->all());
 
-        if($request->emergency === true) {
-            $subject = "Emergency Maintenance requested";
-            $messageBody = "<p>" . $request->required_maintenance . " has been requested for the following reason:</p><p>" . $request->reason . "</p><p> please <a href=\"" . env('APP_URL') . "/maintenance-requests/" . $new_maintenance_request->id . "\">click here</a> and review the request as soon as possible.</p>";
+        if ($request->emergency === true) {
+            $subject = 'Emergency Maintenance requested';
+            $messageBody = '<p>'.$request->required_maintenance.' has been requested for the following reason:</p><p>'.$request->reason.'</p><p> please <a href="'.config('app.url').'/maintenance-requests/'.$new_maintenance_request->id.'">click here</a> and review the request as soon as possible.</p>';
 
             app(JobController::class)->notificationEmail($subject, $messageBody);
         }
@@ -60,48 +59,44 @@ class MaintenanceRequestController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\MaintenanceRequest  $maintenanceRequest
      * @return \Illuminate\Http\Response
      */
     public function show(MaintenanceRequest $maintenanceRequest)
     {
         return Inertia::render('Maintenance/ViewMaintenanceRequest', [
             'maintenanceRequest' => $maintenanceRequest,
-            'title' => 'Maintenance Request for ' . $maintenanceRequest->required_maintenance
+            'title' => 'Maintenance Request for '.$maintenanceRequest->required_maintenance,
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\MaintenanceRequest  $maintenanceRequest
      * @return \Illuminate\Http\Response
      */
     public function edit(MaintenanceRequest $maintenanceRequest)
     {
         return Inertia::render('MaintenanceRequests/Edit', [
             'maintenanceRequest' => $maintenanceRequest,
-            'title' => 'Edit Maintenance Request'
+            'title' => 'Edit Maintenance Request',
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateMaintenanceRequestRequest  $request
-     * @param  \App\Models\MaintenanceRequest  $maintenanceRequest
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateMaintenanceRequestRequest $request, MaintenanceRequest $maintenanceRequest)
     {
         $maintenanceRequest->update($request->all());
+
         return to_route('maintenance-requests.index');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\MaintenanceRequest  $maintenanceRequest
      * @return \Illuminate\Http\Response
      */
     public function destroy(MaintenanceRequest $maintenanceRequest)

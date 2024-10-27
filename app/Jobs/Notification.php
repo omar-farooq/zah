@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Mail\NotificationMail;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -15,7 +14,11 @@ class Notification implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $message, $subject, $recipient;
+    protected $message;
+
+    protected $subject;
+
+    protected $recipient;
 
     /**
      * Create a new job instance.
@@ -32,6 +35,6 @@ class Notification implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to($this->recipient['email'])->send(new NotificationMail($this->message,$this->subject,$this->recipient['name']));
+        Mail::to($this->recipient['email'])->send(new NotificationMail($this->message, $this->subject, $this->recipient['name']));
     }
 }

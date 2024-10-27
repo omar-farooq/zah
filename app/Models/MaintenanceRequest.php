@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class MaintenanceRequest extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'start_time',
         'finish_time',
@@ -29,16 +30,16 @@ class MaintenanceRequest extends Model
 
     protected $casts = [
         'start_date' => 'datetime',
-        'end_date' => 'datetime'
+        'end_date' => 'datetime',
     ];
 
     protected $with = ['user', 'approvals'];
 
-
     /*
      * Waiting Approval
      */
-    public function notYetApproved() {
+    public function notYetApproved()
+    {
         return $this->where('approval_status', 'in voting')->get();
     }
 
@@ -47,7 +48,7 @@ class MaintenanceRequest extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::Class);
+        return $this->belongsTo(User::class);
     }
 
     /*
@@ -55,7 +56,7 @@ class MaintenanceRequest extends Model
      */
     public function maintenance()
     {
-        return $this->hasOne(Maintenance::Class);
+        return $this->hasOne(Maintenance::class);
     }
 
     /*

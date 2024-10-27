@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class TenancyController extends Controller
 {
     /**
      * Display a listing of the resource.
-     * @param \App\Models\User $user
      *
      * @return \Illuminate\Http\Response
      */
     public function index(User $user)
     {
         return response()->json([
-            'tenants' => $user->where('is_tenant',1)->get()
+            'tenants' => $user->where('is_tenant', 1)->get(),
         ]);
     }
 
@@ -33,7 +32,6 @@ class TenancyController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -66,7 +64,6 @@ class TenancyController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */

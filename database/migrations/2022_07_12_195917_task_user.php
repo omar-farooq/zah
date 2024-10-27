@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('task_user', function(Blueprint $table) {
-			$table->foreignId('task_id');
-			$table->foreignId('user_id');
-		});
+        Schema::create('task_user', function (Blueprint $table) {
+            $table->foreignId('task_id');
+            $table->foreignId('user_id');
+        });
     }
 
     /**

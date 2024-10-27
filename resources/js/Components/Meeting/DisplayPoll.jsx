@@ -156,7 +156,7 @@ export default function DisplayPoll({auth, poll, allowDelete=false}) {
                                             className="h-6 w-6 text-black cursor-pointer hover:text-green-600 ml-2"
                                             onClick={() => vote(option.id)}
                                         />
-                                        {auth.user.role.name === 'Chair' &&
+                                        {auth.user.role?.name === 'Chair' &&
                                         <PlusCircleIcon
                                             className="h-6 w-6 text-black cursor-pointer hover:text-green-600 ml-2"
                                             onClick={() => {behalfOfHandlers.open(); setBehalfOfPollOption({poll: poll.id, option: option.id})}}

@@ -4,14 +4,16 @@ import ComponentTitle from './ComponentTitle'
 import ComponentWrapper from './ComponentWrapper'
 import ComponentWrapperWhite from './ComponentWrapperWhite'
 import CreatePoll from './CreatePoll'
+import Decisions from './Decisions'
 import Documents from './Documents'
 import DisplayPoll from './DisplayPoll'
 import Form from './Form'
 import Minutes from './Minutes'
+import MinutesReadAndAgreed from './MinutesReadAndAgreed'
 import Polls from './Polls'
 import PreviousMinutes from './PreviousMinutes'
 import SecretaryReport from './SecretaryReport'
 import Register from './Register'
 import Tasks from './Tasks'
 
-export { Agenda, Button, ComponentTitle, ComponentWrapper, ComponentWrapperWhite, CreatePoll, DisplayPoll, Documents, Form, Minutes, Polls, PreviousMinutes, SecretaryReport, Register, Tasks }
+export { Agenda, Button, ComponentTitle, ComponentWrapper, ComponentWrapperWhite, CreatePoll, Decisions, DisplayPoll, Documents, Form, Minutes, MinutesReadAndAgreed, Polls, PreviousMinutes, SecretaryReport, Register, Tasks }

@@ -2,10 +2,6 @@
 
 namespace App\Providers;
 
-use App\Providers\UserMeetingAttendanceDeleted;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
-
 class SendDeletedUserAttendance
 {
     /**

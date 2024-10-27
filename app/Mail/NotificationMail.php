@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -12,12 +11,17 @@ use Illuminate\Queue\SerializesModels;
 class NotificationMail extends Mailable
 {
     use Queueable, SerializesModels;
-    public $message, $subject, $name;
+
+    public $message;
+
+    public $subject;
+
+    public $name;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($message,$subject,$name)
+    public function __construct($message, $subject, $name)
     {
         $this->message = $message;
         $this->subject = $subject;

@@ -15,11 +15,11 @@ class ReceiptController extends Controller
      */
     public function index(Request $request)
     {
-        if(isset($request->model) && isset($request->id)) {
+        if (isset($request->model) && isset($request->id)) {
             return response()->json(
                 Receipt::where('payable_type', $request->model)
-                        ->where('payable_id', $request->id)
-                        ->get()
+                    ->where('payable_id', $request->id)
+                    ->get()
             );
         }
     }
@@ -37,13 +37,12 @@ class ReceiptController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $receipt = new Receipt;
-        $receiptName = date('Ymdhis') . $request->receiptFile->getClientOriginalName();
+        $receiptName = date('Ymdhis').$request->receiptFile->getClientOriginalName();
 
         //Upload to storage
         try {
@@ -51,8 +50,8 @@ class ReceiptController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => 'false',
-                'message' => 'could not upload'
-            ],500);
+                'message' => 'could not upload',
+            ], 500);
         }
 
         //Add to the database
@@ -61,18 +60,17 @@ class ReceiptController extends Controller
         $receipt['payable_id'] = $request->payable_id;
         $receipt->save();
 
-        if(isset($receipt->id)) {
+        if (isset($receipt->id)) {
             return response()->json([
                 'success' => 'true',
-                'message' => 'receipt successfully uploaded'
-            ],200);
+                'message' => 'receipt successfully uploaded',
+            ], 200);
         }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Receipt  $receipt
      * @return \Illuminate\Http\Response
      */
     public function show(Receipt $receipt)
@@ -84,7 +82,6 @@ class ReceiptController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Receipt  $receipt
      * @return \Illuminate\Http\Response
      */
     public function edit(Receipt $receipt)
@@ -95,8 +92,6 @@ class ReceiptController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Receipt  $receipt
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Receipt $receipt)
@@ -107,7 +102,6 @@ class ReceiptController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Receipt  $receipt
      * @return \Illuminate\Http\Response
      */
     public function destroy(Receipt $receipt)

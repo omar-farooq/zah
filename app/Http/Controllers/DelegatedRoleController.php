@@ -30,7 +30,6 @@ class DelegatedRoleController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -41,7 +40,6 @@ class DelegatedRoleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\DelegatedRole  $delegatedRole
      * @return \Illuminate\Http\Response
      */
     public function show(DelegatedRole $delegatedRole)
@@ -52,7 +50,6 @@ class DelegatedRoleController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\DelegatedRole  $delegatedRole
      * @return \Illuminate\Http\Response
      */
     public function edit(DelegatedRole $delegatedRole)
@@ -63,8 +60,6 @@ class DelegatedRoleController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\DelegatedRole  $delegatedRole
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, DelegatedRole $delegatedRole)
@@ -75,7 +70,6 @@ class DelegatedRoleController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\DelegatedRole  $delegatedRole
      * @return \Illuminate\Http\Response
      */
     public function destroy(DelegatedRole $delegatedRole)

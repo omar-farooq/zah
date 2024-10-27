@@ -23,20 +23,20 @@ class Task extends Model
 
     /**
      * Relationship with Users
-     *
      */
-    public function users() {
+    public function users()
+    {
         return $this->belongsToMany(User::class);
     }
 
     /**
      * Get the channels that the model events should be broadcast on
      *
-     * @param string $event
+     * @param  string  $event
      * @return \Illuminate\Broadcasting\Channel|array
      */
     public function broadcastOn($event)
     {
-        return [new PrivateChannel ('meeting')];
+        return [new PrivateChannel('meeting')];
     }
 }

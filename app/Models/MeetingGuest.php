@@ -11,11 +11,11 @@ class MeetingGuest extends Model
 
     protected $fillable = [
         'name',
-        'meeting_id'
+        'meeting_id',
     ];
 
     public function meeting()
     {
-        return $this->belongsTo(Meeting::Class);
+        return $this->belongsTo(Meeting::class);
     }
 }
