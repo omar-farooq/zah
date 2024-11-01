@@ -131,7 +131,7 @@ export default function Manage({auth}) {
                                 Change vote
                             </Button>
                         </>
-                    : users.length > 0 && !membershipApproval.add.length > 0 ?
+                    : users.length > 0 && !membershipApproval.add?.length > 0 ?
                         <>
                             <span>Add Member</span>
                             <Select 
