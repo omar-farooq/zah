@@ -21,8 +21,13 @@ class AddContentSecurityPolicyHeaders
             return $next($request);
         }
 
-        return $next($request)->withHeaders([
-            'Content-Security-Policy' => "script-src 'nonce-".Vite::cspNonce()."'",
-        ]);
+        $response = $next($request);
+
+        $response->headers->set(
+            'Content-Security-Policy',
+            "script-src 'nonce-".Vite::cspNonce()."' 'wasm-unsafe-eval'"
+        );
+
+        return $response;
     }
 }

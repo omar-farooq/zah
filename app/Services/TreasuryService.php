@@ -194,7 +194,7 @@ class TreasuryService
                 return response()->json($recipient);
                 break;
             case 'App\Models\PaidRent':
-                return response()->json('test');
+                return response()->json($model->where('id', $request->id)->first()->user->name);
             case 'App\Models\Payment':
                 return response()->json($model->where('id', $request->id)->first()->name);
             case 'App\Models\Purchase':

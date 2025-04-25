@@ -7,6 +7,7 @@ import { Button, Group, HoverCard, Loader, Modal, Text, FileInput } from '@manti
 import { useDisclosure } from '@mantine/hooks'
 import Select from 'react-select'
 import Table, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
+import { PDFExportButton } from './ExportToPDF'
 
 //Upload any missing receipts via this component in a modal
 export function ReceiptModal({modalDisclosure, model}) {
@@ -199,10 +200,20 @@ export default function ViewTreasuryReport({reports, rents, treasuryItems, previ
             <Loader color="cyan" size="xl" className="mt-40" />
             :
         <>
-            <div className="flex flex-row mt-4">
-                <div className="bg-white text-sm md:text-xl mr-4">Report Start: {DateTimeToUKDate(start)}</div>
-                <ArrowLongRightIcon className="h-6 w-6" />
-                <div className="bg-white text-sm md:text-xl ml-4">Report End: {DateTimeToUKDate(end)}</div>
+            <div className="flex flex-row mt-4 justify-between">
+                <div className="flex flex-row mt-4">
+                    <div className="bg-white text-sm md:text-xl mr-4">Report Start: {DateTimeToUKDate(start)}</div>
+                    <ArrowLongRightIcon className="h-6 w-6" />
+                    <div className="bg-white text-sm md:text-xl ml-4">Report End: {DateTimeToUKDate(end)}</div>
+                </div>
+                <PDFExportButton
+                    treasuryItems={treasuryItems}
+                    start={start}
+                    end={end}
+                    previousBudget={previousBudget}
+                    remainingBudget={remainingBudget}
+                    mappedTreasuryItems={mappedTreasuryItems}
+                />
             </div>
             <div>Starting Balance: £{previousBudget}</div>
             <div className="w-full flex flex-col items-center">
@@ -258,8 +269,7 @@ export default function ViewTreasuryReport({reports, rents, treasuryItems, previ
                             <TD>{item.is_incoming ? 'incoming' : 'outgoing'}</TD>
                             <TD>
                                 {
-                                    item.treasurable_type === 'App\\Models\\PaidRent' ? rents.find(rent => rent.id === item.treasurable_id).user.name
-                                    : mappedTreasuryItems.map(x => x.id == item.id ? x.sourceOrRecipient : '')
+                                    mappedTreasuryItems.map(x => x.id == item.id ? x.sourceOrRecipient : '')
                                 }
                             </TD>
                             <TD>{ReceiptDownloadLink(item.treasurable_id, item.treasurable_type)}</TD>
