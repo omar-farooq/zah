@@ -23,6 +23,7 @@ FROM zah_base as webserver
 COPY --from=nginxinc/nginx-unprivileged:alpine-slim / /
 COPY ./webserver/default.conf /etc/nginx/conf.d/default.conf
 RUN sed -i '/http {/a \ \ \ client_max_body_size 50M;' /etc/nginx/nginx.conf
+RUN sed -i 's|pid .*|pid /tmp/nginx.pid;|' /etc/nginx/nginx.conf
 RUN adduser --disabled-password -G www-data www-data
 
 # Compile assets for production use
