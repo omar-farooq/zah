@@ -3,10 +3,12 @@ import { usePage } from '@inertiajs/react';
 import { router } from '@inertiajs/react';
 
 export default function TreasuryItemsTable() {
-  const { treasuryItems } = usePage().props;
+  const { treasuryItems, rents } = usePage().props;
   const [editingRow, setEditingRow] = useState(null);
   const [editData, setEditData] = useState({});
   
+    console.log(rents)
+    console.log(treasuryItems)
   // Payment Type Options
   const paymentTypeOptions = [
     "General",
@@ -36,7 +38,7 @@ export default function TreasuryItemsTable() {
     setEditData({
       id: item.id,
       payment_type: item.payment_type,
-      payment_date: item.payment_date
+      date_paid: item.date_paid
     });
   };
 
@@ -74,6 +76,7 @@ export default function TreasuryItemsTable() {
         <thead>
           <tr>
             <th className="px-4 py-2">Amount</th>
+            <th className="px-4 py-2">Paid from/to</th>
             <th className="px-4 py-2">Payment Type</th>
             <th className="px-4 py-2">Payment Date</th>
             <th className="px-4 py-2">Report Period</th>
@@ -84,6 +87,7 @@ export default function TreasuryItemsTable() {
           {treasuryItems.map((item, index) => (
             <tr key={index}>
               <td className="border px-4 py-2">{formatAmount(item.amount)}</td>
+              <td className="border px-4 py-2">{item.treasurable_type == 'App\\Models\\PaidRent' ? rents.find(x => x.id == item.treasurable_id)?.user?.name : ''}</td>
               
               <td className="border px-4 py-2">
                 {editingRow === index && item.treasurable_type == 'App\\Models\\Payment' ? (
@@ -108,13 +112,13 @@ export default function TreasuryItemsTable() {
                 {editingRow === index ? (
                   <input
                     type="date"
-                    name="payment_date"
-                    value={editData.payment_date?.split('T')[0]}
+                    name="date_paid"
+                    value={editData.date_paid?.split('T')[0]}
                     onChange={handleChange}
                     className="w-full p-1 border rounded"
                   />
                 ) : (
-                  formatDate(item.payment_date)
+                  formatDate(item.date_paid)
                 )}
               </td>
               
