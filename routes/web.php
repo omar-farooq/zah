@@ -95,8 +95,9 @@ Route::middleware(['member', 'auth'])->group(function () {
     Route::patch('/update-approval-status', [ApprovalController::class, 'updateModelApproval']);
 
     // Update payment date and type for reports
-    Route::get('/treasury-reports/updatepaymentdateandtype', [TreasuryReportController::class, 'editItems']);
-    Route::put('/treasury-items/{treasuryItem}', [TreasuryReportController::class, 'updateItem'])->name('treasury-items.update');
+    // Was used to add data to new columns
+    //Route::get('/treasury-reports/updatepaymentdateandtype', [TreasuryReportController::class, 'editItems']);
+    //Route::put('/treasury-items/{treasuryItem}', [TreasuryReportController::class, 'updateItem'])->name('treasury-items.update');
 
     Route::resource('accounts', AccountController::class);
     Route::resource('approval', ApprovalController::class);

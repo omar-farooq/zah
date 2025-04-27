@@ -99,170 +99,180 @@ const TreasuryReportPDF = ({ treasuryItems, start, end, previousBudget, remainin
   const incomingItems = treasuryItems.filter(item => item.is_incoming);
   const outgoingItems = treasuryItems.filter(item => !item.is_incoming);
   
-  // Calculate totals
-  const incomingTotal = incomingItems.reduce((sum, item) => sum + parseFloat(item.amount), 0).toFixed(2);
-  const outgoingTotal = outgoingItems.reduce((sum, item) => sum + parseFloat(item.amount), 0).toFixed(2);
+  // Sort the items by date (newest to oldest)
+  const sortByDate = (items) => {
+    return [...items].sort((a, b) => {
+      const mappedItemA = mappedTreasuryItems.find(x => x.id === a.id);
+      const mappedItemB = mappedTreasuryItems.find(x => x.id === b.id);
+      
+      const dateA = mappedItemA?.date_paid ? new Date(mappedItemA.date_paid) : new Date(0);
+      const dateB = mappedItemB?.date_paid ? new Date(mappedItemB.date_paid) : new Date(0);
+      
+      return dateA - dateB; // For descending order (newest first)
+      // Use dateA - dateB for ascending order (oldest first)
+    });
+  };
   
-  return (
-    <Document>
-      {/* First Page */}
-      <Page size="A4" style={styles.page}>
-        <Text style={styles.title}>Zah Treasury Report</Text>
-        
+  const sortedIncomingItems = sortByDate(incomingItems);
+  const sortedOutgoingItems = sortByDate(outgoingItems);
+  
+  // Calculate totals
+  const incomingTotal = sortedIncomingItems.reduce((sum, item) => sum + parseFloat(item.amount), 0).toFixed(2);
+  const outgoingTotal = sortedOutgoingItems.reduce((sum, item) => sum + parseFloat(item.amount), 0).toFixed(2);
+  
+  // Split items into chunks of 25 for pagination
+  const chunkArray = (array, size) => {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += size) {
+      chunks.push(array.slice(i, i + size));
+    }
+    return chunks;
+  };
+  
+  const incomingChunks = chunkArray(sortedIncomingItems, 25);
+  const outgoingChunks = chunkArray(sortedOutgoingItems, 25);
+  
+  // Render table rows for a chunk of items
+  const renderTableRows = (items) => {
+    return items.map(item => {
+      const mappedItem = mappedTreasuryItems.find(x => x.id === item.id);
+      return (
+        <View style={styles.tableRow} key={item.id}>
+          <View style={styles.tableCol}>
+            <Text>£{item.amount}</Text>
+          </View>
+          <View style={styles.tableCol}>
+            <Text>{item.payment_type || ''}</Text>
+          </View>
+          <View style={styles.tableCol}>
+            <Text>{mappedItem?.sourceOrRecipient || ''}</Text>
+          </View>
+          <View style={styles.tableCol}>
+            <Text>{mappedItem?.description || ''}</Text>
+          </View>
+          <View style={styles.tableCol}>
+            <Text>{mappedItem?.date_paid || ''}</Text>
+          </View>
+        </View>
+      );
+    });
+  };
+  
+  // Create incoming transaction pages
+  const incomingPages = incomingChunks.map((chunk, index) => (
+    <Page size="A4" style={styles.page} key={`incoming-${index}`}>
+      <Text style={styles.title}>Zah Treasury Report</Text>
+      
+      {index === 0 && (
         <View style={styles.header}>
           <Text>Report Start: {DateTimeToUKDate(start)}</Text>
           <Text>Report End: {DateTimeToUKDate(end)}</Text>
+          <Text>Starting Balance: £{previousBudget == 0 ? Number(remainingBudget) - Number(incomingTotal) + Number(outgoingTotal) : previousBudget}</Text>
+        </View>
+      )}
+      
+      <Text style={styles.sectionTitle}>
+        Incoming Transactions {incomingChunks.length > 1 ? `(Page ${index + 1} of ${incomingChunks.length})` : ''}
+      </Text>
+      
+      <View style={styles.table}>
+        <View style={styles.tableRow}>
+          <View style={styles.tableColHeader}>
+            <Text>Amount</Text>
+          </View>
+          <View style={styles.tableColHeader}>
+            <Text>Type</Text>
+          </View>
+          <View style={styles.tableColHeader}>
+            <Text>Payer</Text>
+          </View>
+          <View style={styles.tableColHeader}>
+            <Text>Description</Text>
+          </View>
+          <View style={styles.tableColHeader}>
+            <Text>Date</Text>
+          </View>
         </View>
         
-        <Text>Starting Balance: £{previousBudget}</Text>
+        {renderTableRows(chunk)}
         
-        {/* Incoming Items Table */}
-        <Text style={styles.sectionTitle}>Incoming Transactions</Text>
-        <View style={styles.table}>
-          <View style={styles.tableRow}>
-            <View style={styles.tableColHeader}>
-              <Text>Amount</Text>
-            </View>
-            <View style={styles.tableColHeader}>
-              <Text>Type</Text>
-            </View>
-            <View style={styles.tableColHeader}>
-              <Text>Payer</Text>
-            </View>
-            <View style={styles.tableColHeader}>
-              <Text>Description</Text>
-            </View>
-            <View style={styles.tableColHeader}>
-              <Text>Date</Text>
-            </View>
-          </View>
-          
-          {incomingItems.map(item => {
-            const mappedItem = mappedTreasuryItems.find(x => x.id === item.id);
-            return (
-              <View style={styles.tableRow} key={item.id}>
-                <View style={styles.tableCol}>
-                  <Text>£{item.amount}</Text>
-                </View>
-                <View style={styles.tableCol}>
-                  <Text>{mappedItem?.friendly_type || ''}</Text>
-                </View>
-                <View style={styles.tableCol}>
-                  <Text>{mappedItem?.sourceOrRecipient || ''}</Text>
-                </View>
-                <View style={styles.tableCol}>
-                  <Text>{mappedItem?.description || ''}</Text>
-                </View>
-                <View style={styles.tableCol}>
-                  <Text>{mappedItem?.date_paid || ''}</Text>
-                </View>
-              </View>
-            );
-          })}
-          
-          {/* Total row for incoming */}
+        {index === incomingChunks.length - 1 && (
           <View style={styles.totalRow}>
             <View style={styles.totalCol}>
               <Text>Total: £{incomingTotal}</Text>
             </View>
-            <View style={styles.totalCol}>
-              <Text></Text>
-            </View>
-            <View style={styles.totalCol}>
-              <Text></Text>
-            </View>
-            <View style={styles.totalCol}>
-              <Text></Text>
-            </View>
-            <View style={styles.totalCol}>
-              <Text></Text>
-            </View>
+            <View style={styles.totalCol}><Text></Text></View>
+            <View style={styles.totalCol}><Text></Text></View>
+            <View style={styles.totalCol}><Text></Text></View>
+            <View style={styles.totalCol}><Text></Text></View>
+          </View>
+        )}
+      </View>
+      
+      <PageFooter />
+    </Page>
+  ));
+  
+  // Create outgoing transaction pages
+  const outgoingPages = outgoingChunks.map((chunk, index) => (
+    <Page size="A4" style={styles.page} key={`outgoing-${index}`}>
+      <Text style={styles.title}>Zah Treasury Report</Text>
+      
+      <Text style={styles.sectionTitle}>
+        Outgoing Transactions {outgoingChunks.length > 1 ? `(Page ${index + 1} of ${outgoingChunks.length})` : ''}
+      </Text>
+      
+      <View style={styles.table}>
+        <View style={styles.tableRow}>
+          <View style={styles.tableColHeader}>
+            <Text>Amount</Text>
+          </View>
+          <View style={styles.tableColHeader}>
+            <Text>Type</Text>
+          </View>
+          <View style={styles.tableColHeader}>
+            <Text>Payee</Text>
+          </View>
+          <View style={styles.tableColHeader}>
+            <Text>Description</Text>
+          </View>
+          <View style={styles.tableColHeader}>
+            <Text>Date</Text>
           </View>
         </View>
         
-        {/* Footer with page numbers */}
-        <PageFooter />
-      </Page>
-
-      {/* Second Page */}
-      <Page size="A4" style={styles.page}>
-        <Text style={styles.title}>Zah Treasury Report</Text>
+        {renderTableRows(chunk)}
         
-        {/* Outgoing Items Table */}
-        <Text style={styles.sectionTitle}>Outgoing Transactions</Text>
-        <View style={styles.table}>
-          <View style={styles.tableRow}>
-            <View style={styles.tableColHeader}>
-              <Text>Amount</Text>
-            </View>
-            <View style={styles.tableColHeader}>
-              <Text>Type</Text>
-            </View>
-            <View style={styles.tableColHeader}>
-              <Text>Payee</Text>
-            </View>
-            <View style={styles.tableColHeader}>
-              <Text>Description</Text>
-            </View>
-            <View style={styles.tableColHeader}>
-              <Text>Date</Text>
-            </View>
-          </View>
-          
-          {outgoingItems.map(item => {
-            const mappedItem = mappedTreasuryItems.find(x => x.id === item.id);
-            return (
-              <View style={styles.tableRow} key={item.id}>
-                <View style={styles.tableCol}>
-                  <Text>£{item.amount}</Text>
-                </View>
-                <View style={styles.tableCol}>
-                  <Text>{mappedItem?.friendly_type || ''}</Text>
-                </View>
-                <View style={styles.tableCol}>
-                  <Text>{mappedItem?.sourceOrRecipient || ''}</Text>
-                </View>
-                <View style={styles.tableCol}>
-                  <Text>{mappedItem?.description || ''}</Text>
-                </View>
-                <View style={styles.tableCol}>
-                  <Text>{mappedItem?.date_paid || ''}</Text>
-                </View>
+        {index === outgoingChunks.length - 1 && (
+          <>
+            <View style={styles.totalRow}>
+              <View style={styles.totalCol}>
+                <Text>Total: £{outgoingTotal}</Text>
               </View>
-            );
-          })}
-          
-          {/* Total row for outgoing */}
-          <View style={styles.totalRow}>
-            <View style={styles.totalCol}>
-              <Text>Total: £{outgoingTotal}</Text>
+              <View style={styles.totalCol}><Text></Text></View>
+              <View style={styles.totalCol}><Text></Text></View>
+              <View style={styles.totalCol}><Text></Text></View>
+              <View style={styles.totalCol}><Text></Text></View>
             </View>
-            <View style={styles.totalCol}>
-              <Text></Text>
+            
+            <View style={styles.summary}>
+              <Text>Ending Balance: £{remainingBudget}</Text>
             </View>
-            <View style={styles.totalCol}>
-              <Text></Text>
-            </View>
-            <View style={styles.totalCol}>
-              <Text></Text>
-            </View>
-            <View style={styles.totalCol}>
-              <Text></Text>
-            </View>
-          </View>
-        </View>
-        
-        <View style={styles.summary}>
-          <Text>Ending Balance: £{remainingBudget}</Text>
-        </View>
-        
-        {/* Footer with page numbers */}
-        <PageFooter />
-      </Page>
+          </>
+        )}
+      </View>
+      
+      <PageFooter />
+    </Page>
+  ));
+  
+  return (
+    <Document>
+      {incomingPages}
+      {outgoingPages}
     </Document>
   );
 };
-
 // Add this to your ViewTreasuryReport component's return statement
 export const PDFExportButton = ({ treasuryItems, start, end, previousBudget, remainingBudget, mappedTreasuryItems }) => (
   <PDFDownloadLink 
