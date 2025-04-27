@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.3](https://github.com/omar-farooq/zah/compare/v1.1.2...v1.1.3) (2025-04-27)
+
+
+### Bug Fixes
+
+* pdf starting balance and date orders ([ad1373b](https://github.com/omar-farooq/zah/commit/ad1373b863f80b70a5c505d0ed678c881145a2d3))
+* pdf starting balance and date orders ([2933cd8](https://github.com/omar-farooq/zah/commit/2933cd8de41bda2f22ae3b36b9fcfe85dd9ef787))
+
 ## [1.1.2](https://github.com/omar-farooq/zah/compare/v1.1.1...v1.1.2) (2025-04-27)
 
 
