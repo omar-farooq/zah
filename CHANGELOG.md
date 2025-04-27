@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.2](https://github.com/omar-farooq/zah/compare/v1.1.1...v1.1.2) (2025-04-27)
+
+
+### Bug Fixes
+
+* csp and update payment page ([4dc87c5](https://github.com/omar-farooq/zah/commit/4dc87c52e38025343d971b8c1389d9a6370682f8))
+* csp and update payment page ([3c61b8f](https://github.com/omar-farooq/zah/commit/3c61b8fb719fbc5d73abddf27205e2a2a38939af))
+
 ## [1.1.1](https://github.com/omar-farooq/zah/compare/v1.1.0...v1.1.1) (2025-04-27)
 
 
