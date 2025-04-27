@@ -15,6 +15,7 @@ use App\Services\TreasuryReportService;
 use App\Services\TreasuryService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class TreasuryReportController extends Controller
@@ -106,17 +107,44 @@ class TreasuryReportController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'start_date' => 'date',
             'end_date' => 'date|after_or_equal:start_date|before_or_equal:now',
             'calculated_remaining_budget' => 'decimal:2',
             'remaining_budget' => 'decimal:2',
             'paid_rents.*.amount_paid' => 'decimal:2',
+            'paid_rents.*.date_paid' => [
+                function($attribute, $value, $fail) use ($request) {
+                    $index = explode('.', $attribute)[1];
+                    $amountPaid = $request->input("paid_rents.$index.amount_paid");
+
+                    if ($amountPaid > 0 && empty($value)) {
+                        $fail('The date paid is required when amount is greater than 0.');
+                    }
+                },
+                'nullable',
+                'date',
+                'after_or_equal:start_date',
+                'before_or_equal:end_date',
+            ],
             'accounts_balances.*.calculated' => 'decimal:2',
             'accounts_balances.*.final' => 'nullable|decimal:2',
             'recurring.*.amount' => 'nullable|decimal:2',
             'recurring.*.uniqueAmount' => 'required_without:recurring.*.amount|decimal:2',
+            'recurring.*.date_paid' => 'date|after_or_equal:start_date|before_or_equal:end_date',
+        ],[
+            'paid_rents.*.amount_paid' => 'Please check that paid rent is to 2 decimal places',
+            'paid_rents.*.date_paid' => 'Please make sure rents have the correct date',
+            'recurring.*.date_paid' => 'Please check the dates for recurring payments',
+            'recurring.*.uniqueAmount.required_without' => 'Please provide an amount for recurring payment #:index with a customizable amount'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
         if (isset($request->treasurable) && $request->treasurable == 'recurring') {
             $this->treasuryService->payRecurring($request);
@@ -161,6 +189,31 @@ class TreasuryReportController extends Controller
     public function edit(TreasuryReport $treasuryReport)
     {
         //
+    }
+
+    /**
+     * Function to handle the addition of payment date and type columns
+     * Displays a table where you can edit these fields on past items
+     *
+     */
+    public function editItems(TreasuryReport $treasuryReport)
+    {
+        $treasuryItems = TreasuryItem::with('treasuryReport')->get();
+        return Inertia::render('Treasury/Reports/AddNewColumns', [
+            'title' => 'Edit Treasury Reports',
+            'treasuryItems' => $treasuryItems,
+        ]);
+    }
+
+    /**
+     * Function to update the treasury items
+     *
+     */
+    public function updateItem(Request $request, TreasuryItem $treasuryItem)
+    {
+        $treasuryItem->payment_type = $request->payment_type;
+        $treasuryItem->payment_date = $request->payment_date;
+        $treasuryItem->save();
     }
 
     /**

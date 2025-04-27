@@ -67,10 +67,13 @@ class TreasuryService
     protected function payRent($report_id, $rents)
     {
         foreach ($rents as $rent) {
+            if($rent["amount_paid"] == "0.00") {
+                continue;
+            }
             $rent['treasury_report_id'] = $report_id;
             $paid_rent = PaidRent::create($rent);
 
-            $this->createTreasurable($report_id, 'App\\Models\\PaidRent', $paid_rent->id, true, $paid_rent->amount_paid);
+            $this->createTreasurable($report_id, 'App\\Models\\PaidRent', $paid_rent->id, true, $paid_rent->amount_paid, $paid_rent->date_paid);
         }
     }
 
@@ -96,6 +99,7 @@ class TreasuryService
         $paid_recurring->treasury_report_id = $recurring->treasuryReportID;
         $paid_recurring->recurring_payment_id = $recurring->id;
         $paid_recurring->amount_paid = $recurring->amount ?? $recurring->uniqueAmount;
+        $paid_recurring->date_paid = $recurring->date_paid;
         $paid_recurring->save();
 
         //Upload receipt
@@ -104,7 +108,7 @@ class TreasuryService
         }
 
         //Create treasurable
-        $this->createTreasurable($recurring->treasuryReportID, 'App\\Models\\PaidRecurringPayment', $paid_recurring->id, false, $recurring->amount ?? $recurring->uniqueAmount);
+        $this->createTreasurable($recurring->treasuryReportID, 'App\\Models\\PaidRecurringPayment', $paid_recurring->id, false, $recurring->amount ?? $recurring->uniqueAmount, $recurring->date_paid);
     }
 
     /**
@@ -136,7 +140,7 @@ class TreasuryService
      * @param  bool  $is_incoming
      * @param  float  $amount
      */
-    public function createTreasurable($treasury_report_id, $treasurable_type, $treasurable_id, $is_incoming, $amount)
+    public function createTreasurable($treasury_report_id, $treasurable_type, $treasurable_id, $is_incoming, $amount, $date_paid)
     {
         $treasurable = new TreasuryItem;
         $treasurable->treasury_report_id = $treasury_report_id;
@@ -144,6 +148,7 @@ class TreasuryService
         $treasurable->treasurable_type = $treasurable_type;
         $treasurable->treasurable_id = $treasurable_id;
         $treasurable->amount = $amount;
+        $treasurable->date_paid = $date_paid;
         $treasurable->save();
     }
 
@@ -168,7 +173,7 @@ class TreasuryService
         $payments = Payment::where('treasury_report_id', null)->get();
 
         foreach ($payments as $payment) {
-            $this->createTreasurable($treasury_report_id, 'App\\Models\\Payment', $payment->id, $payment->incoming, $payment->amount);
+            $this->createTreasurable($treasury_report_id, 'App\\Models\\Payment', $payment->id, $payment->incoming, $payment->amount, $payment->payment_date);
         }
 
         Payment::where('treasury_report_id', null)
@@ -194,7 +199,7 @@ class TreasuryService
                 return response()->json($recipient);
                 break;
             case 'App\Models\PaidRent':
-                return response()->json('test');
+                return response()->json($model->where('id', $request->id)->first()->user->name);
             case 'App\Models\Payment':
                 return response()->json($model->where('id', $request->id)->first()->name);
             case 'App\Models\Purchase':

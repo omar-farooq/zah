@@ -13,6 +13,7 @@ class PaidRent extends Model
         'user_id',
         'treasury_report_id',
         'amount_paid',
+        'date_paid',
     ];
 
     public function user()

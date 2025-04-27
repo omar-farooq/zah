@@ -16,6 +16,8 @@ class TreasuryItem extends Model
         'treasury_report_id',
         'amount',
         'is_incoming',
+        'payment_type',
+        'date_paid',
     ];
 
     /*
