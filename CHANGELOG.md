@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.4](https://github.com/omar-farooq/zah/compare/v1.1.3...v1.1.4) (2025-04-27)
+
+
+### Bug Fixes
+
+* 2 decimal points for starting balance ([9bb0b8a](https://github.com/omar-farooq/zah/commit/9bb0b8a41951789c27d6ce4c00420b838ce3a8bc))
+* 2 decimal points for starting balance ([618ce88](https://github.com/omar-farooq/zah/commit/618ce88dbdad4438ccefb2443fe3f4d53b4ddf50))
+
 ## [1.1.3](https://github.com/omar-farooq/zah/compare/v1.1.2...v1.1.3) (2025-04-27)
 
 
