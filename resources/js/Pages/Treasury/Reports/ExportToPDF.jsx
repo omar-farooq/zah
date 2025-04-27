@@ -130,7 +130,7 @@ const TreasuryReportPDF = ({ treasuryItems, start, end, previousBudget, remainin
   };
   
   const incomingChunks = chunkArray(sortedIncomingItems, 25);
-  const outgoingChunks = chunkArray(sortedOutgoingItems, 25);
+  const outgoingChunks = chunkArray(sortedOutgoingItems, 20);
   
   // Render table rows for a chunk of items
   const renderTableRows = (items) => {
@@ -167,7 +167,7 @@ const TreasuryReportPDF = ({ treasuryItems, start, end, previousBudget, remainin
         <View style={styles.header}>
           <Text>Report Start: {DateTimeToUKDate(start)}</Text>
           <Text>Report End: {DateTimeToUKDate(end)}</Text>
-          <Text>Starting Balance: £{previousBudget == 0 ? Number(remainingBudget) - Number(incomingTotal) + Number(outgoingTotal) : previousBudget}</Text>
+          <Text>Starting Balance: £{previousBudget == 0 ? Number(Number(remainingBudget) - Number(incomingTotal) + Number(outgoingTotal)).toFixed(2) : previousBudget}</Text>
         </View>
       )}
       
