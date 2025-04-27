@@ -1,6 +1,6 @@
 import { Button } from '@mantine/core'
 import { AdditionalPayments, CalculateAccountBalance, CalculateRecurringPayments, PurchasesAndServices } from '@/Components/Treasury'
-import { FirstDayOfTheMonth, LastDayOfTheMonth, NumberOfMonths } from '@/Shared/Functions'
+import { FirstDayOfTheMonth, LastDayOfTheMonth, NumberOfMonths, FormatDateForInput } from '@/Shared/Functions'
 import { Fragment, useEffect, useReducer, useState } from 'react'
 import { MonthPicker } from '@mantine/dates'
 import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
@@ -34,6 +34,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
     const [calculatedTotalBalance, setCalculatedTotalBalance] = useState(0)
     const [calculatedFinalBalance, setCalculatedFinalBalance] = useState(0)
 
+    const [errors, setErrors] = useState({})
     const [submitted, setSubmitted] = useState(false)
 
     //For displaying purchases and services and adding receipts
@@ -76,7 +77,8 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
         setPaidRent(
             rents.map(rent => ({
                 user_id: rent.user.id,
-                amount_paid: calculatePayableRent(rent.amount)
+                amount_paid: calculatePayableRent(rent.amount),
+                date_paid: FormatDateForInput(dates[0])
             }))
         )
     },[dates])
@@ -109,18 +111,29 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
     const submitReport = async (e) => {
         setSubmitted(true)
         let config = { headers: { 'content-type': 'multipart/form-data' }}
-        let reportID = await axios.post('/treasury-reports', {
-            start_date: dates[0],
-            end_date: dates[1] ? LastDayOfTheMonth(dates[1]) : LastDayOfTheMonth(dates[0]),
-            calculated_remaining_budget: calculatedTotalBalance,
-            remaining_budget: calculatedFinalBalance,
-            paid_rents: paidRent,
-            accounts_balances: accountBalances,
-            recurring: recurringPaymentsToBeMade,
-            unreported: unreportedItems,
-            payables: additionalPayments,
-            arrears: updatedArrears,
-        })
+        let reportID
+
+        try {
+            const response = await axios.post('/treasury-reports', {
+                start_date: dates[0],
+                end_date: dates[1] ? LastDayOfTheMonth(dates[1]) : LastDayOfTheMonth(dates[0]),
+                calculated_remaining_budget: calculatedTotalBalance,
+                remaining_budget: calculatedFinalBalance,
+                paid_rents: paidRent,
+                accounts_balances: accountBalances,
+                recurring: recurringPaymentsToBeMade,
+                unreported: unreportedItems,
+                payables: additionalPayments,
+                arrears: updatedArrears,
+            })
+            reportID = response.data
+        } catch (error) {
+            if (error.response && error.response.status === 422) {
+                setErrors(error.response.data.errors)
+            }
+            setSubmitted(false)
+            return
+        }
 
         //Add receipts for Purchases and Services
         await Promise.all(unreportedItems.map(async (item) => (
@@ -133,11 +146,11 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
         await Promise.all(recurringPaymentsToBeMade.map(async (recurring) => (
             await axios.post('/treasury-reports?treasurable=recurring', {
                 ...recurring,
-                treasuryReportID: reportID.data
+                treasuryReportID: reportID
         },config))))
         setSubmitted(false)
 
-        window.location = "/treasury-reports/"+reportID.data
+        window.location = "/treasury-reports/"+reportID
     }
 
     return (
@@ -207,6 +220,7 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
                         <th className="sm:w-32">Tenant</th>
                         <th className="sm:w-32">Rent Payable</th>
                         <th className="sm:w-32">Rent Paid</th>
+                        <th className="sm:w-32">Date Paid</th>
                         <th className="sm:w-32">Arrears</th>
                     </tr>
                     {rents.map(rent => {
@@ -225,6 +239,14 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
                                         step="0.01"
                                         value={paidRent.find(x => x.user_id === rent.user.id).amount_paid}
                                         onChange={(e) => updateSinglePaidRent(rent.user.id, e.target.value, rent.amount)}
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        className="w-40 border-0"
+                                        type="date"
+                                        defaultValue={FormatDateForInput(dates[0])}
+                                        onChange={(e) => setPaidRent([...paidRent.filter(x => x.user_id !== rent.user.id), {...paidRent.find(x => x.user_id === rent.user.id), date_paid: e.target.value}])}
                                     />
                                 </td>
                                 <td>
@@ -307,6 +329,25 @@ export default function CreateReport({rents, arrears, accounts, defaultAccounts,
 
 
             </div>
+            { Object.keys(errors).length > 0 &&
+                <div className="mt-12 text-red-600">
+                    <div>
+                    There is an error submitting the report. 
+                    </div>
+        
+                    <div>
+                    Please fix the following errors:
+                    </div>
+                    <ul>
+                        {Object.entries(errors).map(([field, messages]) =>
+                            messages.map((message, index) => (
+                                <li key={`${field}-${index}`}>{message}</li>
+                            ))
+                        )}
+                    </ul>
+                </div>
+            }
+
 
             {
                 submitted ?

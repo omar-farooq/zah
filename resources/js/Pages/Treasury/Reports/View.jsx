@@ -160,6 +160,7 @@ export default function ViewTreasuryReport({reports, rents, treasuryItems, previ
                 id: item.id,
                 type: item.treasurable_type,
                 sourceOrRecipient: sourceOrRecipient.data,
+                date_paid: item.date_paid,
                 description: typeof description.data == "object" ? 'There is no description' : description.data,
                 friendly_type: item.treasurable_type == 'App\\Models\\PaidRent' ? 'Rent'
                 : item.treasurable_type == 'App\\Models\\Payment' ? 'Payment'
@@ -200,12 +201,7 @@ export default function ViewTreasuryReport({reports, rents, treasuryItems, previ
             <Loader color="cyan" size="xl" className="mt-40" />
             :
         <>
-            <div className="flex flex-row mt-4 justify-between">
-                <div className="flex flex-row mt-4">
-                    <div className="bg-white text-sm md:text-xl mr-4">Report Start: {DateTimeToUKDate(start)}</div>
-                    <ArrowLongRightIcon className="h-6 w-6" />
-                    <div className="bg-white text-sm md:text-xl ml-4">Report End: {DateTimeToUKDate(end)}</div>
-                </div>
+            <div className="flex flex-col 2xl:flex-row mt-4 justify-between">
                 <PDFExportButton
                     treasuryItems={treasuryItems}
                     start={start}
@@ -214,6 +210,11 @@ export default function ViewTreasuryReport({reports, rents, treasuryItems, previ
                     remainingBudget={remainingBudget}
                     mappedTreasuryItems={mappedTreasuryItems}
                 />
+                <div className="flex flex-row mt-4">
+                    <div className="bg-white text-sm md:text-xl mr-4">Report Start: {DateTimeToUKDate(start)}</div>
+                    <ArrowLongRightIcon className="h-6 w-6" />
+                    <div className="bg-white text-sm md:text-xl ml-4">Report End: {DateTimeToUKDate(end)}</div>
+                </div>
             </div>
             <div>Starting Balance: £{previousBudget}</div>
             <div className="w-full flex flex-col items-center">

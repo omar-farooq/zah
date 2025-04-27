@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from 'react'
-import { DateToUKLocale } from '@/Shared/Functions'
-import SmallTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallTable'
+import { DateToUKLocale, FormatDateForInput } from '@/Shared/Functions'
+import SmallMediumTable, { FirstTD, FirstTH, LastTD, LastTH, TBody, TD, THead, TH } from '@/Components/SmallMediumTable'
 
 export default function CalculateRecurringPayments({recurringPayments, recurringPaymentsToBeMadeHook, calculatedRecurringHook, dates}) {
 
@@ -118,7 +118,7 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
                 let i = 0;
                 while(i < x.occurrences) {
                     i++
-                    arr.push({...recurringPayments.find(y => y.id === x.id), occurrence: i, date: calculateDate(recurringPayments.find(y => y.id === x.id),i), receipt: null})
+                    arr.push({...recurringPayments.find(y => y.id === x.id), occurrence: i, date: calculateDate(recurringPayments.find(y => y.id === x.id),i), date_paid: FormatDateForInput(calculateDate(recurringPayments.find(y => y.id === x.id),i)), receipt: null})
                 }
             })
             setRecurringPaymentsToBeMade(arr)
@@ -141,6 +141,9 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
                     if(k === 'amount') {
                         return {...x, uniqueAmount: Number(e.target.value).toFixed(2)}
                     }
+                    if(k === 'date_paid') {
+                        return {...x, date_paid: new Date(e.target.value)} 
+                    }
                 } else {
                     return x
                 }
@@ -152,11 +155,12 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
         recurringPaymentsToBeMade.length > 0 &&
         <>
             <div className="text-xl mt-8 font-bold">Recurring Payments</div>
-            <SmallTable>
+            <SmallMediumTable>
                 <THead>
                     <FirstTH heading="recipient" />
                     <TH heading="amount" />
-                    <TH heading="date" />
+                    <TH heading="date due" />
+                    <TH heading="date paid" />
                     <TH heading="receipt" />
                 </THead>
                 <TBody>
@@ -168,15 +172,24 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
                                     {
                                         payment.amount ?? 
                                         <input 
+                                            className="w-24 border-0"
                                             type="number" 
                                             step="0.01"
-                                            defaultValue="0.00"
                                             onChange={(e) => addAttributeToRecurringPayment('amount', e, i)}
                                         />
 
                                     }
                                 </TD>
                                 <TD data={DateToUKLocale(payment.date)} />
+                                <TD>
+                                    <input
+                                        type="date"
+                                        id="date-paid"
+                                        name="date paid"
+                                        defaultValue={FormatDateForInput(payment.date)}
+                                        onChange={(e) => addAttributeToRecurringPayment('date_paid', e, i)}
+                                    />
+                                </TD>
                                 <TD>
                                     <input 
                                         type="file" 
@@ -190,7 +203,7 @@ export default function CalculateRecurringPayments({recurringPayments, recurring
                         </Fragment>
                     ))}
                 </TBody>
-            </SmallTable>
+            </SmallMediumTable>
         </>
     )
 }

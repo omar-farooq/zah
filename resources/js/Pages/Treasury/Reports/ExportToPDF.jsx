@@ -132,6 +132,9 @@ const TreasuryReportPDF = ({ treasuryItems, start, end, previousBudget, remainin
             <View style={styles.tableColHeader}>
               <Text>Description</Text>
             </View>
+            <View style={styles.tableColHeader}>
+              <Text>Date</Text>
+            </View>
           </View>
           
           {incomingItems.map(item => {
@@ -150,6 +153,9 @@ const TreasuryReportPDF = ({ treasuryItems, start, end, previousBudget, remainin
                 <View style={styles.tableCol}>
                   <Text>{mappedItem?.description || ''}</Text>
                 </View>
+                <View style={styles.tableCol}>
+                  <Text>{mappedItem?.date_paid || ''}</Text>
+                </View>
               </View>
             );
           })}
@@ -158,6 +164,9 @@ const TreasuryReportPDF = ({ treasuryItems, start, end, previousBudget, remainin
           <View style={styles.totalRow}>
             <View style={styles.totalCol}>
               <Text>Total: £{incomingTotal}</Text>
+            </View>
+            <View style={styles.totalCol}>
+              <Text></Text>
             </View>
             <View style={styles.totalCol}>
               <Text></Text>
@@ -195,6 +204,9 @@ const TreasuryReportPDF = ({ treasuryItems, start, end, previousBudget, remainin
             <View style={styles.tableColHeader}>
               <Text>Description</Text>
             </View>
+            <View style={styles.tableColHeader}>
+              <Text>Date</Text>
+            </View>
           </View>
           
           {outgoingItems.map(item => {
@@ -213,6 +225,9 @@ const TreasuryReportPDF = ({ treasuryItems, start, end, previousBudget, remainin
                 <View style={styles.tableCol}>
                   <Text>{mappedItem?.description || ''}</Text>
                 </View>
+                <View style={styles.tableCol}>
+                  <Text>{mappedItem?.date_paid || ''}</Text>
+                </View>
               </View>
             );
           })}
@@ -221,6 +236,9 @@ const TreasuryReportPDF = ({ treasuryItems, start, end, previousBudget, remainin
           <View style={styles.totalRow}>
             <View style={styles.totalCol}>
               <Text>Total: £{outgoingTotal}</Text>
+            </View>
+            <View style={styles.totalCol}>
+              <Text></Text>
             </View>
             <View style={styles.totalCol}>
               <Text></Text>
@@ -259,11 +277,12 @@ export const PDFExportButton = ({ treasuryItems, start, end, previousBudget, rem
       />
     } 
     fileName={`treasury-report-${DateTimeToUKDate(start)}-to-${DateTimeToUKDate(end)}.pdf`}
+    className={`self-center`}
   >
     {({ blob, url, loading, error }) => (
       <Button 
         leftIcon={<FolderArrowDownIcon className="h-5 w-5" />} 
-        className="bg-sky-600"
+        className="bg-sky-600 2xl:absolute 2xl:right-72"
         loading={loading}
       >
         {loading ? 'Generating PDF...' : 'Export to PDF'}

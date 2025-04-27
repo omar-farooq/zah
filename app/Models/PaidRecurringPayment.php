@@ -13,6 +13,7 @@ class PaidRecurringPayment extends Model
         'recurring_payment_id',
         'treasury_report_id',
         'amount_paid',
+        'date_paid',
     ];
 
     public function recurringPayment()
