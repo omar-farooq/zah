@@ -23,9 +23,12 @@ class AddContentSecurityPolicyHeaders
 
         $response = $next($request);
 
+        $appUrl = config('app.url');
+        $appUrl = rtrim($appUrl, '/');
+
         $response->headers->set(
             'Content-Security-Policy',
-            "script-src 'nonce-".Vite::cspNonce()."' 'wasm-unsafe-eval'"
+            "script-src 'nonce-".Vite::cspNonce()."' 'wasm-unsafe-eval' {$appUrl};"
         );
 
         return $response;

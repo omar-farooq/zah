@@ -199,9 +199,11 @@ class TreasuryReportController extends Controller
     public function editItems(TreasuryReport $treasuryReport)
     {
         $treasuryItems = TreasuryItem::with('treasuryReport')->get();
+        $rents = PaidRent::with('user')->get();
         return Inertia::render('Treasury/Reports/AddNewColumns', [
             'title' => 'Edit Treasury Reports',
             'treasuryItems' => $treasuryItems,
+            'rents' => $rents,
         ]);
     }
 
@@ -212,7 +214,7 @@ class TreasuryReportController extends Controller
     public function updateItem(Request $request, TreasuryItem $treasuryItem)
     {
         $treasuryItem->payment_type = $request->payment_type;
-        $treasuryItem->payment_date = $request->payment_date;
+        $treasuryItem->date_paid = $request->date_paid;
         $treasuryItem->save();
     }
 
