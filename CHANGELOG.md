@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/omar-farooq/zah/compare/v1.1.0...v1.1.1) (2025-04-27)
+
+
+### Bug Fixes
+
+* nginx pid ([0658125](https://github.com/omar-farooq/zah/commit/06581256530a9aa81b1beaaeeb37ce8ef9d89d50))
+* nginx pid ([947a0f5](https://github.com/omar-farooq/zah/commit/947a0f5b11759d5aac65f319e37077111b7f6eab))
+
 ## [1.1.0](https://github.com/omar-farooq/zah/compare/v1.0.1...v1.1.0) (2025-04-27)
 
 
