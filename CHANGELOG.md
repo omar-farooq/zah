@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0](https://github.com/omar-farooq/zah/compare/v1.1.4...v1.2.0) (2025-04-28)
+
+
+### Features
+
+* export minutes ([24cbb56](https://github.com/omar-farooq/zah/commit/24cbb5612cad0b58b4833c6abff9a6b76adf7489))
+* export minutes ([a4b94e6](https://github.com/omar-farooq/zah/commit/a4b94e6a9a28da0bf641caf760dc66bcc5222dda))
+
 ## [1.1.4](https://github.com/omar-farooq/zah/compare/v1.1.3...v1.1.4) (2025-04-27)
 
 
