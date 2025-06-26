@@ -15,6 +15,9 @@ Route::middleware('guest')->group(function () {
     Route::get('/', function () {
         return Inertia::render('Public/index');
     });
+    Route::get('/complaints', function () {
+        return Inertia::render('Public/complaints');
+    });
 
     //    Route::get('register', [RegisteredUserController::class, 'create'])
     //                ->name('register');
