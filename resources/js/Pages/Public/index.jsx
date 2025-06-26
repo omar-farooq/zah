@@ -5,6 +5,8 @@ import { ErrorNotification } from '@/Components/Notifications'
 import { Link } from '@inertiajs/react';
 import Input from '@/Components/Input'
 import TextArea from '@/Components/TextArea'
+import Header from '@/Components/Header'
+import Footer from '@/Components/Footer'
 
 export default function FrontPage() {
 
@@ -95,18 +97,7 @@ export default function FrontPage() {
                         closeButtonLabel="Close alert"
                     />
                 }
-                <nav className="h-16 flex justify-between">
-                    <div className="text-3xl md:text-5xl h-full mt-4 ml-8 flex">
-                        <div>ZAH</div>
-                    </div>
-                    <div className="text-2xl md:text-4xl h-full mt-4 mr-8 flex">
-                        <Link href={'/login'}>Login</Link>
-                    </div>
-                </nav>
-                <div className="bg-[url('/images/zah.jpg')] bg-center bg-cover w-full h-[calc(100vh-55vh)] opacity-90 md:mt-4">
-                        <div className="mx-auto text-left text-6xl h-full overflow-hidden">
-                        </div>
-                </div>
+                <Header />
 
                 <div className="flex justify-center animate-fade font-raleway">
                     <div className="flex md:flex-row flex-col mt-10 mb-4 w-4/5 space-evenly">
@@ -180,27 +171,7 @@ export default function FrontPage() {
                     </div>
                 </div>
 
-                <footer className="h-60 bg-zinc-100 md:-skew-y-1 text-slate-500">
-                    <div className="flex justify-center">
-                        <div className="flex flex-col lg:flex-row w-3/5 mt-3">
-
-                            <div className="w-full lg:w-1/3 text-center">
-                                <h3 className="text-2xl mb-1 text-slate-600">Resources</h3>
-                                <a href="https://www.ica.coop/en" target="_blank">International Cooperative Alliance</a>
-                            </div>
-
-                            <div className="w-full lg:w-1/3 mt-6 lg:mt-0 text-center">
-                                <h3 className="text-2xl mb-1 text-slate-600">UK Social Housing</h3>
-                                <a href="https://diggersanddreamers.org.uk/" target="_blank">Diggers and Dreamers</a>
-                            </div>
-
-                            <div className="w-full lg:w-1/3 mt-6 lg:mt-0 text-center">
-                                <h3 className="text-2xl text-slate-600">Manchester</h3>
-                            </div>
-
-                        </div>
-                    </div>
-                </footer>
+                <Footer />
             </MantineProvider>
         </>
     )
