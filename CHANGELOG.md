@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/omar-farooq/zah/compare/v1.2.0...v1.3.0) (2025-06-26)
+
+
+### Features
+
+* complaints page ([94b9fb3](https://github.com/omar-farooq/zah/commit/94b9fb3e593fe3b11dfb7e9aa8e83bf1851abaf3))
+
 ## [1.2.0](https://github.com/omar-farooq/zah/compare/v1.1.4...v1.2.0) (2025-04-28)
 
 
